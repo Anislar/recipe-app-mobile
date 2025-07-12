@@ -6,7 +6,7 @@ const { height } = Dimensions.get("window");
 export const authStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: "#fff",
   },
   keyboardView: {
     flex: 1,
@@ -51,10 +51,10 @@ export const authStyles = StyleSheet.create({
     color: COLORS.text,
     paddingVertical: 16,
     paddingHorizontal: 20,
-    backgroundColor: COLORS.background,
+    backgroundColor: "#fff",
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: COLORS.gray,
   },
   prefixIcon: {
     position: "absolute",
@@ -81,7 +81,7 @@ export const authStyles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: COLORS.white,
+    color: "#fff",
     textAlign: "center",
   },
   linkContainer: {
@@ -99,7 +99,7 @@ export const authStyles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: COLORS.border,
+    backgroundColor: COLORS.gray,
     marginVertical: 20,
     flexDirection: "row",
   },
@@ -110,11 +110,11 @@ export const authStyles = StyleSheet.create({
     gap: 10,
   },
   socialButton: {
-    backgroundColor: COLORS.white,
+    backgroundColor: "#fff",
     padding: 10,
     borderRadius: 10,
     borderWidth: 1,
     color: COLORS.text,
-    borderColor: COLORS.border,
+    borderColor: COLORS.gray,
   },
 });

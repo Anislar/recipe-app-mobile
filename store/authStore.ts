@@ -2,19 +2,21 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { getItem, setItem, deleteItemAsync } from "expo-secure-store";
 
-import { authService } from "@/services";
+import { authService, oauthService } from "@/services";
 import { LoginCredentials, RegisterData, User } from "@/type/auth.type";
 export interface AuthState {
   isLoading: boolean;
-  error: string | null;
-
+  error: {
+    message: string;
+    code: string;
+  } | null;
   // User data
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
 
   setLoading: (isLoading: boolean) => void;
-  setError: (error: string | null) => void;
+  setError: (error: AuthState["error"] | null) => void;
   // User data
   setUser: (user: AuthState["user"]) => void;
   setToken: (token: AuthState["token"]) => void;
@@ -28,9 +30,9 @@ export interface AuthState {
   logout: () => void;
 
   // OAuth
-  loginWithGoogle: () => Promise<void>;
-  loginWithGithub: () => Promise<void>;
-  loginWithDiscord: () => Promise<void>;
+  loginWithGoogle: (code: string, codeVerifier: string) => Promise<void>;
+  loginWithGithub: (code: string, codeVerifier: string) => Promise<void>;
+  loginWithDiscord: (code: string, codeVerifier: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -52,13 +54,16 @@ export const useAuthStore = create<AuthState>()(
 
       // Login action
       login: async (data: LoginCredentials) => {
-        set({ isLoading: true, error: null });
+        set({
+          isLoading: true,
+          error: null,
+        });
 
         try {
           const response = await authService.login(data);
-          const { user, token } = response;
+          const { data: userData, token } = response;
           set({
-            user,
+            user: userData,
             isLoading: false,
             error: null,
             token,
@@ -68,52 +73,42 @@ export const useAuthStore = create<AuthState>()(
           console.log("🚀 ~ login: ~ error:", error);
           set({
             isLoading: false,
-            error: error instanceof Error ? error.message : "Login failed",
+            error: {
+              message: error instanceof Error ? error.message : "Login failed",
+              code: (error as any).code || "LOGIN_FAILED",
+            },
           });
         }
       },
 
       // Register action
-      register: async (data) => {
-        set({ isLoading: true, error: null });
+      register: async (data: RegisterData) => {
+        set({
+          isLoading: true,
+          error: null,
+        });
 
         try {
-          // Validate passwords match
-          if (data.password !== data.confirmPassword) {
-            throw new Error("Passwords do not match");
-          }
-
           // TODO: Replace with your actual API call
-          const response = await fetch("YOUR_API_URL/auth/register", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: data.name,
-              email: data.email,
-              password: data.password,
-            }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Registration failed");
-          }
-
-          const responseData = await response.json();
+          const response = await authService.register(data);
+          const { data: userData, token } = response;
 
           set({
-            user: responseData.user,
+            user: userData,
             isLoading: false,
             error: null,
-            token: responseData.token,
+            token: token,
             isAuthenticated: true,
           });
         } catch (error) {
+          console.log("🚀 ~ register: ~ error:", error);
           set({
             isLoading: false,
-            error:
-              error instanceof Error ? error.message : "Registration failed",
+            error: {
+              message:
+                error instanceof Error ? error.message : "Registration failed",
+              code: (error as any).code || "REGISTRATION_FAILED",
+            },
           });
         }
       },
@@ -122,56 +117,88 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         set({
           user: null,
+          token: null,
           error: null,
           isAuthenticated: false,
         });
       },
 
       // OAuth actions
-      loginWithGoogle: async () => {
-        set({ isLoading: true, error: null });
+      loginWithGoogle: async (code: string, codeVerifier: string) => {
+        set({
+          error: null,
+        });
 
         try {
-          // The OAuth flow is handled in the individual button components
-          // This method is called after successful OAuth callback
-          set({ isLoading: false, isAuthenticated: true });
+          const result = await oauthService.handleOAuthCallback("google", {
+            code,
+            codeVerifier,
+          });
+          set({
+            isAuthenticated: true,
+            user: result.data,
+            token: result.token,
+          });
         } catch (error) {
           set({
-            isLoading: false,
-            error:
-              error instanceof Error ? error.message : "Google login failed",
+            error: {
+              message:
+                error instanceof Error ? error.message : "Google login failed",
+              code: "GOOGLE_LOGIN_FAILED",
+            },
           });
         }
       },
 
-      loginWithGithub: async () => {
-        set({ isLoading: true, error: null });
+      loginWithGithub: async (code: string, codeVerifier: string) => {
+        set({
+          error: null,
+        });
 
         try {
-          // The OAuth flow is handled in the individual button components
-          // This method is called after successful OAuth callback
-          set({ isLoading: false, isAuthenticated: true });
+          const result = await oauthService.handleOAuthCallback("github", {
+            code,
+            codeVerifier,
+          });
+          set({
+            isAuthenticated: true,
+            user: result.data,
+            token: result.token,
+          });
         } catch (error) {
           set({
-            isLoading: false,
-            error:
-              error instanceof Error ? error.message : "GitHub login failed",
+            error: {
+              message:
+                error instanceof Error ? error.message : "GitHub login failed",
+              code: "GITHUB_LOGIN_FAILED",
+            },
           });
         }
       },
 
-      loginWithDiscord: async () => {
-        set({ isLoading: true, error: null });
-
+      loginWithDiscord: async (code: string, codeVerifier: string) => {
+        set({
+          error: null,
+        });
         try {
-          // The OAuth flow is handled in the individual button components
-          // This method is called after successful OAuth callback
-          set({ isLoading: false, isAuthenticated: true });
+          const result = await oauthService.handleOAuthCallback("discord", {
+            code,
+            codeVerifier,
+          });
+          set({
+            isLoading: false,
+            isAuthenticated: true,
+            user: result.data,
+            token: result.token,
+          });
         } catch (error) {
           set({
             isLoading: false,
-            error:
-              error instanceof Error ? error.message : "Discord login failed",
+            error: {
+              message:
+                error instanceof Error ? error.message : "Discord login failed",
+              code: "DISCORD_LOGIN_FAILED",
+            },
           });
         }
       },

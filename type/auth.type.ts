@@ -8,7 +8,6 @@ export interface RegisterData {
   name: string;
   email: string;
   password: string;
-  confirmPassword: string;
 }
 export interface User {
   id: string;

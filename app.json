@@ -1,12 +1,13 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "link Up",
+    "slug": "linkUp",
     "version": "1.0.0",
+    "owner": "anis_larguet",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
+    "icon": "./assets/images/ic_launcher.png",
     "userInterfaceStyle": "automatic",
+    "scheme": "linkUp",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
@@ -16,11 +17,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/ic_launcher.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.frontend"
+      "package": "com.anis_larguet.linkUp"
     },
     "web": {
       "bundler": "metro",
@@ -32,11 +33,15 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/welcome.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "@react-native-google-signin/google-signin"
+       
       ],
       "expo-secure-store",
       "expo-web-browser"
@@ -47,7 +52,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "374bd809-c253-4f65-82c9-074897256e5e"
+        "projectId": "ea0963f5-5f4d-4d09-a4a6-dd115d90c675"
       }
     }
   }

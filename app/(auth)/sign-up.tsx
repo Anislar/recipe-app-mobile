@@ -1,179 +1,175 @@
 import {
-  ActivityIndicator,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/store";
-import { authStyles } from "@/assets/styles/auth.style";
-import { COLORS } from "@/constants/colors";
-import { useState } from "react";
-import { RegisterData } from "@/type";
+import { THEME } from "@/constants/colors";
+import { useEffect, useRef } from "react";
 import { Link } from "expo-router";
+import {
+  BackButton,
+  Button,
+  ScreenWrapper,
+  SocialButtonComponent,
+  TextInputComponent,
+} from "@/components";
+import { hp, wp } from "@/helpers/common";
 
 const SignUp = () => {
-  const [registerForm, setRegisterForm] = useState<RegisterData>({
-    email: "",
-    password: "",
-    name: "",
-    confirmPassword: "",
-  });
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const emailRef = useRef("");
+  const nameRef = useRef("");
+
+  const passwordRef = useRef("");
+  const confirmPasswordRef = useRef("");
+
   const { register, error, isLoading, setError } = useAuthStore();
 
-  const handleChange = (key: keyof RegisterData, value: string) => {
-    setRegisterForm({ ...registerForm, [key]: value });
-  };
-  const handleLogin = () => {
-    if (registerForm.email && registerForm.password) {
-      register(registerForm);
+  // Handle error display in useEffect to avoid setState during render
+  useEffect(() => {
+    if (error?.code === "REGISTRATION_FAILED") {
+      alert(error.message);
+      setError(null);
+    }
+  }, [error, setError]);
+
+  const handleRegister = () => {
+    if (emailRef.current && passwordRef.current) {
+      register({
+        name: nameRef.current,
+        email: emailRef.current,
+        password: passwordRef.current,
+      });
     }
   };
-  if (error) {
-    alert(error);
-    // clear error
-    setError(null);
-  }
   return (
-    <View style={authStyles.container}>
+    <ScreenWrapper bg="white">
       <KeyboardAvoidingView
-        style={authStyles.keyboardView}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
       >
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={authStyles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={authStyles.imageContainer}>
-            <Image
-              source={require("@/assets/images/i1.png")}
-              style={authStyles.image}
-              contentFit="contain"
-            />
-          </View>
-          <Text style={authStyles.title}> Create an Account </Text>
-          {/* Form */}
-          <View style={authStyles.formContainer}>
-            {/*Email Input */}
-            <View style={authStyles.inputContainer}>
-              <TextInput
-                style={authStyles.textInput}
-                placeholder="Email"
-                placeholderTextColor={COLORS.textLight}
-                value={registerForm.email}
-                onChangeText={(text) => handleChange("email", text)}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                returnKeyType="next"
-              />
+        <ScrollView keyboardShouldPersistTaps="handled">
+          <View style={styles.container}>
+            <BackButton size={26} />
+            {/* Welcome text */}
+            <View>
+              <Text style={styles.welcomeText}>Let&apos;s,</Text>
+              <Text style={styles.welcomeText}>Get Started!</Text>
             </View>
-            {/*Name Input */}
-            <View style={authStyles.inputContainer}>
-              <TextInput
-                style={authStyles.textInput}
-                placeholder="Name"
-                placeholderTextColor={COLORS.textLight}
-                value={registerForm.name}
-                onChangeText={(text) => handleChange("name", text)}
-                keyboardType="default"
-                autoCapitalize="none"
-                autoComplete="name"
-                returnKeyType="next"
+            {/* form */}
+            <View style={styles.form}>
+              <Text style={styles.form_description}>
+                Please Fill the details to create an account
+              </Text>
+              <TextInputComponent
+                icon="person-outline"
+                placeholder="Enter your name"
+                onChangeText={(value) => {
+                  nameRef.current = value;
+                }}
+              />
+              <TextInputComponent
+                icon="mail-outline"
+                placeholder="Enter your email"
+                onChangeText={(value) => {
+                  emailRef.current = value;
+                }}
+              />
+              <TextInputComponent
+                icon="lock-closed-outline"
+                secureTextEntry
+                placeholder="Enter your password"
+                onChangeText={(value) => {
+                  passwordRef.current = value;
+                }}
+              />
+              {/* <TextInputComponent
+                icon="lock-closed-outline"
+                secureTextEntry
+                placeholder="Confirm your password"
+                onChangeText={(value) => {
+                  confirmPasswordRef.current = value;
+                }}
+              /> */}
+
+              {/* Button */}
+              <Button
+                title="Sign Up"
+                loading={isLoading}
+                onPress={handleRegister}
               />
             </View>
 
-            {/*Password Input */}
-            <View style={authStyles.inputContainer}>
-              <TextInput
-                style={authStyles.textInput}
-                placeholder="Password"
-                placeholderTextColor={COLORS.textLight}
-                value={registerForm.password}
-                onChangeText={(text) => handleChange("password", text)}
-                keyboardType="default"
-                autoCapitalize="none"
-                secureTextEntry={showPassword}
-                returnKeyType="done"
-                onSubmitEditing={handleLogin}
-              />
-              <TouchableOpacity
-                style={authStyles.eyeButton}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                <Ionicons
-                  name={showPassword ? "eye-off-outline" : "eye-outline"}
-                  size={20}
-                  color={COLORS.textLight}
-                />
-              </TouchableOpacity>
-            </View>
-
-            {/*Confirm Password Input */}
-            <View style={authStyles.inputContainer}>
-              <TextInput
-                style={authStyles.textInput}
-                placeholder="Confirm Password"
-                placeholderTextColor={COLORS.textLight}
-                value={registerForm.confirmPassword}
-                onChangeText={(text) => handleChange("confirmPassword", text)}
-                keyboardType="default"
-                autoCapitalize="none"
-                secureTextEntry={showPassword}
-                returnKeyType="done"
-                onSubmitEditing={handleLogin}
-              />
-              {/*Login Button */}
-              <TouchableOpacity
-                onPress={handleLogin}
-                disabled={isLoading}
-                style={[
-                  authStyles.authButton,
-                  isLoading && authStyles.buttonDisabled,
-                ]}
-                activeOpacity={0.8}
-              >
-                {isLoading ? (
-                  <ActivityIndicator size="small" color={COLORS.white} />
-                ) : (
-                  <Text style={authStyles.buttonText}>Login</Text>
-                )}
-              </TouchableOpacity>
-              {/*Sign Up Link */}
-              <View style={authStyles.linkContainer}>
-                <Text style={authStyles.linkText}>
-                  Already have an account?{" "}
-                  <Link href="/sign-in">
-                    <Text style={authStyles.link}>Sign In</Text>
-                  </Link>
+            {/* Footer */}
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>already have an accout?</Text>
+              <Link href="/(auth)/sign-in" push>
+                <Text
+                  style={[
+                    styles.footerText,
+                    {
+                      color: THEME.colors.primaryDark,
+                      fontWeight: THEME.fonts.semibold,
+                      textDecorationLine: "underline",
+                    },
+                  ]}
+                >
+                  Sign In
                 </Text>
-              </View>
-              <View style={authStyles.divider} />
-              <View style={authStyles.socialContainer}>
-                <TouchableOpacity style={authStyles.socialButton}>
-                  <Ionicons name="logo-github" size={26} />
-                </TouchableOpacity>
-                <TouchableOpacity style={authStyles.socialButton}>
-                  <Ionicons name="logo-discord" size={26} />
-                </TouchableOpacity>
-                <TouchableOpacity style={authStyles.socialButton}>
-                  <Ionicons name="logo-google" size={26} />
-                </TouchableOpacity>
-              </View>
+              </Link>
             </View>
+
+            {/* Social Media */}
+            <SocialButtonComponent />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </View>
+    </ScreenWrapper>
   );
 };
-
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    gap: 45,
+    paddingHorizontal: wp(5),
+  },
+  welcomeText: {
+    fontSize: hp(4),
+    fontWeight: THEME.fonts.bold,
+    color: THEME.colors.text,
+  },
+  form: {
+    gap: 15,
+  },
+  form_description: {
+    fontSize: hp(1.5),
+    color: THEME.colors.text,
+  },
+  forgotPassword: {
+    textAlign: "right",
+    fontWeight: THEME.fonts.semibold,
+    color: THEME.colors.primaryDark,
+    textDecorationLine: "underline",
+  },
+  footer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  footerText: {
+    textAlign: "center",
+    color: THEME.colors.text,
+    fontSize: hp(1.6),
+  },
+  divider: {
+    height: 1,
+    backgroundColor: THEME.colors.gray,
+  },
+});
 export default SignUp;

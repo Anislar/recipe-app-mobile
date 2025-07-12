@@ -1,37 +1,24 @@
-import { COLORS } from "@/constants/colors";
-import { View, ActivityIndicator, Text, StyleSheet } from "react-native";
+import { THEME } from "@/constants/colors";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
+interface LoadingSpinnerProps {
+  color?: string;
+  size?: "large" | "small";
+}
 
 export default function LoadingSpinner({
-  message = "Loading...",
   size = "large",
-}: {
-  message?: string;
-  size?: "large" | "small";
-}) {
+  color = THEME.colors.primary,
+}: LoadingSpinnerProps) {
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        <ActivityIndicator size={size} color={COLORS.primary} />
-        <Text style={styles.message}>{message}</Text>
-      </View>
+      <ActivityIndicator size={size} color={color} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 32,
-  },
-  content: {
-    alignItems: "center",
-    gap: 16,
-  },
-  message: {
-    fontSize: 16,
-    color: COLORS.textLight,
-    textAlign: "center",
   },
 });

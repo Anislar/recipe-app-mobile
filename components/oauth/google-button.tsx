@@ -1,62 +1,59 @@
-import React, { useEffect, useState } from "react";
-import * as AuthSession from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
-
+import React, { useState, useCallback } from "react";
+import {
+  GoogleSignin,
+  SignInResponse,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
 import BaseOAuthButton from "./base-oauth-button";
-import { oauthService } from "@/services";
 import { useAuthStore } from "@/store/authStore";
-
-// Required for iOS/Android to complete the flow
-WebBrowser.maybeCompleteAuthSession();
 
 const GoogleButton: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { loginWithGoogle } = useAuthStore();
 
-  // Build the redirect URI (Expo Go or standalone)
-  const redirectUri = AuthSession.makeRedirectUri({});
-
-  const [request, response, promptAsync] = AuthSession.useAuthRequest(
-    {
-      clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
-      scopes: ["openid", "email", "profile"],
-      responseType: AuthSession.ResponseType.Code,
-      redirectUri, // use computed value, not from a service
-    },
-    { authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth" } // Required in SDK 49+
-  );
-
-  useEffect(() => {
-    if (response?.type === "success" && response.params?.code) {
-      handleOAuthResponse(response.params.code);
-    }
-  }, [response]);
-
-  const handleOAuthResponse = async (code: string) => {
-    setIsLoading(true);
+  const handlePress = useCallback(async () => {
     try {
-      // Send `code` to your backend for token exchange
-      // await oauthService.handleOAuthCallback("google", { code });
-      console.log("🚀 ~ handleOAuthResponse ~ code:", code);
-      await loginWithGoogle();
-    } catch (error) {
-      console.error("Google OAuth error:", error);
+      setIsLoading(true);
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+
+      // Optional: Force user to select account again
+      await GoogleSignin.signOut();
+
+      const { data, type }: SignInResponse = await GoogleSignin.signIn();
+      // const idToken = await GoogleSignin.getTokens();
+
+      if (!data) {
+        console.warn("No user info or ID token returned from Google");
+        return;
+      }
+      console.log("🚀 ~ data:", data);
+
+      // Send ID token to your backend
+      // await loginWithGoogle(idToken.idToken);
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log("❌ User cancelled Google login");
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log("⏳ Google login already in progress");
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.error("❌ Google Play Services not available or outdated");
+      } else {
+        console.error("❗ Unexpected Google Sign-In error:", error);
+      }
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handlePress = async () => {
-    if (request) {
-      await promptAsync();
-    }
-  };
+  }, []);
 
   return (
     <BaseOAuthButton
+      title="Continue With Google"
       icon="logo-google"
       onPress={handlePress}
       isLoading={isLoading}
+      disabled={isLoading}
     />
   );
 };

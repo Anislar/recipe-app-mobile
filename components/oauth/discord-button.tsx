@@ -1,36 +1,29 @@
-import React, { useState } from "react";
-import { Platform } from "react-native";
-import * as AuthSession from "expo-auth-session";
-import * as WebBrowser from "expo-web-browser";
-
+import React, { useState, useEffect } from "react";
+import { useAuthRequest } from "expo-auth-session";
 import BaseOAuthButton from "./base-oauth-button";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store";
 import { oauthService } from "@/services";
-
-WebBrowser.maybeCompleteAuthSession();
 
 const DiscordButton: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
+
   const { loginWithDiscord } = useAuthStore();
+  const [request, response, promptAsync] = useAuthRequest(
+    oauthService.getOAuthConfig("discord").config,
+    oauthService.getOAuthConfig("discord").discovery
+  );
 
-  const redirectUri = AuthSession.makeRedirectUri({
-    native: "com.anonymous.frontend",
-  });
+  useEffect(() => {
+    if (response?.type === "success" && response.params?.code) {
+      handleOAuthResponse(response.params.code, request?.codeVerifier!);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [response]);
 
-  const handleOAuthResponse = async (url: string) => {
-    const code = new URL(url).searchParams.get("code");
-
-    if (!code) return;
-
+  const handleOAuthResponse = async (code: string, codeVerifier: string) => {
     setIsLoading(true);
     try {
-      console.log("🚀 ~ handleOAuthResponse ~ code:", code);
-      //   await oauthService.handleOAuthCallback("discord", {
-      //     type: "success",
-      //     params: { code },
-      //   });
-
-      await loginWithDiscord();
+      await loginWithDiscord(code, codeVerifier);
     } catch (error) {
       console.error("Discord OAuth error:", error);
     } finally {
@@ -39,30 +32,18 @@ const DiscordButton: React.FC = () => {
   };
 
   const handlePress = async () => {
-    const queryParams = new URLSearchParams({
-      client_id: process.env.EXPO_PUBLIC_DISCORD_CLIENT_ID!,
-      redirect_uri: redirectUri,
-      response_type: "code",
-      scope: "identify email",
-      prompt: "consent",
-    });
-
-    const authUrl = `https://discord.com/api/oauth2/authorize?${queryParams.toString()}`;
-
-    const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
-
-    if (result.type === "success" && result.url.includes("code=")) {
-      await handleOAuthResponse(result.url);
-    } else {
-      console.warn("OAuth cancelled or failed:", result);
+    if (request) {
+      await promptAsync();
     }
   };
 
   return (
     <BaseOAuthButton
+      title="Continue With Discord"
       icon="logo-discord"
       onPress={handlePress}
       isLoading={isLoading}
+      disabled={!request}
     />
   );
 };
