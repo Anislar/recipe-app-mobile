@@ -1,13 +1,14 @@
 {
   "expo": {
     "name": "link Up",
-    "slug": "linkUp",
+    "slug": "link-up",
     "version": "1.0.0",
     "owner": "anis_larguet",
     "orientation": "portrait",
     "icon": "./assets/images/ic_launcher.png",
     "userInterfaceStyle": "automatic",
     "scheme": "linkUp",
+    "deepLinks": ["linkUp://oauthredirect"],
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
@@ -21,7 +22,37 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anis_larguet.linkUp"
+      "package": "com.anis_larguet.linkUp",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "linkUp",
+              "host": "oauthredirect",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "linkUp"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -41,7 +72,6 @@
       ],
       [
         "@react-native-google-signin/google-signin"
-       
       ],
       "expo-secure-store",
       "expo-web-browser"
@@ -52,7 +82,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "ea0963f5-5f4d-4d09-a4a6-dd115d90c675"
+        "projectId": "1a79f5b1-16ff-47f1-a7c1-85ec245b18b2"
       }
     }
   }

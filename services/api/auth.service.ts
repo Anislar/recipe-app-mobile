@@ -1,6 +1,12 @@
-import { LoginCredentials, RegisterData } from "@/type";
 import { api } from "../axios-instance";
 import { OAuthCallbackData } from "./oauth.service";
+import {
+  FogotPasswordType,
+  ResetPasswordType,
+  SignInType,
+  SignUpType,
+  VerifyCodeType,
+} from "@/helpers/schema";
 
 interface ApiError {
   success: false;
@@ -39,7 +45,7 @@ class AuthService {
     throw error;
   }
 
-  async login(data: LoginCredentials): Promise<ApiSuccess<any>> {
+  async login(data: SignInType): Promise<ApiSuccess<any>> {
     try {
       const response = await api.post(this.prefix + "/signin", data);
       return response.data;
@@ -48,7 +54,7 @@ class AuthService {
     }
   }
 
-  async register(data: RegisterData): Promise<ApiSuccess<any>> {
+  async register(data: SignUpType): Promise<ApiSuccess<any>> {
     try {
       const response = await api.post(this.prefix + "/signup", data);
       return response.data;
@@ -56,7 +62,30 @@ class AuthService {
       this.handleApiError(error);
     }
   }
-
+  async forgotPassword(data: FogotPasswordType): Promise<ApiSuccess<any>> {
+    try {
+      const response = await api.post(this.prefix + "/forgot-password", data);
+      return response.data;
+    } catch (error) {
+      this.handleApiError(error);
+    }
+  }
+  async verifyCode(data: VerifyCodeType): Promise<ApiSuccess<any>> {
+    try {
+      const response = await api.post(this.prefix + "/verify-code", data);
+      return response.data;
+    } catch (error) {
+      this.handleApiError(error);
+    }
+  }
+  async resetPassword(data: ResetPasswordType): Promise<ApiSuccess<any>> {
+    try {
+      const response = await api.post(this.prefix + "/reset-password", data);
+      return response.data;
+    } catch (error) {
+      this.handleApiError(error);
+    }
+  }
   async oauthCallback(
     provider: "google" | "github" | "discord",
     data: OAuthCallbackData

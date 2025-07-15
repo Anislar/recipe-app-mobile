@@ -3,7 +3,14 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { getItem, setItem, deleteItemAsync } from "expo-secure-store";
 
 import { authService, oauthService } from "@/services";
-import { LoginCredentials, RegisterData, User } from "@/type/auth.type";
+import {
+  FogotPasswordType,
+  ResetPasswordType,
+  SignInType,
+  SignUpType,
+  User,
+  VerifyCodeType,
+} from "@/helpers/schema";
 export interface AuthState {
   isLoading: boolean;
   error: {
@@ -22,9 +29,11 @@ export interface AuthState {
   setToken: (token: AuthState["token"]) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
 
-  login: (data: LoginCredentials) => Promise<void>;
-
-  register: (data: RegisterData) => Promise<void>;
+  login: (data: SignInType) => Promise<void>;
+  register: (data: SignUpType) => Promise<void>;
+  forgotPassword: (data: FogotPasswordType) => Promise<boolean>;
+  resetPassword: (data: ResetPasswordType) => Promise<boolean>;
+  verifyCode: (data: VerifyCodeType) => Promise<boolean>;
 
   // Logout
   logout: () => void;
@@ -44,7 +53,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
-
+      isSuccess: false,
       // Basic actions
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),
@@ -53,7 +62,7 @@ export const useAuthStore = create<AuthState>()(
       setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
 
       // Login action
-      login: async (data: LoginCredentials) => {
+      login: async (data: SignInType) => {
         set({
           isLoading: true,
           error: null,
@@ -75,14 +84,14 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             error: {
               message: error instanceof Error ? error.message : "Login failed",
-              code: (error as any).code || "LOGIN_FAILED",
+              code: "LOGIN_FAILED",
             },
           });
         }
       },
 
       // Register action
-      register: async (data: RegisterData) => {
+      register: async (data: SignUpType) => {
         set({
           isLoading: true,
           error: null,
@@ -101,18 +110,95 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
           });
         } catch (error) {
-          console.log("🚀 ~ register: ~ error:", error);
           set({
             isLoading: false,
             error: {
               message:
                 error instanceof Error ? error.message : "Registration failed",
-              code: (error as any).code || "REGISTRATION_FAILED",
+              code: "REGISTRATION_FAILED",
             },
           });
         }
       },
+      // Forgot password
+      forgotPassword: async (data: FogotPasswordType) => {
+        set({
+          isLoading: true,
+          error: null,
+        });
 
+        try {
+          await authService.forgotPassword(data);
+          set({
+            isLoading: false,
+            error: null,
+          });
+          return true;
+        } catch (error) {
+          console.log(error);
+          set({
+            isLoading: false,
+            error: {
+              message: error instanceof Error ? error.message : "Forgot failed",
+              code: "FORGOT_PASSWORD_FAILED",
+            },
+          });
+          return false;
+        }
+      },
+      // Verify Code
+      verifyCode: async (data: VerifyCodeType) => {
+        set({
+          isLoading: true,
+          error: null,
+        });
+
+        try {
+          await authService.verifyCode(data);
+          set({
+            isLoading: false,
+            error: null,
+          });
+          return true;
+        } catch (error) {
+          console.log(error);
+          set({
+            isLoading: false,
+            error: {
+              message:
+                error instanceof Error ? error.message : "Verify Code failed",
+              code: "VERIFY_CODE_FAILED",
+            },
+          });
+          return false;
+        }
+      },
+      // Reset password
+      resetPassword: async (data: ResetPasswordType) => {
+        set({
+          isLoading: true,
+          error: null,
+        });
+
+        try {
+          await authService.resetPassword(data);
+          set({
+            isLoading: false,
+            error: null,
+          });
+          return true;
+        } catch (error) {
+          console.log(error);
+          set({
+            isLoading: false,
+            error: {
+              message: error instanceof Error ? error.message : "Reset failed",
+              code: "RESET_PASSWORD_FAILED",
+            },
+          });
+          return false;
+        }
+      },
       // Logout action
       logout: () => {
         set({
@@ -210,6 +296,11 @@ export const useAuthStore = create<AuthState>()(
         getItem,
         removeItem: deleteItemAsync,
       })),
+      partialize: (state) => ({
+        token: state.token,
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
 );

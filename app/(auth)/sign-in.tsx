@@ -1,93 +1,133 @@
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useAuthStore } from "@/store";
-import { THEME } from "@/constants/colors";
-import { useEffect, useRef } from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+import { useRef, useState } from "react";
 import { Link } from "expo-router";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuthStore } from "@/store";
 import {
   BackButton,
   Button,
+  FormWrapper,
   ScreenWrapper,
   SocialButtonComponent,
   TextInputComponent,
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
+import { THEME } from "@/constants/colors";
+import { SignInSchema, type SignInType } from "@/helpers/schema";
+import { useClearAuthErrorOnFocus } from "@/hooks/useClearError";
 
 const Login = () => {
-  const emailRef = useRef("");
-  const passwordRef = useRef("");
+  useClearAuthErrorOnFocus();
+  const { login, error: errorAPI, isLoading } = useAuthStore();
+  const passwordRef = useRef<TextInput>(null);
+  const [showPassword, setShowPassword] = useState(true);
+  const { control, handleSubmit } = useForm<SignInType>({
+    resolver: zodResolver(SignInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const { login, error, isLoading, setError } = useAuthStore();
-
-  // Handle error display in useEffect to avoid setState during render
-  useEffect(() => {
-    if (error?.code === "LOGIN_FAILED") {
-      alert(error.message);
-      setError(null);
-    }
-  }, [error, setError]);
-
-  const handleLogin = () => {
-    if (emailRef.current && passwordRef.current) {
-      login({
-        email: emailRef.current,
-        password: passwordRef.current,
-      });
-    }
+  const handleLogin: SubmitHandler<SignInType> = (data: SignInType) => {
+    login(data);
   };
   return (
     <ScreenWrapper bg="white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-      >
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <View style={styles.container}>
-            <BackButton size={26} />
-            {/* Welcome text */}
-            <View>
-              <Text style={styles.welcomeText}>Hey,</Text>
-              <Text style={styles.welcomeText}>Welcome Back</Text>
-            </View>
-            {/* form */}
-            <View style={styles.form}>
-              <Text style={styles.form_description}>
-                Please login to continue
-              </Text>
-              <TextInputComponent
-                icon="mail-outline"
-                placeholder="Enter your email"
-                onChangeText={(value) => {
-                  emailRef.current = value;
-                }}
-              />
-              <TextInputComponent
-                icon="lock-closed-outline"
-                secureTextEntry
-                placeholder="Enter your password"
-                onChangeText={(value) => {
-                  passwordRef.current = value;
-                }}
-              />
-              <Link href="/(auth)/forget-password" push>
-                <Text style={styles.forgotPassword}>Forgot password?</Text>
-              </Link>
-              {/* Button */}
-              <Button
-                title="Sign In"
-                loading={isLoading}
-                onPress={handleLogin}
-              />
-            </View>
+      <FormWrapper>
+        <View style={styles.container}>
+          <BackButton size={26} />
+          {/* Welcome text */}
+          <View>
+            <Text style={styles.welcomeText}>Hey,</Text>
+            <Text style={styles.welcomeText}>Welcome Back</Text>
+          </View>
+          {/* form */}
+          <View style={styles.form}>
+            <Text style={styles.form_description}>
+              Please login to continue
+            </Text>
+            <Controller
+              control={control}
+              render={({
+                field: { onBlur, onChange, value },
+                fieldState: { error },
+              }) => (
+                <>
+                  <TextInputComponent
+                    containerStyles={
+                      error && {
+                        borderColor: THEME.colors.rose,
+                      }
+                    }
+                    enterKeyHint="next"
+                    onSubmitEditing={() => passwordRef.current?.focus()}
+                    value={value}
+                    icon="mail-outline"
+                    placeholder="Enter your email"
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                  {error && (
+                    <Text style={{ color: THEME.colors.rose }}>
+                      {error.message}
+                    </Text>
+                  )}
+                </>
+              )}
+              name="email"
+            />
 
+            <Controller
+              control={control}
+              render={({
+                field: { onBlur, onChange, value },
+                fieldState: { error },
+              }) => (
+                <>
+                  <TextInputComponent
+                    ref={passwordRef}
+                    containerStyles={
+                      error && {
+                        borderColor: THEME.colors.rose,
+                      }
+                    }
+                    value={value}
+                    onBlur={onBlur}
+                    icon="lock-closed-outline"
+                    suffixIcon={
+                      !showPassword ? "eye-outline" : "eye-off-outline"
+                    }
+                    onPressIcon={() => setShowPassword((prev) => !prev)}
+                    secureTextEntry={showPassword}
+                    placeholder="Enter your password"
+                    onChangeText={onChange}
+                  />
+                  {error && (
+                    <Text style={{ color: THEME.colors.rose }}>
+                      {error.message}
+                    </Text>
+                  )}
+                </>
+              )}
+              name="password"
+            />
+
+            <Link href="/(auth)/forgot-password" push>
+              <Text style={styles.forgotPassword}>Forgot password?</Text>
+            </Link>
+            {/* Button */}
+            <Button
+              title="Sign In"
+              loading={isLoading}
+              onPress={handleSubmit(handleLogin)}
+            />
+            {errorAPI?.message && (
+              <Text style={styles.errorText}>Error : {errorAPI.message} </Text>
+            )}
             {/* Footer */}
+
             <View style={styles.footer}>
               <Text style={styles.footerText}>Don&apos;t have an accout?</Text>
               <Link href="/(auth)/sign-up" push>
@@ -105,12 +145,12 @@ const Login = () => {
                 </Text>
               </Link>
             </View>
-
-            {/* Social Media */}
-            <SocialButtonComponent />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+
+          {/* Social Media */}
+          <SocialButtonComponent />
+        </View>
+      </FormWrapper>
     </ScreenWrapper>
   );
 };
@@ -147,6 +187,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: THEME.colors.text,
     fontSize: hp(1.6),
+  },
+  errorText: {
+    color: THEME.colors.rose,
+    fontSize: hp(1.5),
+    fontWeight: THEME.fonts.medium,
   },
   divider: {
     height: 1,

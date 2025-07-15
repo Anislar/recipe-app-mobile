@@ -12,7 +12,6 @@ const DiscordButton: React.FC = () => {
     oauthService.getOAuthConfig("discord").config,
     oauthService.getOAuthConfig("discord").discovery
   );
-
   useEffect(() => {
     if (response?.type === "success" && response.params?.code) {
       handleOAuthResponse(response.params.code, request?.codeVerifier!);

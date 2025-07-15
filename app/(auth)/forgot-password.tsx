@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 import {
@@ -13,53 +13,39 @@ import {
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/colors";
 import { useAuthStore } from "@/store";
-import { VerifyCodeType, verifyCodeSchema } from "@/helpers/schema";
-import { useRef, useState } from "react";
-import TokenInputComponent from "@/components/auth/token-input";
-const ResetPasswordScreen = () => {
+import { FogotPasswordType, forgotPasswordSchema } from "@/helpers/schema";
+
+const ForgotPasswordScreen = () => {
   const router = useRouter();
-  const { email } = useLocalSearchParams();
-  const [loadingCode, setLoadingCode] = useState(false);
-  const inputRef = useRef<TextInput>(null);
-  const {
-    error: errorAPI,
-    isLoading,
-    verifyCode,
-    forgotPassword,
-  } = useAuthStore();
-  const { control, handleSubmit } = useForm<VerifyCodeType>({
-    resolver: zodResolver(verifyCodeSchema),
+  const { error: errorAPI, isLoading, forgotPassword } = useAuthStore();
+  const { control, handleSubmit } = useForm<FogotPasswordType>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
-      token: "",
     },
   });
-  const onSubmit: SubmitHandler<VerifyCodeType> = async (
-    data: VerifyCodeType
+  const onSubmit: SubmitHandler<FogotPasswordType> = async (
+    data: FogotPasswordType
   ) => {
-    const response: boolean = await verifyCode(data);
-
+    const response: boolean = await forgotPassword(data);
     if (response) {
-      router.push("/(auth)/new-password");
+      router.push({
+        pathname: "/(auth)/reset-password",
+        params: { email: data.email },
+      });
     }
-  };
-  const resetCode = async () => {
-    setLoadingCode(true);
-    console.log(email);
-    //await forgotPassword({ email });
-    setLoadingCode(false);
   };
   return (
     <ScreenWrapper bg="white">
       <FormWrapper>
         <View style={styles.container}>
           <BackButton size={26} />
-          {/* Welcome text */}
           <View>
-            <Text style={styles.welcomeText}>Reset Password</Text>
+            <Text style={styles.welcomeText}>Forgot Password</Text>
           </View>
           <Text style={styles.form_description}>
-            We send you a code to verify your email!
+            Enter your email address below and we’ll send you a link to reset
+            your password.
           </Text>
 
           <View style={styles.form}>
@@ -70,7 +56,6 @@ const ResetPasswordScreen = () => {
                 fieldState: { error },
               }) => (
                 <>
-                  <TokenInputComponent onTokenComplete={() => {}} />
                   <TextInputComponent
                     containerStyles={
                       error && {
@@ -79,11 +64,9 @@ const ResetPasswordScreen = () => {
                     }
                     value={value}
                     onBlur={onBlur}
-                    placeholder="0"
+                    icon="mail-outline"
+                    placeholder="Enter your email"
                     onChangeText={onChange}
-                    onSubmitEditing={() => inputRef.current?.focus()}
-                    enterKeyHint="next"
-                    keyboardType="numeric"
                   />
                   {error && (
                     <Text style={{ color: THEME.colors.rose }}>
@@ -92,29 +75,21 @@ const ResetPasswordScreen = () => {
                   )}
                 </>
               )}
-              name="token"
+              name="email"
             />
 
+            {/* Button */}
             <Button
-              buttonStyle={{
-                backgroundColor: "transparent",
-              }}
-              textStyle={{
-                color: THEME.colors.primary,
-              }}
-              title="resent code"
-              loading={loadingCode}
-              onPress={resetCode}
-            />
-            <Button
-              title="Confirm"
+              title="Send Reset Link"
               loading={isLoading}
               onPress={handleSubmit(onSubmit)}
             />
             {errorAPI?.message && (
               <Text style={styles.errorText}>Error : {errorAPI.message} </Text>
             )}
+            {/* Footer */}
           </View>
+          {/* Welcome text */}
         </View>
       </FormWrapper>
     </ScreenWrapper>
@@ -134,13 +109,7 @@ const styles = StyleSheet.create({
   form: { marginTop: hp(5), gap: hp(2.5) },
   form_description: {
     fontSize: hp(1.5),
-    color: THEME.colors.textLight,
-  },
-  linkText: {
-    textAlign: "right",
-    fontWeight: THEME.fonts.semibold,
-    color: THEME.colors.primaryDark,
-    textDecorationLine: "underline",
+    color: THEME.colors.text,
   },
   errorText: {
     color: THEME.colors.rose,
@@ -148,5 +117,4 @@ const styles = StyleSheet.create({
     fontWeight: THEME.fonts.medium,
   },
 });
-
-export default ResetPasswordScreen;
+export default ForgotPasswordScreen;

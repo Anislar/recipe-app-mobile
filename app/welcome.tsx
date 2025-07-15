@@ -1,15 +1,13 @@
 import { StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { Image } from "expo-image";
 
 import { ScreenWrapper, Button } from "@/components";
-
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/colors";
 
 const WelcomScreen = () => {
-  const router = useRouter();
   return (
     <ScreenWrapper bg="white">
       <StatusBar style="dark" />
@@ -29,17 +27,16 @@ const WelcomScreen = () => {
         </View>
         {/* footer */}
         <View style={styles.footer}>
-          <Button
-            hasShadow={false}
-            loading={false}
-            textStyle={{
-              fontSize: hp(2.5),
-            }}
-            title="Getting Started"
-            onPress={() => {
-              router.push("/sign-up");
-            }}
-          />
+          <Link href="/sign-up" push asChild>
+            <Button
+              hasShadow={false}
+              loading={false}
+              textStyle={{
+                fontSize: hp(2.5),
+              }}
+              title="Getting Started"
+            />
+          </Link>
           <View style={styles.bottomTextContainer}>
             <Text style={styles.loginText}>Already have an account?</Text>
             <Link href="/(auth)/sign-in" push>

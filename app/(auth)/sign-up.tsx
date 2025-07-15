@@ -1,112 +1,165 @@
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { StyleSheet, Text, TextInput, View } from "react-native";
+import { useRef, useState } from "react";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "expo-router";
+
 import { useAuthStore } from "@/store";
 import { THEME } from "@/constants/colors";
-import { useEffect, useRef } from "react";
-import { Link } from "expo-router";
 import {
   BackButton,
   Button,
+  FormWrapper,
   ScreenWrapper,
   SocialButtonComponent,
   TextInputComponent,
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
+import { signUpSchema, type SignUpType } from "@/helpers/schema";
+import { useClearAuthErrorOnFocus } from "@/hooks/useClearError";
 
 const SignUp = () => {
-  const emailRef = useRef("");
-  const nameRef = useRef("");
+  useClearAuthErrorOnFocus();
+  const { register, error: errorAPI, isLoading } = useAuthStore();
+  const inputRefs = [useRef<TextInput>(null), useRef<TextInput>(null)];
+  const [showPassword, setShowPassword] = useState(true);
 
-  const passwordRef = useRef("");
-  const confirmPasswordRef = useRef("");
-
-  const { register, error, isLoading, setError } = useAuthStore();
-
+  const { control, handleSubmit } = useForm<SignUpType>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: "",
+      name: "",
+      password: "",
+    },
+  });
   // Handle error display in useEffect to avoid setState during render
-  useEffect(() => {
-    if (error?.code === "REGISTRATION_FAILED") {
-      alert(error.message);
-      setError(null);
-    }
-  }, [error, setError]);
 
-  const handleRegister = () => {
-    if (emailRef.current && passwordRef.current) {
-      register({
-        name: nameRef.current,
-        email: emailRef.current,
-        password: passwordRef.current,
-      });
-    }
+  const handleRegister: SubmitHandler<SignUpType> = (data: SignUpType) => {
+    register(data);
   };
   return (
     <ScreenWrapper bg="white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-      >
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <View style={styles.container}>
-            <BackButton size={26} />
-            {/* Welcome text */}
-            <View>
-              <Text style={styles.welcomeText}>Let&apos;s,</Text>
-              <Text style={styles.welcomeText}>Get Started!</Text>
-            </View>
-            {/* form */}
-            <View style={styles.form}>
-              <Text style={styles.form_description}>
-                Please Fill the details to create an account
-              </Text>
-              <TextInputComponent
-                icon="person-outline"
-                placeholder="Enter your name"
-                onChangeText={(value) => {
-                  nameRef.current = value;
-                }}
-              />
-              <TextInputComponent
-                icon="mail-outline"
-                placeholder="Enter your email"
-                onChangeText={(value) => {
-                  emailRef.current = value;
-                }}
-              />
-              <TextInputComponent
-                icon="lock-closed-outline"
-                secureTextEntry
-                placeholder="Enter your password"
-                onChangeText={(value) => {
-                  passwordRef.current = value;
-                }}
-              />
-              {/* <TextInputComponent
-                icon="lock-closed-outline"
-                secureTextEntry
-                placeholder="Confirm your password"
-                onChangeText={(value) => {
-                  confirmPasswordRef.current = value;
-                }}
-              /> */}
+      <FormWrapper>
+        <View style={styles.container}>
+          <BackButton size={26} />
+          {/* Welcome text */}
+          <View>
+            <Text style={styles.welcomeText}>Let&apos;s,</Text>
+            <Text style={styles.welcomeText}>Get Started!</Text>
+          </View>
+          {/* form */}
+          <View style={styles.form}>
+            <Text style={styles.form_description}>
+              Please Fill the details to create an account
+            </Text>
+            <Controller
+              control={control}
+              render={({
+                field: { onBlur, onChange, value },
+                fieldState: { error },
+              }) => (
+                <>
+                  <TextInputComponent
+                    containerStyles={
+                      error && {
+                        borderColor: THEME.colors.rose,
+                      }
+                    }
+                    value={value}
+                    icon="person-outline"
+                    placeholder="Enter your name"
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    onSubmitEditing={() => inputRefs[0].current?.focus()}
+                    enterKeyHint="next"
+                  />
+                  {error && (
+                    <Text style={{ color: THEME.colors.rose }}>
+                      {error.message}
+                    </Text>
+                  )}
+                </>
+              )}
+              name="name"
+            />
 
-              {/* Button */}
-              <Button
-                title="Sign Up"
-                loading={isLoading}
-                onPress={handleRegister}
-              />
-            </View>
+            <Controller
+              control={control}
+              render={({
+                field: { onBlur, onChange, value },
+                fieldState: { error },
+              }) => (
+                <>
+                  <TextInputComponent
+                    ref={inputRefs[0]}
+                    containerStyles={
+                      error && {
+                        borderColor: THEME.colors.rose,
+                      }
+                    }
+                    value={value}
+                    icon="mail-outline"
+                    placeholder="Enter your email"
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    onSubmitEditing={() => inputRefs[1].current?.focus()}
+                    enterKeyHint="next"
+                  />
+                  {error && (
+                    <Text style={{ color: THEME.colors.rose }}>
+                      {error.message}
+                    </Text>
+                  )}
+                </>
+              )}
+              name="email"
+            />
 
-            {/* Footer */}
+            <Controller
+              control={control}
+              render={({
+                field: { onBlur, onChange, value },
+                fieldState: { error },
+              }) => (
+                <>
+                  <TextInputComponent
+                    ref={inputRefs[1]}
+                    containerStyles={
+                      error && {
+                        borderColor: THEME.colors.rose,
+                      }
+                    }
+                    value={value}
+                    onBlur={onBlur}
+                    icon="lock-closed-outline"
+                    suffixIcon={
+                      !showPassword ? "eye-outline" : "eye-off-outline"
+                    }
+                    onPressIcon={() => setShowPassword((prev) => !prev)}
+                    secureTextEntry={showPassword}
+                    placeholder="Enter your password"
+                    onChangeText={onChange}
+                    enterKeyHint="done"
+                  />
+                  {error && (
+                    <Text style={{ color: THEME.colors.rose }}>
+                      {error.message}
+                    </Text>
+                  )}
+                </>
+              )}
+              name="password"
+            />
+
+            {/* Button */}
+            <Button
+              title="Sign Up"
+              loading={isLoading}
+              onPress={handleSubmit(handleRegister)}
+            />
+            {errorAPI?.message && (
+              <Text style={styles.errorText}>Error : {errorAPI.message} </Text>
+            )}
             <View style={styles.footer}>
               <Text style={styles.footerText}>already have an accout?</Text>
               <Link href="/(auth)/sign-in" push>
@@ -124,12 +177,14 @@ const SignUp = () => {
                 </Text>
               </Link>
             </View>
-
-            {/* Social Media */}
-            <SocialButtonComponent />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+
+          {/* Footer */}
+
+          {/* Social Media */}
+          <SocialButtonComponent />
+        </View>
+      </FormWrapper>
     </ScreenWrapper>
   );
 };
@@ -166,6 +221,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: THEME.colors.text,
     fontSize: hp(1.6),
+  },
+  errorText: {
+    color: THEME.colors.rose,
+    fontSize: hp(1.5),
+    fontWeight: THEME.fonts.medium,
   },
   divider: {
     height: 1,

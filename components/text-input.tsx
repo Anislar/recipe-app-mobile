@@ -9,16 +9,20 @@ import {
 import { Ref } from "react";
 import { THEME } from "@/constants/colors";
 import { hp } from "@/helpers/common";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface TextInputInterface extends TextInputProps {
   containerStyles?: StyleProp<ViewStyle>;
   icon?: keyof typeof Ionicons.glyphMap;
+  suffixIcon?: keyof typeof Ionicons.glyphMap;
+  onPressIcon?: () => void;
   ref?: Ref<TextInput>;
 }
 const TextInputComponent = ({
   containerStyles,
   icon,
+  suffixIcon,
+  onPressIcon,
   ref,
   ...props
 }: TextInputInterface) => {
@@ -26,11 +30,13 @@ const TextInputComponent = ({
     <View style={[styles.container, containerStyles]}>
       <Ionicons name={icon} size={26} />
       <TextInput
+        autoCapitalize="none"
         style={styles.input}
         placeholderTextColor={THEME.colors.textLight}
         ref={ref}
         {...props}
       />
+      <Ionicons onPress={onPressIcon} name={suffixIcon} size={26} />
     </View>
   );
 };

@@ -13,7 +13,7 @@ import LoadingSpinner from "./loading";
 interface ButtonProps {
   buttonStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
-  onPress: () => void;
+  onPress?: () => void;
   title: string;
   loading: boolean;
   hasShadow?: boolean;
@@ -22,7 +22,7 @@ interface ButtonProps {
 const Button = ({
   buttonStyle,
   textStyle,
-  onPress,
+  onPress = () => {},
   title,
   loading,
   hasShadow,
@@ -46,6 +46,7 @@ const Button = ({
   }
   return (
     <TouchableOpacity
+      disabled={loading}
       style={[styles.button, buttonStyle, hasShadow && shadowStyle]}
       onPress={onPress}
     >

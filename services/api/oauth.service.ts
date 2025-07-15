@@ -2,10 +2,11 @@ import { authService } from "./auth.service";
 
 export interface OAuthConfig {
   config: {
+    androidClientId?: string;
     clientId: string;
     scopes: string[];
     redirectUri: string;
-    usePKCE?: boolean;
+    usePKCE: boolean;
   };
   discovery: {
     authorizationEndpoint: string;
@@ -21,7 +22,7 @@ export class OAuthService {
   private redirectUri: string;
 
   constructor() {
-    this.redirectUri = "exp://192.168.1.16:8081";
+    this.redirectUri = process.env.EXPO_PUBLIC_API_URL!;
   }
 
   async handleOAuthCallback(
@@ -39,41 +40,45 @@ export class OAuthService {
       throw error;
     }
   }
-  getOAuthConfig(provider: "github" | "discord"): OAuthConfig {
+  getOAuthConfig(provider: "github" | "discord" | "google"): OAuthConfig {
     const configs = {
-      // google: {
-      //   config: {
-      //     //androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID!,
-      //     scopes: ["email", "profile", "openid"],
-      //     clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
-      //     usePKCE: true,
-      //     redirectUri: this.redirectUri,
-      //   },
-      //   discovery: {
-      //     authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
-      //     tokenEndpoint: "https://oauth2.googleapis.com/token",
-      //     revocationEndpoint: "https://oauth2.googleapis.com/revoke",
-      //   },
-      // },
+      google: {
+        config: {
+          androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID!,
+          scopes: ["email", "profile", "openid"],
+          clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
+          usePKCE: false,
+          redirectUri: this.redirectUri + "/auth/google/callback",
+        },
+        discovery: {
+          authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
+          // native: "linkUp://oauthredirect",
+          tokenEndpoint: "https://oauth2.googleapis.com/token",
+          revocationEndpoint: "https://oauth2.googleapis.com/revoke",
+        },
+      },
       github: {
         config: {
           clientId: process.env.EXPO_PUBLIC_GITHUB_CLIENT_ID!,
           scopes: ["read:user", "user:email"],
-          redirectUri: this.redirectUri,
+          redirectUri: this.redirectUri + "/auth/github/callback",
+          usePKCE: false,
         },
         discovery: {
           authorizationEndpoint: "https://github.com/login/oauth/authorize",
+          //native: "linkUp://oauthredirect",
         },
       },
       discord: {
         config: {
           clientId: process.env.EXPO_PUBLIC_DISCORD_CLIENT_ID!,
           scopes: ["identify", "email"],
-          redirectUri: this.redirectUri,
-          usePKCE: true,
+          redirectUri: this.redirectUri + "/auth/discord/callback",
+          usePKCE: false,
         },
         discovery: {
           authorizationEndpoint: "https://discord.com/oauth2/authorize",
+          //native: "linkUp://oauthredirect",
         },
       },
     };

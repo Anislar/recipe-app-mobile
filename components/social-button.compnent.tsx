@@ -2,10 +2,10 @@ import React, { Suspense, lazy, FC } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { THEME } from "@/constants/colors";
-import { wp } from "@/helpers/common";
 
-const GitHubButton = lazy(() => import("@/components/oauth/github-button"));
-const DiscordButton = lazy(() => import("@/components/oauth/discord-button"));
+const GitHubButton = lazy(() => import("@/components/auth/github-button"));
+const DiscordButton = lazy(() => import("@/components/auth/discord-button"));
+const GoogleButton = lazy(() => import("@/components/auth/google-button"));
 
 // Required for iOS/Android to complete the flow
 WebBrowser.maybeCompleteAuthSession();
@@ -19,6 +19,7 @@ const SocialButtonComponent: FC = () => {
   //     profileImageSize: 120,
   //   });
   // }, []);
+
   return (
     <View
       style={{
@@ -44,7 +45,15 @@ const SocialButtonComponent: FC = () => {
       >
         <DiscordButton />
       </Suspense>
-      {/* <GoogleButton /> */}
+      <Suspense
+        fallback={
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color={THEME.colors.text} />
+          </View>
+        }
+      >
+        <GoogleButton />
+      </Suspense>
     </View>
   );
 };
@@ -57,7 +66,7 @@ const styles = StyleSheet.create({
     borderCurve: "continuous",
     color: THEME.colors.text,
     borderColor: THEME.colors.gray,
-    width: wp(90),
+    justifyContent: "center",
   },
 });
 

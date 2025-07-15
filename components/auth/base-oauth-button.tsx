@@ -6,9 +6,9 @@ import {
   View,
   Text,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { THEME } from "@/constants/colors";
-import { hp, wp } from "@/helpers/common";
+import { hp } from "@/helpers/common";
 
 export interface OAuthButtonProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     borderCurve: "continuous",
     color: THEME.colors.text,
     borderColor: THEME.colors.gray,
-    width: wp(90),
+    justifyContent: "center",
   },
   socialContainer: {
     flexDirection: "row",
