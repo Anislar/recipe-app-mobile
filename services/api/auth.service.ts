@@ -89,6 +89,14 @@ class AuthService {
       this.handleApiError(error);
     }
   }
+  async getCurrentUser(): Promise<ApiSuccess<any>> {
+    try {
+      const response = await api.get(this.prefix + "/me");
+      return response.data;
+    } catch (error) {
+      this.handleApiError(error);
+    }
+  }
   async logout(): Promise<ApiSuccess<any>> {
     try {
       const response = await api.post(this.prefix + "/logout");
@@ -110,7 +118,6 @@ class AuthService {
       const response = await api.get(url);
       return response.data;
     } catch (error) {
-      console.log("🚀 ~ AuthService ~ error:", error);
       this.handleApiError(error);
     }
   }

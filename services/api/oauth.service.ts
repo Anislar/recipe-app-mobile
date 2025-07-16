@@ -22,7 +22,7 @@ export class OAuthService {
   private redirectUri: string;
 
   constructor() {
-    this.redirectUri = process.env.EXPO_PUBLIC_API_URL!;
+    this.redirectUri = `${process.env.EXPO_PUBLIC_API_URL!}/auth`;
   }
 
   async handleOAuthCallback(
@@ -48,11 +48,10 @@ export class OAuthService {
           scopes: ["email", "profile", "openid"],
           clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
           usePKCE: false,
-          redirectUri: this.redirectUri + "/auth/google/callback",
+          redirectUri: `${this.redirectUri}/google/callback`,
         },
         discovery: {
           authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
-          // native: "linkUp://oauthredirect",
           tokenEndpoint: "https://oauth2.googleapis.com/token",
           revocationEndpoint: "https://oauth2.googleapis.com/revoke",
         },
@@ -61,28 +60,27 @@ export class OAuthService {
         config: {
           clientId: process.env.EXPO_PUBLIC_GITHUB_CLIENT_ID!,
           scopes: ["read:user", "user:email"],
-          redirectUri: this.redirectUri + "/auth/github/callback",
+          redirectUri: `${this.redirectUri}/github/callback`,
+
           usePKCE: false,
         },
         discovery: {
           authorizationEndpoint: "https://github.com/login/oauth/authorize",
-          //native: "linkUp://oauthredirect",
         },
       },
       discord: {
         config: {
           clientId: process.env.EXPO_PUBLIC_DISCORD_CLIENT_ID!,
           scopes: ["identify", "email"],
-          redirectUri: this.redirectUri + "/auth/discord/callback",
+          redirectUri: `${this.redirectUri}/discord/callback`,
+
           usePKCE: false,
         },
         discovery: {
           authorizationEndpoint: "https://discord.com/oauth2/authorize",
-          //native: "linkUp://oauthredirect",
         },
       },
     };
-
     return configs[provider];
   }
 }

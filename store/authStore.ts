@@ -34,6 +34,7 @@ export interface AuthState {
   forgotPassword: (data: ForgotPasswordType) => Promise<boolean>;
   resetPassword: (data: ResetPasswordType) => Promise<boolean>;
   verifyCode: (data: VerifyCodeType) => Promise<boolean>;
+  getCurrentUser: () => Promise<void>;
 
   // Logout
   logout: () => void;
@@ -82,7 +83,6 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
           });
         } catch (error) {
-          console.log("🚀 ~ login: ~ error:", error);
           set({
             isLoading: false,
             error: {
@@ -138,7 +138,6 @@ export const useAuthStore = create<AuthState>()(
           });
           return true;
         } catch (error) {
-          console.log(error);
           set({
             isLoading: false,
             error: {
@@ -164,7 +163,6 @@ export const useAuthStore = create<AuthState>()(
           });
           return true;
         } catch (error) {
-          console.log(error);
           set({
             isLoading: false,
             error: {
@@ -191,7 +189,6 @@ export const useAuthStore = create<AuthState>()(
           });
           return true;
         } catch (error) {
-          console.log(error);
           set({
             isLoading: false,
             error: {
@@ -200,6 +197,33 @@ export const useAuthStore = create<AuthState>()(
             },
           });
           return false;
+        }
+      },
+      getCurrentUser: async () => {
+        set({
+          isLoading: true,
+          error: null,
+        });
+
+        try {
+          const response = await authService.getCurrentUser();
+          const { data: user, token } = response;
+
+          set({
+            isLoading: false,
+            error: null,
+            user: user,
+            token: token,
+            isAuthenticated: true,
+          });
+        } catch (error) {
+          set({
+            isLoading: false,
+            error: {
+              message: error instanceof Error ? error.message : "Reset failed",
+              code: "RESET_PASSWORD_FAILED",
+            },
+          });
         }
       },
       // Logout action

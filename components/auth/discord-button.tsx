@@ -3,13 +3,13 @@ import { useAuthRequest } from "expo-auth-session";
 import BaseOAuthButton from "./base-oauth-button";
 import { useAuthStore } from "@/store";
 import { oauthService } from "@/services";
-
 const DiscordButton: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { loginWithDiscord } = useAuthStore();
   const [request, response, promptAsync] = useAuthRequest(
     oauthService.getOAuthConfig("discord").config,
+
     oauthService.getOAuthConfig("discord").discovery
   );
   useEffect(() => {

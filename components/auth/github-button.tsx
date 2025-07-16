@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, FC } from "react";
 import { useAuthRequest } from "expo-auth-session";
 import BaseOAuthButton from "./base-oauth-button";
 import { useAuthStore } from "@/store";
 import { oauthService } from "@/services";
-
-const GithubButton: React.FC = () => {
+const GithubButton: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { loginWithGithub } = useAuthStore();
