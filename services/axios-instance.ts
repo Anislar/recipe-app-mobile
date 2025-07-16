@@ -8,9 +8,11 @@ export const api = axios.create({
   },
 });
 
-api.interceptors.request.use((config) => {
-  // if (token) {
-  //   config.headers.Authorization = `Bearer ${token}`;
-  // }
+api.interceptors.request.use(async (config) => {
+  const { useAuthStore } = await import("@/store");
+  const token = useAuthStore.getState().token;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });

@@ -11,15 +11,6 @@ const GoogleButton = lazy(() => import("@/components/auth/google-button"));
 WebBrowser.maybeCompleteAuthSession();
 
 const SocialButtonComponent: FC = () => {
-  // useEffect(() => {
-  //   GoogleSignin.configure({
-  //     webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!,
-  //     offlineAccess: true,
-  //     scopes: ["email", "profile", "openid"],
-  //     profileImageSize: 120,
-  //   });
-  // }, []);
-
   return (
     <View
       style={{

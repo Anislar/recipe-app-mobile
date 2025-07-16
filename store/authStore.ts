@@ -4,7 +4,7 @@ import { getItem, setItem, deleteItemAsync } from "expo-secure-store";
 
 import { authService, oauthService } from "@/services";
 import {
-  FogotPasswordType,
+  ForgotPasswordType,
   ResetPasswordType,
   SignInType,
   SignUpType,
@@ -28,10 +28,10 @@ export interface AuthState {
   setUser: (user: AuthState["user"]) => void;
   setToken: (token: AuthState["token"]) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
-
+  setResetElement: () => void;
   login: (data: SignInType) => Promise<void>;
   register: (data: SignUpType) => Promise<void>;
-  forgotPassword: (data: FogotPasswordType) => Promise<boolean>;
+  forgotPassword: (data: ForgotPasswordType) => Promise<boolean>;
   resetPassword: (data: ResetPasswordType) => Promise<boolean>;
   verifyCode: (data: VerifyCodeType) => Promise<boolean>;
 
@@ -53,14 +53,17 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isAuthenticated: false,
-      isSuccess: false,
       // Basic actions
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),
       setUser: (user) => set({ user }),
       setToken: (token) => set({ token }),
       setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
-
+      setResetElement: () =>
+        set({
+          error: null,
+          isLoading: false,
+        }),
       // Login action
       login: async (data: SignInType) => {
         set({
@@ -121,7 +124,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       // Forgot password
-      forgotPassword: async (data: FogotPasswordType) => {
+      forgotPassword: async (data: ForgotPasswordType) => {
         set({
           isLoading: true,
           error: null,
@@ -200,13 +203,32 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       // Logout action
-      logout: () => {
+      logout: async () => {
         set({
-          user: null,
-          token: null,
+          isLoading: true,
           error: null,
-          isAuthenticated: false,
         });
+
+        try {
+          await authService.logout();
+          set({
+            user: null,
+            token: null,
+            error: null,
+            isLoading: false,
+            isAuthenticated: false,
+          });
+          return true;
+        } catch (error) {
+          set({
+            isLoading: false,
+            error: {
+              message: error instanceof Error ? error.message : "Logout failed",
+              code: "LOGOUT_FAILED",
+            },
+          });
+          return false;
+        }
       },
 
       // OAuth actions

@@ -28,26 +28,29 @@ type SignInType = z.infer<typeof SignInSchema>;
 const forgotPasswordSchema = z.object({
   email: z.string().email("Invalid email format"),
 });
-type FogotPasswordType = z.infer<typeof forgotPasswordSchema>;
+type ForgotPasswordType = z.infer<typeof forgotPasswordSchema>;
 
 // Verify Code DTO
 const verifyCodeSchema = z.object({
   email: z.string().email("Invalid email format"),
-  token: z.string().length(4, "Token must be at 4 characters"),
+  token: z
+    .array(z.string().length(1, "Each digit is required")) // each input must have 1 char
+    .length(4, "Token must be exactly 4 digits"), // enforce 4 inputs
 });
 type VerifyCodeType = z.infer<typeof verifyCodeSchema>;
 
 // Reset password DTO
 const resetPasswordSchema = z
   .object({
-    email: z.string().email("Invalid email format"),
+    email: z.string().email("Invalid email format (eg: ex@example.com)"),
     password: z.string().min(8, "Password must be at least 8 characters long"),
     confirmPassword: z
       .string()
       .min(8, "Password must be at least 8 characters long"),
   })
-  .refine((data) => data.password !== data.confirmPassword, {
+  .refine((data) => data.password === data.confirmPassword, {
     message: "Password must be matched",
+    path: ["password"],
   });
 type ResetPasswordType = z.infer<typeof resetPasswordSchema>;
 
@@ -59,7 +62,7 @@ export {
   verifyCodeSchema,
   type SignUpType,
   type SignInType,
-  type FogotPasswordType,
+  type ForgotPasswordType,
   type ResetPasswordType,
   type VerifyCodeType,
 };

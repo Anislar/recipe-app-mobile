@@ -2,6 +2,7 @@ import { useAuthStore } from "@/store";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import * as Linking from "expo-linking";
+import { RootSiblingParent } from "react-native-root-siblings";
 
 export default function RootLayout() {
   const { isAuthenticated } = useAuthStore();
@@ -9,12 +10,6 @@ export default function RootLayout() {
     const handleUrl = (url: string) => {
       const { hostname, queryParams } = Linking.parse(url);
 
-      console.log(
-        "🚀 ~ handleUrl ~ hostname, queryParams:",
-        url,
-        hostname,
-        queryParams
-      );
       if (hostname === "oauthredirect" && queryParams?.code) {
         // OAuth returned a code
         console.log("OAuth code:", queryParams.code);
@@ -35,14 +30,16 @@ export default function RootLayout() {
     return () => subscription.remove();
   }, []);
   return (
-    <Stack screenOptions={{ animation: "fade" }}>
-      <Stack.Protected guard={isAuthenticated}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack.Protected>
-      <Stack.Protected guard={!isAuthenticated}>
-        <Stack.Screen name="welcome" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      </Stack.Protected>
-    </Stack>
+    <RootSiblingParent>
+      <Stack screenOptions={{ animation: "fade" }}>
+        <Stack.Protected guard={isAuthenticated}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack.Protected>
+        <Stack.Protected guard={!isAuthenticated}>
+          <Stack.Screen name="welcome" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        </Stack.Protected>
+      </Stack>
+    </RootSiblingParent>
   );
 }

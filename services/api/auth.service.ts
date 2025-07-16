@@ -1,7 +1,7 @@
 import { api } from "../axios-instance";
 import { OAuthCallbackData } from "./oauth.service";
 import {
-  FogotPasswordType,
+  ForgotPasswordType,
   ResetPasswordType,
   SignInType,
   SignUpType,
@@ -62,7 +62,7 @@ class AuthService {
       this.handleApiError(error);
     }
   }
-  async forgotPassword(data: FogotPasswordType): Promise<ApiSuccess<any>> {
+  async forgotPassword(data: ForgotPasswordType): Promise<ApiSuccess<any>> {
     try {
       const response = await api.post(this.prefix + "/forgot-password", data);
       return response.data;
@@ -72,7 +72,10 @@ class AuthService {
   }
   async verifyCode(data: VerifyCodeType): Promise<ApiSuccess<any>> {
     try {
-      const response = await api.post(this.prefix + "/verify-code", data);
+      const response = await api.post(this.prefix + "/verify-code", {
+        email: data.email,
+        token: data.token.join(""),
+      });
       return response.data;
     } catch (error) {
       this.handleApiError(error);
@@ -86,6 +89,15 @@ class AuthService {
       this.handleApiError(error);
     }
   }
+  async logout(): Promise<ApiSuccess<any>> {
+    try {
+      const response = await api.post(this.prefix + "/logout");
+      return response.data;
+    } catch (error) {
+      this.handleApiError(error);
+    }
+  }
+
   async oauthCallback(
     provider: "google" | "github" | "discord",
     data: OAuthCallbackData

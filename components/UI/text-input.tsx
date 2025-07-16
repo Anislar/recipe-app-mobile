@@ -5,6 +5,7 @@ import {
   type StyleProp,
   TextInput,
   TextInputProps,
+  TextStyle,
 } from "react-native";
 import { Ref } from "react";
 import { THEME } from "@/constants/colors";
@@ -13,6 +14,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface TextInputInterface extends TextInputProps {
   containerStyles?: StyleProp<ViewStyle>;
+  inputStyles?: StyleProp<TextStyle>;
   icon?: keyof typeof Ionicons.glyphMap;
   suffixIcon?: keyof typeof Ionicons.glyphMap;
   onPressIcon?: () => void;
@@ -20,6 +22,7 @@ interface TextInputInterface extends TextInputProps {
 }
 const TextInputComponent = ({
   containerStyles,
+  inputStyles,
   icon,
   suffixIcon,
   onPressIcon,
@@ -28,15 +31,17 @@ const TextInputComponent = ({
 }: TextInputInterface) => {
   return (
     <View style={[styles.container, containerStyles]}>
-      <Ionicons name={icon} size={26} />
+      {icon && <Ionicons name={icon} size={26} />}
       <TextInput
         autoCapitalize="none"
-        style={styles.input}
+        style={[styles.input, inputStyles]}
         placeholderTextColor={THEME.colors.textLight}
         ref={ref}
         {...props}
       />
-      <Ionicons onPress={onPressIcon} name={suffixIcon} size={26} />
+      {suffixIcon && (
+        <Ionicons onPress={onPressIcon} name={suffixIcon} size={26} />
+      )}
     </View>
   );
 };
@@ -47,12 +52,16 @@ const styles = StyleSheet.create({
     height: hp(7.2),
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 0.4,
+    borderWidth: 0.3,
     borderColor: THEME.colors.text,
     borderRadius: THEME.radius.xxl,
     borderCurve: "continuous",
     paddingHorizontal: 15,
     gap: 12,
   },
-  input: { flex: 1, color: THEME.colors.text, fontSize: hp(1.9) },
+  input: {
+    flex: 1,
+    color: THEME.colors.text,
+    fontSize: hp(1.9),
+  },
 });

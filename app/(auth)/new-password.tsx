@@ -1,12 +1,8 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { withSuspense } from "@/components";
+import { lazy } from "react";
 
-const NewPassword = () => {
-  return (
-    <View>
-      <Text>NewPassword</Text>
-    </View>
-  );
-};
+const NewPassword = lazy(
+  () => import("@/components/auth/screens/new-password.screen")
+);
 
-export default NewPassword;
+export default withSuspense(NewPassword);
