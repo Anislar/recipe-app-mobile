@@ -40,6 +40,7 @@ const GoogleButton: React.FC = () => {
   return (
     <BaseOAuthButton
       title="Continue With Google"
+      color="#DB4437"
       icon="logo-google"
       onPress={handlePress}
       isLoading={isLoading}

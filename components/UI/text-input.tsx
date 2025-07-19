@@ -8,7 +8,7 @@ import {
   TextStyle,
 } from "react-native";
 import { Ref } from "react";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import Ionicons from "@expo/vector-icons/Ionicons";
 

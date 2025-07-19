@@ -5,7 +5,7 @@ import { Image } from "expo-image";
 
 import { ScreenWrapper, Button } from "@/components";
 import { hp, wp } from "@/helpers/common";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 
 const WelcomScreen = () => {
   return (

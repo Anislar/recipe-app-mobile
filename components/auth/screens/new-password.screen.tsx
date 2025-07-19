@@ -7,17 +7,16 @@ import {
   ScreenWrapper,
   TextInputComponent,
 } from "@/components";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { useRef, useState } from "react";
 import { useAuthStore } from "@/store";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { resetPasswordSchema, ResetPasswordType } from "@/helpers/schema";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import { showToast } from "@/helpers/toastService";
 
 const NewPasswordScreen = () => {
-  const router = useRouter();
   const { email } = useLocalSearchParams();
 
   const inputRef = useRef<TextInput>(null);
@@ -41,9 +40,9 @@ const NewPasswordScreen = () => {
     data: ResetPasswordType
   ) => {
     const response = await resetPassword(data);
-    showToast("Password has been reset succesfully!");
 
-    if (response) {
+    if (typeof response === "boolean") {
+      showToast("Password has been reset succesfully!");
       router.push("/sign-in");
     }
   };
@@ -161,7 +160,7 @@ const NewPasswordScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 45,
+    gap: hp(3.5),
     paddingHorizontal: wp(5),
   },
   welcomeText: {

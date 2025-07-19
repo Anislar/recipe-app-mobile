@@ -15,11 +15,9 @@ const AuthLayout = () => {
         }}
       >
         <Stack.Screen name="sign-in" />
-        <Stack.Screen name="oauthredirect" />
         <Stack.Screen name="sign-up" />
-        <Stack.Screen name="forgot-password" />
-        <Stack.Screen name="verify-code-password" />
-        <Stack.Screen name="new-password" />
+        <Stack.Screen name="password" />
+        <Stack.Screen name="verify-code" />
       </Stack>
     </>
   );

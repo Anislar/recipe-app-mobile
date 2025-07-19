@@ -2,10 +2,10 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import { lazy, Suspense, useRef, useState } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 
 import { useAuthStore } from "@/store";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 import {
   BackButton,
   Button,
@@ -22,11 +22,11 @@ import { showToast } from "@/helpers/toastService";
 const SocialButtonComponent = lazy(() => import("../social-button.compnent"));
 const SignUpScreen = () => {
   useClearAuthStateOnFocus();
-  const { register, error: errorAPI, isLoading } = useAuthStore();
+  const { signup, error: errorAPI, isLoading } = useAuthStore();
   const inputRefs = [useRef<TextInput>(null), useRef<TextInput>(null)];
   const [showPassword, setShowPassword] = useState(true);
 
-  const { control, handleSubmit } = useForm<SignUpType>({
+  const { control, handleSubmit, watch } = useForm<SignUpType>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: "",
@@ -39,8 +39,15 @@ const SignUpScreen = () => {
   const handleRegister: SubmitHandler<SignUpType> = async (
     data: SignUpType
   ) => {
-    await register(data);
-    showToast("Welcome!");
+    const response = await signup(data);
+    const email = watch("email");
+    if (typeof response === "boolean") {
+      router.push({
+        pathname: "/(auth)/verify-code",
+        params: { email, path: "verify-email" },
+      });
+      showToast("You must verify your Email!");
+    }
   };
   return (
     <ScreenWrapper bg="white">
@@ -167,7 +174,7 @@ const SignUpScreen = () => {
             )}
             <View style={styles.footer}>
               <Text style={styles.footerText}>already have an accout?</Text>
-              <Link href="/(auth)/sign-in" push>
+              <Link href="/(auth)/sign-in" push prefetch>
                 <Text
                   style={[
                     styles.footerText,
@@ -200,7 +207,7 @@ const SignUpScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 45,
+    gap: hp(3.5),
     paddingHorizontal: wp(5),
   },
   welcomeText: {

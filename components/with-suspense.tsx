@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { Text, View } from "react-native";
 import LoadingSpinner from "./UI/loading";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 
 export const DefaultFallback = () => (

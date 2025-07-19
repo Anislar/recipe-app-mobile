@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 import {
@@ -11,29 +11,27 @@ import {
   TextInputComponent,
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 import { useAuthStore } from "@/store";
-import { ForgotPasswordType, forgotPasswordSchema } from "@/helpers/schema";
+import { SendCodeType, sendCodeSchema } from "@/helpers/schema";
 import { showToast } from "@/helpers/toastService";
 
 const ForgotPasswordScreen = () => {
-  const router = useRouter();
-  const { error: errorAPI, isLoading, forgotPassword } = useAuthStore();
-  const { control, handleSubmit } = useForm<ForgotPasswordType>({
-    resolver: zodResolver(forgotPasswordSchema),
+  const { error: errorAPI, isLoading, sendCode } = useAuthStore();
+  const { control, handleSubmit } = useForm<SendCodeType>({
+    resolver: zodResolver(sendCodeSchema),
     defaultValues: {
       email: "",
+      path: "password/forgot",
     },
   });
-  const onSubmit: SubmitHandler<ForgotPasswordType> = async (
-    data: ForgotPasswordType
-  ) => {
-    const response: boolean = await forgotPassword(data);
-    if (response) {
-      showToast("code sent with Success!");
+  const onSubmit: SubmitHandler<SendCodeType> = async (data: SendCodeType) => {
+    const response = await sendCode(data);
+    if (typeof response === "boolean") {
+      showToast("code sent with Successfully!");
       router.push({
-        pathname: "/(auth)/verify-code-password",
-        params: { email: data.email },
+        pathname: "/(auth)/verify-code",
+        params: { email: data.email, path: "password/forgot" },
       });
     }
   };
@@ -100,7 +98,7 @@ const ForgotPasswordScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 45,
+    gap: hp(3.5),
     paddingHorizontal: wp(5),
   },
   welcomeText: {

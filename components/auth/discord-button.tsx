@@ -39,6 +39,7 @@ const DiscordButton: React.FC = () => {
   return (
     <BaseOAuthButton
       title="Continue With Discord"
+      color="#5865F2"
       icon="logo-discord"
       onPress={handlePress}
       isLoading={isLoading}

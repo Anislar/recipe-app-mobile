@@ -4,13 +4,14 @@ import { getItem, setItem, deleteItemAsync } from "expo-secure-store";
 
 import { authService, oauthService } from "@/services";
 import {
-  ForgotPasswordType,
+  SendCodeType,
   ResetPasswordType,
   SignInType,
   SignUpType,
   User,
   VerifyCodeType,
 } from "@/helpers/schema";
+import { ApiError } from "@/type";
 export interface AuthState {
   isLoading: boolean;
   error: {
@@ -29,20 +30,35 @@ export interface AuthState {
   setToken: (token: AuthState["token"]) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setResetElement: () => void;
-  login: (data: SignInType) => Promise<void>;
-  register: (data: SignUpType) => Promise<void>;
-  forgotPassword: (data: ForgotPasswordType) => Promise<boolean>;
-  resetPassword: (data: ResetPasswordType) => Promise<boolean>;
-  verifyCode: (data: VerifyCodeType) => Promise<boolean>;
-  getCurrentUser: () => Promise<void>;
+  //login
+  login: (data: SignInType) => Promise<boolean | string>;
+  //signup
+  signup: (data: SignUpType) => Promise<boolean | string>;
+  //reset password
+  resetPassword: (data: ResetPasswordType) => Promise<boolean | string>;
+  // verifyCode (verify email, forgotPassword)
+  verifyCode: (data: VerifyCodeType) => Promise<boolean | string>;
+  // sendCode (verify email, forgotPassword)
+  sendCode: (data: SendCodeType) => Promise<boolean | string>;
+  // me
+  getCurrentUser: () => Promise<boolean | string>;
 
   // Logout
-  logout: () => void;
+  logout: () => Promise<boolean | string>;
 
   // OAuth
-  loginWithGoogle: (code: string, codeVerifier: string) => Promise<void>;
-  loginWithGithub: (code: string, codeVerifier: string) => Promise<void>;
-  loginWithDiscord: (code: string, codeVerifier: string) => Promise<void>;
+  loginWithGoogle: (
+    code: string,
+    codeVerifier: string
+  ) => Promise<boolean | string>;
+  loginWithGithub: (
+    code: string,
+    codeVerifier: string
+  ) => Promise<boolean | string>;
+  loginWithDiscord: (
+    code: string,
+    codeVerifier: string
+  ) => Promise<boolean | string>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -82,19 +98,21 @@ export const useAuthStore = create<AuthState>()(
             token,
             isAuthenticated: true,
           });
-        } catch (error) {
+          return true;
+        } catch (error: ApiError | any) {
           set({
             isLoading: false,
             error: {
-              message: error instanceof Error ? error.message : "Login failed",
-              code: "LOGIN_FAILED",
+              message: error.message,
+              code: error.code || "LOGIN_FAILED",
             },
           });
+          return error.code || "LOGIN_FAILED";
         }
       },
 
       // Register action
-      register: async (data: SignUpType) => {
+      signup: async (data: SignUpType) => {
         set({
           isLoading: true,
           error: null,
@@ -102,52 +120,51 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           // TODO: Replace with your actual API call
-          const response = await authService.register(data);
-          const { data: userData, token } = response;
+          await authService.signup(data);
 
           set({
-            user: userData,
             isLoading: false,
             error: null,
-            token: token,
-            isAuthenticated: true,
           });
-        } catch (error) {
+          return true;
+        } catch (error: ApiError | any) {
           set({
             isLoading: false,
             error: {
-              message:
-                error instanceof Error ? error.message : "Registration failed",
-              code: "REGISTRATION_FAILED",
+              message: error.message,
+              code: error.code || "REGISTRATION_FAILED",
             },
           });
+          return error.code || "REGISTRATION_FAILED";
         }
       },
-      // Forgot password
-      forgotPassword: async (data: ForgotPasswordType) => {
+
+      sendCode: async (data: SendCodeType) => {
         set({
           isLoading: true,
           error: null,
         });
 
         try {
-          await authService.forgotPassword(data);
+          await authService.sendCode(data);
           set({
             isLoading: false,
             error: null,
           });
           return true;
-        } catch (error) {
+        } catch (error: ApiError | any) {
           set({
             isLoading: false,
             error: {
-              message: error instanceof Error ? error.message : "Forgot failed",
-              code: "FORGOT_PASSWORD_FAILED",
+              message:
+                error instanceof Error ? error.message : "Resend Code failed",
+              code: error.code || "RESEND_CODE_FAILED",
             },
           });
-          return false;
+          return error.code || "RESEND_CODE_FAILED";
         }
       },
+
       // Verify Code
       verifyCode: async (data: VerifyCodeType) => {
         set({
@@ -156,22 +173,28 @@ export const useAuthStore = create<AuthState>()(
         });
 
         try {
-          await authService.verifyCode(data);
+          const response = await authService.verifyCode(data);
+          if (data.path === "verify-email") {
+            set({
+              user: response.data.user,
+              token: response.data.token,
+              isAuthenticated: true,
+            });
+          }
           set({
             isLoading: false,
             error: null,
           });
           return true;
-        } catch (error) {
+        } catch (error: ApiError | any) {
           set({
             isLoading: false,
             error: {
-              message:
-                error instanceof Error ? error.message : "Verify Code failed",
-              code: "VERIFY_CODE_FAILED",
+              message: error.message,
+              code: error.code || "VERIFY_CODE_FAILED",
             },
           });
-          return false;
+          return error.code || "VERIFY_CODE_FAILED";
         }
       },
       // Reset password
@@ -188,45 +211,42 @@ export const useAuthStore = create<AuthState>()(
             error: null,
           });
           return true;
-        } catch (error) {
+        } catch (error: ApiError | any) {
           set({
             isLoading: false,
             error: {
-              message: error instanceof Error ? error.message : "Reset failed",
-              code: "RESET_PASSWORD_FAILED",
+              message: error.message,
+              code: error.code || "RESET_PASSWORD_FAILED",
             },
           });
-          return false;
+          return error.code || "RESET_PASSWORD_FAILED";
         }
       },
+      // me
       getCurrentUser: async () => {
         set({
           isLoading: true,
-          error: null,
         });
 
         try {
           const response = await authService.getCurrentUser();
-          const { data: user, token } = response;
+          const { data: user } = response;
 
           set({
             isLoading: false,
             error: null,
-            user: user,
-            token: token,
             isAuthenticated: true,
+            user,
           });
-        } catch (error) {
+          return true;
+        } catch (error: ApiError | any) {
           set({
             isLoading: false,
-            error: {
-              message: error instanceof Error ? error.message : "Reset failed",
-              code: "RESET_PASSWORD_FAILED",
-            },
           });
+          return error.code || "GET_CURRENT_USER";
         }
       },
-      // Logout action
+      // Logout
       logout: async () => {
         set({
           isLoading: true,
@@ -243,15 +263,15 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
           });
           return true;
-        } catch (error) {
+        } catch (error: ApiError | any) {
           set({
             isLoading: false,
             error: {
-              message: error instanceof Error ? error.message : "Logout failed",
-              code: "LOGOUT_FAILED",
+              message: error.message,
+              code: error.code || "LOGOUT_FAILED",
             },
           });
-          return false;
+          return error.code || "LOGOUT_FAILED";
         }
       },
 
@@ -271,14 +291,15 @@ export const useAuthStore = create<AuthState>()(
             user: result.data,
             token: result.token,
           });
-        } catch (error) {
+          return true;
+        } catch (error: ApiError | any) {
           set({
             error: {
-              message:
-                error instanceof Error ? error.message : "Google login failed",
-              code: "GOOGLE_LOGIN_FAILED",
+              message: error.message,
+              code: error.code || "GOOGLE_LOGIN_FAILED",
             },
           });
+          return error.code || "GOOGLE_LOGIN_FAILED";
         }
       },
 
@@ -297,14 +318,15 @@ export const useAuthStore = create<AuthState>()(
             user: result.data,
             token: result.token,
           });
-        } catch (error) {
+          return true;
+        } catch (error: ApiError | any) {
           set({
             error: {
-              message:
-                error instanceof Error ? error.message : "GitHub login failed",
-              code: "GITHUB_LOGIN_FAILED",
+              message: error.message,
+              code: error.code || "GITHUB_LOGIN_FAILED",
             },
           });
+          return error.code || "GITHUB_LOGIN_FAILED";
         }
       },
 
@@ -323,15 +345,16 @@ export const useAuthStore = create<AuthState>()(
             user: result.data,
             token: result.token,
           });
-        } catch (error) {
+          return true;
+        } catch (error: ApiError | any) {
           set({
             isLoading: false,
             error: {
-              message:
-                error instanceof Error ? error.message : "Discord login failed",
-              code: "DISCORD_LOGIN_FAILED",
+              message: error.message,
+              code: error.code || "DISCORD_LOGIN_FAILED",
             },
           });
+          return error.code || "DISCORD_LOGIN_FAILED";
         }
       },
     }),

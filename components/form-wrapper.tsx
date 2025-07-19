@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    padding: 10,
+    padding: 5,
     justifyContent: "center",
   },
 });

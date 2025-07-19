@@ -1,6 +1,6 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { lazy, Suspense, useRef, useState } from "react";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuthStore } from "@/store";
@@ -13,7 +13,7 @@ import {
   TextInputComponent,
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 import { SignInSchema, type SignInType } from "@/helpers/schema";
 import { showToast } from "@/helpers/toastService";
 
@@ -23,7 +23,7 @@ const SignInScreen = () => {
   const { login, error: errorAPI, isLoading } = useAuthStore();
   const passwordRef = useRef<TextInput>(null);
   const [showPassword, setShowPassword] = useState(true);
-  const { control, handleSubmit } = useForm<SignInType>({
+  const { control, handleSubmit, watch } = useForm<SignInType>({
     resolver: zodResolver(SignInSchema),
     defaultValues: {
       email: "",
@@ -32,8 +32,19 @@ const SignInScreen = () => {
   });
 
   const handleLogin: SubmitHandler<SignInType> = async (data: SignInType) => {
-    await login(data);
-    showToast("Welcome Back!");
+    const response = await login(data);
+    if (typeof response === "string" && response === "EMAIL_NOT_VERIFIED") {
+      const email = watch("email");
+
+      router.push({
+        pathname: "/(auth)/verify-code",
+        params: {
+          email,
+          path: "verify-email",
+        },
+      });
+      showToast("Your email is not verified!");
+    }
   };
   return (
     <ScreenWrapper bg="white">
@@ -116,7 +127,7 @@ const SignInScreen = () => {
               name="password"
             />
 
-            <Link href="/(auth)/forgot-password" push>
+            <Link href="/(auth)/password/forgot" push>
               <Text style={styles.forgotPassword}>Forgot password?</Text>
             </Link>
             {/* Button */}
@@ -163,7 +174,7 @@ const SignInScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 45,
+    gap: hp(3.5),
     paddingHorizontal: wp(5),
   },
   welcomeText: {

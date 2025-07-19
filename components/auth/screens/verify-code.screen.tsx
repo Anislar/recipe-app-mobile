@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TextInput } from "react-native";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 import {
@@ -11,17 +11,17 @@ import {
   TextInputComponent,
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 import { useAuthStore } from "@/store";
 import { VerifyCodeType, verifyCodeSchema } from "@/helpers/schema";
 import { Fragment, useRef, useState } from "react";
 import { showToast } from "@/helpers/toastService";
+
 const VerifyCodeScreen = () => {
-  const router = useRouter();
-  const { email } = useLocalSearchParams();
+  const { email, path } = useLocalSearchParams();
   const [loadingCode, setLoadingCode] = useState(false);
   const inputRefs = useRef<(TextInput | null)[]>([]);
-  const { error: errorAPI, verifyCode, forgotPassword } = useAuthStore();
+  const { error: errorAPI, verifyCode, sendCode } = useAuthStore();
   const {
     control,
     handleSubmit,
@@ -30,25 +30,32 @@ const VerifyCodeScreen = () => {
     formState: { isSubmitting, errors },
   } = useForm<VerifyCodeType>({
     resolver: zodResolver(verifyCodeSchema),
-
     defaultValues: {
+      path: path as "password/forgot" | "verify-email",
       email: email as string,
-      token: ["", "", "", ""],
+      code: ["", "", "", ""],
     },
   });
 
   const onSubmit: SubmitHandler<VerifyCodeType> = async (
     data: VerifyCodeType
   ) => {
-    const response: boolean = await verifyCode(data);
-    if (response) {
-      showToast("Reset password now!");
-      router.push({ pathname: "/(auth)/new-password", params: { email } });
+    const response = await verifyCode(data);
+    if (typeof response === "boolean") {
+      if (path === "password/forgot") {
+        showToast("Reset password now!");
+        router.push({ pathname: "/(auth)/password/new", params: { email } });
+      } else {
+        showToast(`Welcome!`);
+      }
     }
   };
   const resetCode = async () => {
     setLoadingCode(true);
-    await forgotPassword({ email: email as string });
+    await sendCode({
+      email: email as string,
+      path: path as "password/forgot" | "verify-email",
+    });
     reset();
     setLoadingCode(false);
   };
@@ -59,7 +66,11 @@ const VerifyCodeScreen = () => {
           <BackButton size={26} />
           {/* Welcome text */}
           <View>
-            <Text style={styles.welcomeText}>Reset Password</Text>
+            <Text style={styles.welcomeText}>
+              {path === "forgotPassword"
+                ? "Reset Password"
+                : "Verification Email"}
+            </Text>
           </View>
           <Text style={styles.formDescription}>
             We send you a code to verify your email!
@@ -71,7 +82,7 @@ const VerifyCodeScreen = () => {
                 <Fragment key={`text_input_${index}`}>
                   <Controller
                     control={control}
-                    name={`token.${index}`}
+                    name={`code.${index}`}
                     render={({
                       field: { onBlur, onChange, value },
                       fieldState: { error },
@@ -111,7 +122,7 @@ const VerifyCodeScreen = () => {
                               (!value || value.length === 0) &&
                               index > 0
                             ) {
-                              setValue(`token.${index - 1}`, "");
+                              setValue(`code.${index - 1}`, "");
                               inputRefs.current[index - 1]?.focus();
                             }
                           }}
@@ -127,12 +138,18 @@ const VerifyCodeScreen = () => {
                             inputRefs.current[index] = ref;
                           }}
                         />
+                        {}
                       </>
                     )}
                   />
                 </Fragment>
               ))}
             </View>
+            {errors.code && (
+              <Text style={styles.errorText}>
+                Error : {errors.code.message}
+              </Text>
+            )}
             {errors.email && (
               <Text style={styles.errorText}>
                 Error : {errors.email.message}
@@ -166,7 +183,7 @@ const VerifyCodeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 45,
+    gap: hp(3.5),
     paddingHorizontal: wp(5),
   },
   welcomeText: {
@@ -192,7 +209,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: THEME.colors.rose,
-    fontSize: hp(1.8),
+    fontSize: hp(2),
     fontWeight: THEME.fonts.medium,
   },
 });

@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import LoadingSpinner from "./loading";
 interface ButtonProps {

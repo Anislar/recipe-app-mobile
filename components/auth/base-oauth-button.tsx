@@ -7,11 +7,12 @@ import {
   Text,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 
 export interface OAuthButtonProps {
   icon: keyof typeof Ionicons.glyphMap;
+  color: string;
   onPress: () => void;
   title: string;
   isLoading?: boolean;
@@ -20,6 +21,7 @@ export interface OAuthButtonProps {
 
 const BaseOAuthButton: React.FC<OAuthButtonProps> = ({
   icon,
+  color,
   onPress,
   isLoading = false,
   disabled = false,
@@ -38,7 +40,7 @@ const BaseOAuthButton: React.FC<OAuthButtonProps> = ({
         <ActivityIndicator size="small" color="#666" />
       ) : (
         <View style={styles.socialContainer}>
-          <Ionicons name={icon} size={26} />
+          <Ionicons name={icon} size={26} color={color} />
           <Text style={styles.text}>{title}</Text>
         </View>
       )}

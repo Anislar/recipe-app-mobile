@@ -39,6 +39,7 @@ const GithubButton: FC = () => {
   return (
     <BaseOAuthButton
       title="Continue With Github"
+      color="black"
       icon="logo-github"
       onPress={handlePress}
       isLoading={isLoading}

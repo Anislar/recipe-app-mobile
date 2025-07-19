@@ -1,15 +1,22 @@
 import { Pressable, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
+import { useAuthStore } from "@/store";
 
 interface BackButtonProps {
   size?: number;
 }
 const BackButton = ({ size = 25 }: BackButtonProps) => {
-  const router = useRouter();
+  const reset = useAuthStore((state) => state.setResetElement);
   return (
-    <Pressable style={styles.button} onPress={() => router.back()}>
+    <Pressable
+      style={styles.button}
+      onPress={() => {
+        reset();
+        router.back();
+      }}
+    >
       <Ionicons name="arrow-back" size={size} color={THEME.colors.text} />
     </Pressable>
   );

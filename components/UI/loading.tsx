@@ -1,4 +1,4 @@
-import { THEME } from "@/constants/colors";
+import { THEME } from "@/constants/theme";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 interface LoadingSpinnerProps {
   color?: string;

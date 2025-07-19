@@ -1,32 +1,13 @@
+import { ApiError, ApiSuccess } from "@/type";
 import { api } from "../axios-instance";
 import { OAuthCallbackData } from "./oauth.service";
 import {
-  ForgotPasswordType,
+  SendCodeType,
   ResetPasswordType,
   SignInType,
   SignUpType,
   VerifyCodeType,
 } from "@/helpers/schema";
-
-interface ApiError {
-  success: false;
-  message: string;
-  code: string;
-  errors?: {
-    field: string;
-    message: string;
-    code: string;
-  }[];
-  timestamp: string;
-}
-
-interface ApiSuccess<T> {
-  success: true;
-  message: string;
-  data?: T;
-  token?: string;
-  timestamp: string;
-}
 
 class AuthService {
   private prefix: string;
@@ -37,10 +18,7 @@ class AuthService {
   private handleApiError(error: any): never {
     if (error.response?.data) {
       const apiError: ApiError = error.response.data;
-      const customError = new Error(apiError.message);
-      (customError as any).code = apiError.code;
-      (customError as any).errors = apiError.errors;
-      throw customError;
+      throw apiError;
     }
     throw error;
   }
@@ -49,12 +27,12 @@ class AuthService {
     try {
       const response = await api.post(this.prefix + "/signin", data);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       this.handleApiError(error);
     }
   }
 
-  async register(data: SignUpType): Promise<ApiSuccess<any>> {
+  async signup(data: SignUpType): Promise<ApiSuccess<any>> {
     try {
       const response = await api.post(this.prefix + "/signup", data);
       return response.data;
@@ -62,20 +40,29 @@ class AuthService {
       this.handleApiError(error);
     }
   }
-  async forgotPassword(data: ForgotPasswordType): Promise<ApiSuccess<any>> {
+
+  async verifyCode(data: VerifyCodeType): Promise<ApiSuccess<any>> {
     try {
-      const response = await api.post(this.prefix + "/forgot-password", data);
+      let url = "/verify-code-password";
+      if (data.path === "verify-email") {
+        url = "/verify-email";
+      }
+      const response = await api.post(this.prefix + url, {
+        email: data.email,
+        code: data.code.join(""),
+      });
       return response.data;
     } catch (error) {
       this.handleApiError(error);
     }
   }
-  async verifyCode(data: VerifyCodeType): Promise<ApiSuccess<any>> {
+  async sendCode(data: SendCodeType): Promise<ApiSuccess<any>> {
     try {
-      const response = await api.post(this.prefix + "/verify-code", {
-        email: data.email,
-        token: data.token.join(""),
-      });
+      let url = "/password/forgot";
+      if (data.path === "verify-email") {
+        url = "/code-verify-email";
+      }
+      const response = await api.post(this.prefix + url, { email: data.email });
       return response.data;
     } catch (error) {
       this.handleApiError(error);
@@ -91,7 +78,7 @@ class AuthService {
   }
   async getCurrentUser(): Promise<ApiSuccess<any>> {
     try {
-      const response = await api.get(this.prefix + "/me");
+      const response = await api.get("/user" + "/me");
       return response.data;
     } catch (error) {
       this.handleApiError(error);

@@ -5,6 +5,9 @@ export interface User {
   email: string;
   avatar?: string;
   role?: string;
+  location?: string;
+  bio?: string;
+  phone?: string;
 }
 // Sign up DTO
 const signUpSchema = z.object({
@@ -24,18 +27,19 @@ const SignInSchema = z.object({
 });
 type SignInType = z.infer<typeof SignInSchema>;
 
-// Forgot password DTO
-const forgotPasswordSchema = z.object({
+// Resend code DTO
+const sendCodeSchema = z.object({
   email: z.string().email("Invalid email format"),
+  path: z.enum(["verify-email", "password/forgot"]),
 });
-type ForgotPasswordType = z.infer<typeof forgotPasswordSchema>;
-
+type SendCodeType = z.infer<typeof sendCodeSchema>;
 // Verify Code DTO
 const verifyCodeSchema = z.object({
   email: z.string().email("Invalid email format"),
-  token: z
+  code: z
     .array(z.string().length(1, "Each digit is required")) // each input must have 1 char
-    .length(4, "Token must be exactly 4 digits"), // enforce 4 inputs
+    .length(4, "Code must be exactly 4 digits"), // enforce 4 inputs
+  path: z.enum(["verify-email", "password/forgot"]),
 });
 type VerifyCodeType = z.infer<typeof verifyCodeSchema>;
 
@@ -57,12 +61,12 @@ type ResetPasswordType = z.infer<typeof resetPasswordSchema>;
 export {
   signUpSchema,
   SignInSchema,
-  forgotPasswordSchema,
   resetPasswordSchema,
   verifyCodeSchema,
+  sendCodeSchema,
   type SignUpType,
   type SignInType,
-  type ForgotPasswordType,
   type ResetPasswordType,
   type VerifyCodeType,
+  type SendCodeType,
 };
