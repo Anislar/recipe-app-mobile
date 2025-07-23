@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet } from "react-native";
 import { router } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import Feather from "@expo/vector-icons/Feather";
 import { THEME } from "@/constants/theme";
 import { useAuthStore } from "@/store";
 
@@ -17,7 +17,7 @@ const BackButton = ({ size = 25 }: BackButtonProps) => {
         router.back();
       }}
     >
-      <Ionicons name="arrow-back" size={size} color={THEME.colors.text} />
+      <Feather name="arrow-left" size={size} color={THEME.colors.text} />
     </Pressable>
   );
 };

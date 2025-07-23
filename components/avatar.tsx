@@ -10,7 +10,7 @@ interface AvatarProps {
   rounded?: number;
   style?: StyleProp<ImageStyle>;
 }
-const Avatar = ({
+export const Avatar = ({
   uri,
   size = hp(4.5),
   rounded = THEME.radius.md,
@@ -35,4 +35,3 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 });
-export default Avatar;

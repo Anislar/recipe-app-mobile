@@ -8,12 +8,19 @@
     "icon": "./assets/images/ic_launcher.png",
     "userInterfaceStyle": "automatic",
     "scheme": "linkUp",
-    "deepLinks": ["linkUp://oauthredirect"],
+    "deepLinks": [
+      "linkUp://oauthredirect"
+    ],
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to let users take photos.",
+        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to let you pick images.",
+        "NSPhotoLibraryAddUsageDescription": "This app saves photos to your photo library."
       }
     },
     "android": {
@@ -52,6 +59,11 @@
             "DEFAULT"
           ]
         }
+      ],
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
       ]
     },
     "web": {

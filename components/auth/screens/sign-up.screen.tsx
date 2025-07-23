@@ -15,7 +15,7 @@ import {
   TextInputComponent,
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
-import { signUpSchema, type SignUpType } from "@/helpers/schema";
+import { signUpSchema, type SignUpType } from "@/helpers/auth";
 import { useClearAuthStateOnFocus } from "@/hooks/useClearError";
 import { showToast } from "@/helpers/toastService";
 
@@ -78,7 +78,7 @@ const SignUpScreen = () => {
                       }
                     }
                     value={value}
-                    icon="person-outline"
+                    icon="user"
                     placeholder="Enter your name"
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -110,7 +110,7 @@ const SignUpScreen = () => {
                       }
                     }
                     value={value}
-                    icon="mail-outline"
+                    icon="mail"
                     placeholder="Enter your email"
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -143,10 +143,8 @@ const SignUpScreen = () => {
                     }
                     value={value}
                     onBlur={onBlur}
-                    icon="lock-closed-outline"
-                    suffixIcon={
-                      !showPassword ? "eye-outline" : "eye-off-outline"
-                    }
+                    icon="lock"
+                    suffixIcon={!showPassword ? "eye" : "eye-off"}
                     onPressIcon={() => setShowPassword((prev) => !prev)}
                     secureTextEntry={showPassword}
                     placeholder="Enter your password"

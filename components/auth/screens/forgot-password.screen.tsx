@@ -13,7 +13,7 @@ import {
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
 import { useAuthStore } from "@/store";
-import { SendCodeType, sendCodeSchema } from "@/helpers/schema";
+import { SendCodeType, sendCodeSchema } from "@/helpers/auth";
 import { showToast } from "@/helpers/toastService";
 
 const ForgotPasswordScreen = () => {
@@ -64,7 +64,7 @@ const ForgotPasswordScreen = () => {
                     }
                     value={value}
                     onBlur={onBlur}
-                    icon="mail-outline"
+                    icon="mail"
                     placeholder="Enter your email"
                     onChangeText={onChange}
                   />

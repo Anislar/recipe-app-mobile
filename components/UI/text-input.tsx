@@ -10,13 +10,13 @@ import {
 import { Ref } from "react";
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import Feather from "@expo/vector-icons/Feather";
 
 interface TextInputInterface extends TextInputProps {
   containerStyles?: StyleProp<ViewStyle>;
   inputStyles?: StyleProp<TextStyle>;
-  icon?: keyof typeof Ionicons.glyphMap;
-  suffixIcon?: keyof typeof Ionicons.glyphMap;
+  icon?: keyof typeof Feather.glyphMap;
+  suffixIcon?: keyof typeof Feather.glyphMap;
   onPressIcon?: () => void;
   ref?: Ref<TextInput>;
 }
@@ -31,7 +31,7 @@ const TextInputComponent = ({
 }: TextInputInterface) => {
   return (
     <View style={[styles.container, containerStyles]}>
-      {icon && <Ionicons name={icon} size={26} />}
+      {icon && <Feather name={icon} size={26} />}
       <TextInput
         autoCapitalize="none"
         style={[styles.input, inputStyles]}
@@ -40,7 +40,7 @@ const TextInputComponent = ({
         {...props}
       />
       {suffixIcon && (
-        <Ionicons onPress={onPressIcon} name={suffixIcon} size={26} />
+        <Feather onPress={onPressIcon} name={suffixIcon} size={26} />
       )}
     </View>
   );

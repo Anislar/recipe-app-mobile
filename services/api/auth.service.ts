@@ -1,4 +1,4 @@
-import { ApiError, ApiSuccess } from "@/type";
+import { ApiSuccess } from "@/type";
 import { api } from "../axios-instance";
 import { OAuthCallbackData } from "./oauth.service";
 import {
@@ -7,7 +7,8 @@ import {
   SignInType,
   SignUpType,
   VerifyCodeType,
-} from "@/helpers/schema";
+} from "@/helpers/auth";
+import { handleApiError } from "@/helpers/utils";
 
 class AuthService {
   private prefix: string;
@@ -15,20 +16,12 @@ class AuthService {
     this.prefix = "/auth";
   }
 
-  private handleApiError(error: any): never {
-    if (error.response?.data) {
-      const apiError: ApiError = error.response.data;
-      throw apiError;
-    }
-    throw error;
-  }
-
   async login(data: SignInType): Promise<ApiSuccess<any>> {
     try {
       const response = await api.post(this.prefix + "/signin", data);
       return response.data;
     } catch (error: any) {
-      this.handleApiError(error);
+      return handleApiError(error);
     }
   }
 
@@ -37,7 +30,7 @@ class AuthService {
       const response = await api.post(this.prefix + "/signup", data);
       return response.data;
     } catch (error) {
-      this.handleApiError(error);
+      return handleApiError(error);
     }
   }
 
@@ -53,7 +46,7 @@ class AuthService {
       });
       return response.data;
     } catch (error) {
-      this.handleApiError(error);
+      return handleApiError(error);
     }
   }
   async sendCode(data: SendCodeType): Promise<ApiSuccess<any>> {
@@ -65,7 +58,7 @@ class AuthService {
       const response = await api.post(this.prefix + url, { email: data.email });
       return response.data;
     } catch (error) {
-      this.handleApiError(error);
+      return handleApiError(error);
     }
   }
   async resetPassword(data: ResetPasswordType): Promise<ApiSuccess<any>> {
@@ -73,15 +66,7 @@ class AuthService {
       const response = await api.post(this.prefix + "/reset-password", data);
       return response.data;
     } catch (error) {
-      this.handleApiError(error);
-    }
-  }
-  async getCurrentUser(): Promise<ApiSuccess<any>> {
-    try {
-      const response = await api.get("/user" + "/me");
-      return response.data;
-    } catch (error) {
-      this.handleApiError(error);
+      return handleApiError(error);
     }
   }
   async logout(): Promise<ApiSuccess<any>> {
@@ -89,7 +74,7 @@ class AuthService {
       const response = await api.post(this.prefix + "/logout");
       return response.data;
     } catch (error) {
-      this.handleApiError(error);
+      return handleApiError(error);
     }
   }
 
@@ -105,7 +90,7 @@ class AuthService {
       const response = await api.get(url);
       return response.data;
     } catch (error) {
-      this.handleApiError(error);
+      return handleApiError(error);
     }
   }
 }

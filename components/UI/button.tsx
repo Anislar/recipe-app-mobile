@@ -10,6 +10,7 @@ import {
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import LoadingSpinner from "./loading";
+import Feather from "@expo/vector-icons/Feather";
 interface ButtonProps {
   buttonStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -17,6 +18,7 @@ interface ButtonProps {
   title: string;
   loading: boolean;
   hasShadow?: boolean;
+  icon?: keyof typeof Feather.glyphMap;
 }
 
 const Button = ({
@@ -26,6 +28,7 @@ const Button = ({
   title,
   loading,
   hasShadow,
+  icon,
 }: ButtonProps) => {
   const shadowStyle = {
     shadowColor: THEME.colors.dark,
@@ -50,6 +53,7 @@ const Button = ({
       style={[styles.button, buttonStyle, hasShadow && shadowStyle]}
       onPress={onPress}
     >
+      {icon && <Feather name={icon} size={20} color="#fff" />}
       <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
@@ -59,6 +63,7 @@ export default Button;
 
 const styles = StyleSheet.create({
   button: {
+    flexDirection: "row",
     backgroundColor: THEME.colors.primary,
     height: hp(6.6),
     justifyContent: "center",

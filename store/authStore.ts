@@ -10,8 +10,10 @@ import {
   SignUpType,
   User,
   VerifyCodeType,
-} from "@/helpers/schema";
+} from "@/helpers/auth";
 import { ApiError } from "@/type";
+import { userService } from "@/services/api/user.service";
+import { UpdateUserType } from "@/helpers/user";
 export interface AuthState {
   isLoading: boolean;
   error: {
@@ -42,6 +44,8 @@ export interface AuthState {
   sendCode: (data: SendCodeType) => Promise<boolean | string>;
   // me
   getCurrentUser: () => Promise<boolean | string>;
+  // update profile
+  updateProfile: (data: UpdateUserType) => Promise<boolean | string>;
 
   // Logout
   logout: () => Promise<boolean | string>;
@@ -229,7 +233,7 @@ export const useAuthStore = create<AuthState>()(
         });
 
         try {
-          const response = await authService.getCurrentUser();
+          const response = await userService.getCurrentUser();
           const { data: user } = response;
 
           set({
@@ -246,6 +250,32 @@ export const useAuthStore = create<AuthState>()(
           return error.code || "GET_CURRENT_USER";
         }
       },
+      updateProfile: async (data: UpdateUserType) => {
+        set({
+          isLoading: true,
+        });
+
+        try {
+          const response = await userService.updateUser(data);
+          const { data: user } = response;
+
+          set({
+            isLoading: false,
+            error: null,
+            user,
+          });
+          return true;
+        } catch (error: ApiError | any) {
+          set({
+            isLoading: false,
+            error: {
+              message: error.message,
+              code: error.code || "UPDATE_USER",
+            },
+          });
+          return error.code || "UPDATE_USER";
+        }
+      },
       // Logout
       logout: async () => {
         set({
@@ -254,22 +284,23 @@ export const useAuthStore = create<AuthState>()(
         });
 
         try {
-          await authService.logout();
+          authService.logout();
           set({
             user: null,
-            token: null,
             error: null,
             isLoading: false,
             isAuthenticated: false,
           });
           return true;
         } catch (error: ApiError | any) {
+          console.log("🚀 ~ logout: ~ error:", error);
           set({
             isLoading: false,
             error: {
               message: error.message,
               code: error.code || "LOGOUT_FAILED",
             },
+            token: null,
           });
           return error.code || "LOGOUT_FAILED";
         }

@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { lazy, Suspense, useRef, useState } from "react";
 import { Link, router } from "expo-router";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
@@ -14,7 +14,7 @@ import {
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
-import { SignInSchema, type SignInType } from "@/helpers/schema";
+import { SignInSchema, type SignInType } from "@/helpers/auth";
 import { showToast } from "@/helpers/toastService";
 
 const SocialButtonComponent = lazy(() => import("../social-button.compnent"));
@@ -77,7 +77,7 @@ const SignInScreen = () => {
                     enterKeyHint="next"
                     onSubmitEditing={() => passwordRef.current?.focus()}
                     value={value}
-                    icon="mail-outline"
+                    icon="mail"
                     placeholder="Enter your email"
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -108,10 +108,8 @@ const SignInScreen = () => {
                     }
                     value={value}
                     onBlur={onBlur}
-                    icon="lock-closed-outline"
-                    suffixIcon={
-                      !showPassword ? "eye-outline" : "eye-off-outline"
-                    }
+                    icon="lock"
+                    suffixIcon={!showPassword ? "eye" : "eye-off"}
                     onPressIcon={() => setShowPassword((prev) => !prev)}
                     secureTextEntry={showPassword}
                     placeholder="Enter your password"

@@ -8,7 +8,6 @@ const AuthLayout = () => {
   return (
     <>
       <StatusBar style="dark" />
-
       <Stack
         screenOptions={{
           headerShown: false,
@@ -18,6 +17,7 @@ const AuthLayout = () => {
         <Stack.Screen name="sign-up" />
         <Stack.Screen name="password" />
         <Stack.Screen name="verify-code" />
+        <Stack.Screen name="oauthredirect" />
       </Stack>
     </>
   );
