@@ -7,15 +7,24 @@ import { showToast } from "@/helpers/toastService";
 interface uploadFileInterface {
   source: "user" | "post";
 }
+const STATUS = {
+  IDLE: "idle",
+  UPLOADING: "uploading",
+  ERROR: "error",
+  SUCCESS: "success",
+} as const;
 const useUpload = ({ source }: uploadFileInterface) => {
   const [progress, setProgress] = useState<number>(0);
-  const [uploading, setUploading] = useState<boolean>(false);
+  const [status, setStatus] = useState<(typeof STATUS)[keyof typeof STATUS]>(
+    STATUS.IDLE
+  );
+  const [file, setFile] = useState<any>(null);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: "images",
     });
     if (!result.canceled) {
       await uploadFile(result.assets[0]);
@@ -30,8 +39,6 @@ const useUpload = ({ source }: uploadFileInterface) => {
     });
     if (!result.canceled) {
       await uploadFile(result.assets[0]);
-
-      console.log(result);
     } else {
       showToast("You did not select image!");
     }
@@ -40,31 +47,31 @@ const useUpload = ({ source }: uploadFileInterface) => {
     file: DocumentPicker.DocumentPickerAsset | ImagePicker.ImagePickerAsset
   ) => {
     try {
-      setUploading(true);
+      setStatus(STATUS.UPLOADING);
+
+      const fileName = file.file?.name || file.uri.split("/").pop() || "image";
+      const fileType = file.mimeType || file.file?.type || "image/jpg";
       const formData = new FormData();
-      console.log(file);
-      //return;
       formData.append("file", {
         uri: file.uri,
-        file: file.file,
-        mimeType: file.mimeType,
+        name: fileName,
+        type: fileType,
       } as any);
       formData.append("source", source);
-
       const res = await fileService.uploadFile(formData, setProgress);
-
+      console.log("🚀 ~ uploadFile ~ res:", res);
       showToast("File uploaded successfully!");
-      return res.data;
+      setFile(res.data);
+      setStatus(STATUS.SUCCESS);
     } catch (error) {
+      setStatus(STATUS.ERROR);
       console.error("Upload failed:", error);
       showToast("Failed to upload file.");
       return null;
-    } finally {
-      setUploading(false);
     }
   };
 
-  return { progress, pickDocument, pickImage, uploading };
+  return { progress, pickDocument, pickImage, status, file };
 };
 
 export default useUpload;

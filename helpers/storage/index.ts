@@ -2,7 +2,7 @@ import * as z from "zod";
 
 // Sign up DTO
 const uploadFileSchema = z.object({
-  file: z.file(),
+  file: z.string(),
   source: z.enum(["user", "post"]),
 });
 type UploadFileType = z.infer<typeof uploadFileSchema>;

@@ -293,7 +293,6 @@ export const useAuthStore = create<AuthState>()(
           });
           return true;
         } catch (error: ApiError | any) {
-          console.log("🚀 ~ logout: ~ error:", error);
           set({
             isLoading: false,
             error: {

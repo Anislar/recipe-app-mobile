@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 interface IFormWrapper {
@@ -9,9 +9,12 @@ const FormWrapper = ({ children }: IFormWrapper) => {
     <KeyboardAwareScrollView
       bottomOffset={64}
       contentContainerStyle={styles.container}
-      style={styles.inner}
+      style={{
+        flex: 1,
+        padding: 5,
+      }}
     >
-      {children}
+      <View style={styles.inner}>{children}</View>
     </KeyboardAwareScrollView>
   );
 };

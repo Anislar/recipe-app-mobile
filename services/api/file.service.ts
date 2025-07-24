@@ -10,15 +10,18 @@ class FileService {
 
   async uploadFile(
     data: FormData,
-    onProgess: (progress: number) => void
+    onProgress: (progress: number) => void
   ): Promise<ApiSuccess<any>> {
     try {
       const response = await api.post(this.prefix + "/upload", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
         onUploadProgress: (progressEvent: AxiosProgressEvent) => {
           if (!progressEvent) return;
-          const rawProgress =
-            (progressEvent.loaded / progressEvent.total!) * 100;
-          onProgess(Math.round(rawProgress));
+          const total = progressEvent.total ?? 1; // Avoid division by zero
+          const rawProgress = (progressEvent.loaded / total) * 100;
+          onProgress(Math.min(Math.round(rawProgress), 100));
         },
       });
       return response.data;

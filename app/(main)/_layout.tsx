@@ -54,6 +54,7 @@ const MainLayout = () => {
               size={size}
               rounded={THEME.radius.sm}
               style={{
+                marginHorizontal: 5,
                 borderColor: color,
                 borderWidth: 2,
               }}

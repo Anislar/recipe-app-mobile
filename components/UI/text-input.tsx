@@ -15,6 +15,7 @@ import Feather from "@expo/vector-icons/Feather";
 interface TextInputInterface extends TextInputProps {
   containerStyles?: StyleProp<ViewStyle>;
   inputStyles?: StyleProp<TextStyle>;
+  iconStyle?: StyleProp<TextStyle>;
   icon?: keyof typeof Feather.glyphMap;
   suffixIcon?: keyof typeof Feather.glyphMap;
   onPressIcon?: () => void;
@@ -24,6 +25,8 @@ const TextInputComponent = ({
   containerStyles,
   inputStyles,
   icon,
+  iconStyle,
+
   suffixIcon,
   onPressIcon,
   ref,
@@ -31,7 +34,7 @@ const TextInputComponent = ({
 }: TextInputInterface) => {
   return (
     <View style={[styles.container, containerStyles]}>
-      {icon && <Feather name={icon} size={26} />}
+      {icon && <Feather name={icon} size={26} style={iconStyle} />}
       <TextInput
         autoCapitalize="none"
         style={[styles.input, inputStyles]}

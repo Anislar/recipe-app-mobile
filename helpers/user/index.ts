@@ -26,7 +26,7 @@ const updateUserSchema = z.object({
     .string()
     .url("Invalid avatar URL")
     .regex(
-      /^https:\/\/res\.cloudinary\.com\//,
+      /^https?:\/\/res\.cloudinary\.com\//,
       "Avatar must be a Cloudinary URL"
     )
     .optional(),
