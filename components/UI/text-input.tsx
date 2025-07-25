@@ -6,65 +6,87 @@ import {
   TextInput,
   TextInputProps,
   TextStyle,
+  Text,
+  TouchableOpacity,
 } from "react-native";
 import { Ref } from "react";
 import { THEME } from "@/constants/theme";
-import { hp } from "@/helpers/common";
-import Feather from "@expo/vector-icons/Feather";
+import { hp, wp } from "@/helpers/common";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 interface TextInputInterface extends TextInputProps {
+  label: string;
   containerStyles?: StyleProp<ViewStyle>;
   inputStyles?: StyleProp<TextStyle>;
-  iconStyle?: StyleProp<TextStyle>;
-  icon?: keyof typeof Feather.glyphMap;
-  suffixIcon?: keyof typeof Feather.glyphMap;
+  suffixIcon?: keyof typeof MaterialCommunityIcons.glyphMap;
   onPressIcon?: () => void;
   ref?: Ref<TextInput>;
 }
+
 const TextInputComponent = ({
+  label,
   containerStyles,
   inputStyles,
-  icon,
-  iconStyle,
-
   suffixIcon,
   onPressIcon,
+  secureTextEntry,
   ref,
   ...props
 }: TextInputInterface) => {
   return (
     <View style={[styles.container, containerStyles]}>
-      {icon && <Feather name={icon} size={26} style={iconStyle} />}
-      <TextInput
-        autoCapitalize="none"
-        style={[styles.input, inputStyles]}
-        placeholderTextColor={THEME.colors.textLight}
-        ref={ref}
-        {...props}
-      />
-      {suffixIcon && (
-        <Feather onPress={onPressIcon} name={suffixIcon} size={26} />
-      )}
+      {label && <Text style={styles.label}>{label}</Text>}
+      <View style={styles.inputContainer}>
+        <TextInput
+          autoCapitalize="none"
+          ref={ref}
+          placeholderTextColor={THEME.colors.textLight}
+          secureTextEntry={secureTextEntry}
+          style={[styles.input, inputStyles]}
+          {...props}
+        />
+
+        {suffixIcon && (
+          <TouchableOpacity onPress={onPressIcon}>
+            <MaterialCommunityIcons
+              name={suffixIcon}
+              size={24}
+              color={THEME.colors.gray}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
+
 export default TextInputComponent;
+
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    height: hp(7.2),
-    alignItems: "center",
-    justifyContent: "center",
     borderWidth: 0.3,
-    borderColor: THEME.colors.text,
+    borderColor: THEME.colors.textLight,
     borderRadius: THEME.radius.xxl,
     borderCurve: "continuous",
-    paddingHorizontal: 15,
-    gap: 12,
+    padding: wp(4),
+    height: hp(8),
+    justifyContent: "center",
+  },
+  label: {
+    color: THEME.colors.gray,
+    fontSize: hp(1.5),
+    marginBottom: 2,
+    textTransform: "capitalize",
+    letterSpacing: wp(0.1),
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   input: {
     flex: 1,
     color: THEME.colors.text,
-    fontSize: hp(1.9),
+    fontSize: hp(1.8),
+    fontWeight: THEME.fonts.medium,
   },
 });

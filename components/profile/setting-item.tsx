@@ -1,70 +1,57 @@
-import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
-import { capitalize } from "@/helpers/utils";
-import Feather from "@expo/vector-icons/Feather";
-import { StyleSheet, Text, View } from "react-native";
-
+//import AntDesign from "@expo/vector-icons/AntDesign";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Separator } from "../UI/separator";
+import { THEME } from "@/constants/theme";
 interface ISettingsItem {
   title: string;
-  subTitle: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
   showArrow?: boolean;
+  isSeperator?: boolean;
+  onPress?: () => void;
 }
 export const SettingsItem = ({
   title,
-  subTitle,
   showArrow,
   icon,
+  isSeperator,
+  onPress,
 }: ISettingsItem) => {
   return (
-    <View style={[styles.infoContainer, { justifyContent: "space-between" }]}>
-      <View style={[styles.infoContainer, { alignItems: "flex-start" }]}>
-        <Feather
-          name={icon}
-          style={{
-            marginTop: 2,
-          }}
-          size={20}
-          color="#4b5563"
-        />
-        <View>
-          <Text
-            style={[
-              styles.label,
-              { fontSize: hp(2), color: THEME.colors.textDark },
-            ]}
-          >
-            {capitalize(title)}
-          </Text>
-          <Text
-            numberOfLines={4}
-            style={[styles.label, { marginRight: wp(8) }]}
-          >
-            {subTitle || "N/A"}
-          </Text>
-        </View>
-      </View>
-
-      {showArrow && <Feather name="chevron-right" size={20} color="#4b5563" />}
-    </View>
+    <>
+      {isSeperator ? (
+        <Separator />
+      ) : (
+        <TouchableOpacity onPress={onPress} style={styles.optionRow}>
+          <View style={styles.iconContainer}>
+            <MaterialCommunityIcons name={icon} size={20} />
+          </View>
+          <Text style={styles.optionLabel}>{title}</Text>
+          {showArrow && (
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={20}
+              style={styles.rightIcon}
+            />
+          )}
+        </TouchableOpacity>
+      )}
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  label: {
-    fontSize: hp(1.7),
-    fontWeight: THEME.fonts.medium,
-    color: THEME.colors.textLight,
+  iconContainer: {
+    backgroundColor: "#eee",
+    padding: 5,
+    borderRadius: THEME.radius.xxl,
   },
-  infoText: {
-    fontSize: hp(1.6),
-    color: THEME.colors.textLight,
-  },
-
-  infoContainer: {
-    marginHorizontal: 5,
+  optionRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    paddingVertical: hp(1),
   },
+  optionLabel: { flex: 1, marginLeft: wp(2), fontSize: hp(1.8) },
+  rightIcon: { color: THEME.colors.text },
 });

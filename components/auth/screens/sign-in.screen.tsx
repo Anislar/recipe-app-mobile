@@ -69,15 +69,16 @@ const SignInScreen = () => {
               }) => (
                 <>
                   <TextInputComponent
+                    label="email"
                     containerStyles={
                       error && {
                         borderColor: THEME.colors.rose,
                       }
                     }
+                    keyboardType="email-address"
                     enterKeyHint="next"
                     onSubmitEditing={() => passwordRef.current?.focus()}
                     value={value}
-                    icon="mail"
                     placeholder="Enter your email"
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -100,6 +101,7 @@ const SignInScreen = () => {
               }) => (
                 <>
                   <TextInputComponent
+                    label="password"
                     ref={passwordRef}
                     containerStyles={
                       error && {
@@ -108,7 +110,6 @@ const SignInScreen = () => {
                     }
                     value={value}
                     onBlur={onBlur}
-                    icon="lock"
                     suffixIcon={!showPassword ? "eye" : "eye-off"}
                     onPressIcon={() => setShowPassword((prev) => !prev)}
                     secureTextEntry={showPassword}

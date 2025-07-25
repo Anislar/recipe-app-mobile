@@ -72,13 +72,13 @@ const SignUpScreen = () => {
               }) => (
                 <>
                   <TextInputComponent
+                    label="name"
                     containerStyles={
                       error && {
                         borderColor: THEME.colors.rose,
                       }
                     }
                     value={value}
-                    icon="user"
                     placeholder="Enter your name"
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -103,14 +103,15 @@ const SignUpScreen = () => {
               }) => (
                 <>
                   <TextInputComponent
+                    label="email"
                     ref={inputRefs[0]}
                     containerStyles={
                       error && {
                         borderColor: THEME.colors.rose,
                       }
                     }
+                    keyboardType="email-address"
                     value={value}
-                    icon="mail"
                     placeholder="Enter your email"
                     onChangeText={onChange}
                     onBlur={onBlur}
@@ -135,6 +136,7 @@ const SignUpScreen = () => {
               }) => (
                 <>
                   <TextInputComponent
+                    label="password"
                     ref={inputRefs[1]}
                     containerStyles={
                       error && {
@@ -143,7 +145,6 @@ const SignUpScreen = () => {
                     }
                     value={value}
                     onBlur={onBlur}
-                    icon="lock"
                     suffixIcon={!showPassword ? "eye" : "eye-off"}
                     onPressIcon={() => setShowPassword((prev) => !prev)}
                     secureTextEntry={showPassword}

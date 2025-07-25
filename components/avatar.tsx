@@ -31,8 +31,8 @@ export const Avatar = ({
 const styles = StyleSheet.create({
   avatar: {
     borderCurve: "continuous",
-    borderColor: THEME.colors.textLight,
-    borderWidth: 1,
+    borderColor: THEME.colors.text,
+    borderWidth: 1.5,
     backgroundColor: "white",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

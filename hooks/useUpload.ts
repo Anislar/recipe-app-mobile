@@ -59,7 +59,6 @@ const useUpload = ({ source }: uploadFileInterface) => {
       } as any);
       formData.append("source", source);
       const res = await fileService.uploadFile(formData, setProgress);
-      console.log("🚀 ~ uploadFile ~ res:", res);
       showToast("File uploaded successfully!");
       setFile(res.data);
       setStatus(STATUS.SUCCESS);

@@ -1,14 +1,10 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, TextInput } from "react-native";
 import { router } from "expo-router";
 import { useRef } from "react";
-import Feather from "@expo/vector-icons/Feather";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { IDropdownRef } from "react-native-element-dropdown";
+
 import {
   Button,
   ScreenWrapper,
@@ -16,6 +12,8 @@ import {
   FormWrapper,
   TextInputComponent,
   LoadingSpinner,
+  Separator,
+  DropdownComponent,
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
@@ -24,18 +22,26 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { updateUserSchema, UpdateUserType } from "@/helpers/user";
 import { showToast } from "@/helpers/toastService";
 import useUpload from "@/hooks/useUpload";
-
+const data = [
+  { label: "Male", value: "male", icon: "male" },
+  { label: "Female", value: "female", icon: "female" },
+];
 const UpdatePerson = () => {
   const { isLoading, user, updateProfile } = useAuthStore();
 
-  const { control, handleSubmit } = useForm<UpdateUserType>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<UpdateUserType>({
     resolver: zodResolver(updateUserSchema),
     defaultValues: {
-      name: user?.name ?? "",
-      bio: user?.bio ?? "",
-      location: user?.location ?? "",
-      phone: user?.phone ?? "",
-      avatar: user?.avatar ?? "",
+      name: user?.name || undefined,
+      bio: user?.bio || undefined,
+      location: user?.location || undefined,
+      phone: user?.phone || undefined,
+      avatar: user?.avatar || undefined,
+      gender: (user?.gender as "male" | "female") || "male",
     },
   });
 
@@ -44,12 +50,16 @@ const UpdatePerson = () => {
     useRef<TextInput>(null),
     useRef<TextInput>(null),
   ];
-
+  const dropdownRef = useRef<IDropdownRef>(null);
   const { pickImage, status, progress, file } = useUpload({ source: "post" });
 
   const onSubmit: SubmitHandler<UpdateUserType> = async (data) => {
     const avatar = file?.url || user?.avatar!;
-    const response = await updateProfile({ ...data, avatar });
+    const payload = { ...data };
+    if (avatar) {
+      payload.avatar = avatar;
+    }
+    const response = await updateProfile(payload);
 
     if (typeof response === "boolean") {
       router.back();
@@ -61,37 +71,56 @@ const UpdatePerson = () => {
     <ScreenWrapper bg="white">
       <FormWrapper>
         <View style={styles.container}>
-          {status === "uploading" ? (
-            <View style={styles.progressContainer}>
-              <LoadingSpinner />
-              <Text style={styles.progressText}>{progress}%</Text>
-            </View>
-          ) : (
-            <View style={styles.avatarWrapper}>
-              <Avatar
-                uri={file?.url || user?.avatar!}
-                size={hp(13)}
-                rounded={THEME.radius.xxl * 1.4}
-              />
-              <TouchableOpacity
-                style={styles.editIcon}
-                onPress={pickImage}
-                accessibilityLabel="Change profile photo"
+          <View style={styles.avatarWrapper}>
+            {status === "uploading" ? (
+              <View style={styles.progressContainer}>
+                <LoadingSpinner />
+                <Text style={styles.progressText}>{progress}%</Text>
+              </View>
+            ) : (
+              <View>
+                <Avatar
+                  uri={file?.url || user?.avatar!}
+                  size={hp(13)}
+                  rounded={THEME.radius.xxl * 3}
+                />
+                <MaterialCommunityIcons
+                  onPress={pickImage}
+                  style={styles.editIcon}
+                  accessibilityLabel="Change profile photo"
+                  name="camera"
+                  size={20}
+                  color={THEME.colors.text}
+                />
+              </View>
+            )}
+            <Text style={styles.name}>{user?.name} </Text>
+            <View style={styles.statusContainer}>
+              <Text
+                style={{
+                  color: THEME.colors.text,
+                }}
               >
-                <Feather name="camera" size={20} color={THEME.colors.text} />
-              </TouchableOpacity>
+                Status:
+              </Text>
+              <View
+                style={[
+                  styles.status,
+                  {
+                    backgroundColor: user?.isActive ? "green" : "red",
+                  },
+                ]}
+              />
             </View>
-          )}
+          </View>
 
-          {status === "error" && (
+          {(status === "error" || errors["avatar"]?.message) && (
             <Text style={styles.errorText}>
               🚨 Error: Failed to upload file...
             </Text>
           )}
-
+          <Separator my={hp(2)} />
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Account Info</Text>
-
             {/* Name */}
             <Controller
               control={control}
@@ -102,11 +131,11 @@ const UpdatePerson = () => {
               }) => (
                 <>
                   <TextInputComponent
+                    label="full name"
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     placeholder="Enter your full name"
-                    icon="user"
                     returnKeyType="next"
                     autoCapitalize="words"
                     containerStyles={
@@ -120,6 +149,85 @@ const UpdatePerson = () => {
                 </>
               )}
             />
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                gap: 5,
+                flex: 1,
+              }}
+            >
+              {/* Location */}
+              <Controller
+                control={control}
+                name="location"
+                render={({
+                  field: { onChange, onBlur, value },
+                  fieldState: { error },
+                }) => (
+                  <View
+                    style={{
+                      width: "50%",
+                    }}
+                  >
+                    <TextInputComponent
+                      ref={inputRefs[0]}
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      placeholder="Location"
+                      label="location"
+                      autoCapitalize="words"
+                      returnKeyType="next"
+                      containerStyles={{
+                        height: hp(8),
+                        borderColor: error ? THEME.colors.rose : undefined,
+                      }}
+                      onSubmitEditing={() => dropdownRef.current?.open()}
+                    />
+                    {error && (
+                      <Text style={styles.errorText}>{error.message}</Text>
+                    )}
+                  </View>
+                )}
+              />
+              {/* Gender */}
+              <Controller
+                control={control}
+                name="gender"
+                render={({
+                  field: { onChange, onBlur, value },
+                  fieldState: { error },
+                }) => (
+                  <View
+                    style={{
+                      width: "50%",
+                    }}
+                  >
+                    <DropdownComponent
+                      label="Gender"
+                      ref={dropdownRef}
+                      style={{
+                        borderColor: error ? THEME.colors.rose : undefined,
+                      }}
+                      labelField="label"
+                      valueField="value"
+                      value={value}
+                      onBlur={onBlur}
+                      data={data}
+                      onChange={(item) => {
+                        onChange(item.value);
+                        inputRefs[2].current?.focus();
+                      }}
+                    />
+
+                    {error && (
+                      <Text style={styles.errorText}>{error.message}</Text>
+                    )}
+                  </View>
+                )}
+              />
+            </View>
 
             {/* Phone */}
             <Controller
@@ -131,48 +239,18 @@ const UpdatePerson = () => {
               }) => (
                 <>
                   <TextInputComponent
-                    ref={inputRefs[0]}
+                    ref={inputRefs[2]}
+                    label="phone"
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     placeholder="Enter your phone number"
-                    icon="phone"
                     keyboardType="phone-pad"
                     returnKeyType="next"
                     containerStyles={
                       error && { borderColor: THEME.colors.rose }
                     }
-                    onSubmitEditing={() => inputRefs[1].current?.focus()}
-                  />
-                  {error && (
-                    <Text style={styles.errorText}>{error.message}</Text>
-                  )}
-                </>
-              )}
-            />
-
-            {/* Location */}
-            <Controller
-              control={control}
-              name="location"
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <>
-                  <TextInputComponent
-                    ref={inputRefs[1]}
-                    value={value}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    placeholder="Enter your location"
-                    icon="map-pin"
-                    autoCapitalize="words"
-                    returnKeyType="next"
-                    containerStyles={
-                      error && { borderColor: THEME.colors.rose }
-                    }
-                    onSubmitEditing={() => inputRefs[2].current?.focus()}
+                    onSubmitEditing={() => inputRefs[3].current?.focus()}
                   />
                   {error && (
                     <Text style={styles.errorText}>{error.message}</Text>
@@ -191,32 +269,18 @@ const UpdatePerson = () => {
               }) => (
                 <>
                   <TextInputComponent
-                    ref={inputRefs[2]}
+                    ref={inputRefs[3]}
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
                     placeholder="Tell us a bit about yourself..."
-                    icon="info"
+                    label="bio"
                     multiline
                     containerStyles={{
-                      height: hp(13),
+                      height: hp(14),
                       borderColor: error
                         ? THEME.colors.rose
                         : THEME.colors.textLight,
-                      alignItems: "flex-start",
-                      flexDirection: "row",
-                    }}
-                    inputStyles={{
-                      textAlignVertical: "top",
-                      lineHeight: hp(2.3),
-                      fontSize: hp(1.4),
-                      paddingTop: hp(1),
-                      paddingRight: wp(10),
-                    }}
-                    iconStyle={{
-                      marginTop: hp(1),
-                      paddingLeft: wp(10),
-                      alignSelf: "flex-start",
                     }}
                   />
                   {error && (
@@ -225,20 +289,18 @@ const UpdatePerson = () => {
                 </>
               )}
             />
-
-            <View style={{ marginTop: 20 }}>
-              <Button
-                title="Submit"
-                loading={isLoading}
-                hasShadow
-                buttonStyle={{
-                  height: hp(6),
-                  marginHorizontal: wp(5),
-                  borderRadius: THEME.radius.xl,
-                }}
-                onPress={handleSubmit(onSubmit)}
-              />
-            </View>
+          </View>
+          <View style={{ marginTop: 20 }}>
+            <Button
+              title="Save"
+              loading={isLoading}
+              hasShadow
+              buttonStyle={{
+                height: hp(6),
+                borderRadius: THEME.radius.xl,
+              }}
+              onPress={handleSubmit(onSubmit)}
+            />
           </View>
         </View>
       </FormWrapper>
@@ -252,14 +314,13 @@ const styles = StyleSheet.create({
     marginHorizontal: wp(3),
   },
   avatarWrapper: {
-    alignSelf: "center",
-    marginBottom: hp(2),
+    alignItems: "center",
   },
   editIcon: {
     position: "absolute",
     bottom: 0,
     right: 0,
-    transform: [{ translateX: 8 }, { translateY: 8 }],
+    transform: [{ translateX: 4 }, { translateY: 4 }],
     padding: 6,
     borderRadius: 24,
     backgroundColor: "#fff",
@@ -275,8 +336,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: hp(13),
     width: hp(13),
-    borderRadius: THEME.radius.xxl * 1.4,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: THEME.radius.xxl * 3,
+    borderWidth: 2,
     borderColor: THEME.colors.text,
     backgroundColor: "white",
     shadowColor: "#000",
@@ -284,7 +345,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
-    marginBottom: hp(2),
   },
   progressText: {
     marginTop: 12,
@@ -293,7 +353,6 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   formSection: {
-    marginTop: hp(3),
     gap: hp(2.5),
   },
   sectionTitle: {
@@ -305,6 +364,21 @@ const styles = StyleSheet.create({
     fontSize: hp(1.6),
     color: THEME.colors.rose,
     marginTop: 4,
+  },
+  profileSection: { alignItems: "center" },
+  name: { fontSize: 18, fontWeight: "bold", marginTop: 10 },
+  statusContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 5,
+    marginBottom: 10,
+  },
+  status: {
+    height: hp(1.5),
+    width: hp(1.5),
+    borderRadius: hp(1),
+    borderColor: "black",
+    borderWidth: 1,
   },
 });
 

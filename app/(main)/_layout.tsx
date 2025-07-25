@@ -1,37 +1,43 @@
 import { Link, Tabs } from "expo-router";
-import Feather from "@expo/vector-icons/Feather";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { THEME } from "@/constants/theme";
-import { useAuthStore } from "@/store";
-import { Avatar, HeaderTab } from "@/components";
+import { HeaderTab } from "@/components";
 import { wp } from "@/helpers/common";
 
 const MainLayout = () => {
-  const user = useAuthStore((state) => state.user);
   return (
     <Tabs
       screenOptions={({ route }) => ({
         tabBarActiveTintColor: THEME.colors.primaryDark,
+        headerShadowVisible: false,
         headerTitle: () => (
-          <HeaderTab title={route.name === "index" ? "LinkUp" : route.name} />
+          <HeaderTab
+            showBackButton={route.name !== "index"}
+            title={route.name === "index" ? "LinkUp" : route.name}
+          />
         ),
       })}
     >
       <Tabs.Screen
         name="index"
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Feather size={size} name="home" color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <MaterialCommunityIcons
+              size={size}
+              name={focused ? "home" : "home-outline"}
+              color={color}
+            />
           ),
           title: "Home",
           headerRight: () => (
             <Link href="/(modal)/add-post" asChild>
-              <Feather
+              <MaterialCommunityIcons
                 style={{
                   marginHorizontal: wp(3),
                 }}
                 size={26}
-                name="plus-square"
+                name="plus-box-outline"
               />
             </Link>
           ),
@@ -41,37 +47,36 @@ const MainLayout = () => {
         name="search"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Feather size={size} name="search" color={color} />
+            <MaterialCommunityIcons
+              size={size}
+              name="text-search"
+              color={color}
+            />
           ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Avatar
-              uri={user?.avatar!}
+          tabBarIcon: ({ color, size, focused }) => (
+            <MaterialCommunityIcons
               size={size}
-              rounded={THEME.radius.sm}
-              style={{
-                marginHorizontal: 5,
-                borderColor: color,
-                borderWidth: 2,
-              }}
+              name={focused ? "account" : "account-outline"}
+              color={color}
             />
           ),
-          headerRight: () => (
-            <Link href="/(modal)/update-person" asChild>
-              <Feather
-                style={{
-                  marginHorizontal: wp(3),
-                }}
-                size={26}
-                color={THEME.colors.text}
-                name="edit"
-              />
-            </Link>
-          ),
+          // headerRight: () => (
+          //   <Link href="/(modal)/update-person" asChild>
+          //     <MaterialCommunityIcons
+          //       style={{
+          //         marginHorizontal: wp(3),
+          //       }}
+          //       size={26}
+          //       color={THEME.colors.text}
+          //       name="account-edit-outline"
+          //     />
+          //   </Link>
+          // ),
         }}
       />
     </Tabs>

@@ -30,6 +30,7 @@ const updateUserSchema = z.object({
       "Avatar must be a Cloudinary URL"
     )
     .optional(),
+  gender: z.enum(["male", "female"]).optional(),
 });
 type UpdateUserType = z.infer<typeof updateUserSchema>;
 

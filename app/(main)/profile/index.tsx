@@ -1,150 +1,106 @@
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { Link } from "expo-router";
-import Feather from "@expo/vector-icons/Feather";
+import { View, Text, StyleSheet } from "react-native";
+import { router } from "expo-router";
 
-import { Button, ScreenWrapper, Avatar, SettingsItem } from "@/components";
-
-import { useAuthStore } from "@/store";
-import { hp, wp } from "@/helpers/common";
-
+import { Avatar, Button, Separator, SettingsItem } from "@/components";
 import { THEME } from "@/constants/theme";
+import { useAuthStore } from "@/store";
+import { hp } from "@/helpers/common";
+import { capitalize } from "@/helpers/utils";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-const Profile = () => {
-  const { isLoading, user, logout } = useAuthStore();
+interface OptionType {
+  icon?: keyof typeof MaterialCommunityIcons.glyphMap;
+  label?: string;
+  isSeperator?: boolean;
+  onPress?: () => void;
+}
+export default function Profile() {
+  const { user, logout } = useAuthStore();
+
+  const options: OptionType[] = [
+    { icon: "account-cog-outline", label: "Settings" },
+    { icon: "map-marker", label: "Address" },
+    { icon: "lock", label: "Change Password" },
+    { isSeperator: true },
+    { icon: "help-circle-outline", label: "Help & Support" },
+    { icon: "logout", label: "Log out", onPress: () => logout() },
+  ];
 
   return (
-    <ScreenWrapper bg="white">
-      <ScrollView style={styles.container}>
-        <View style={styles.avatarContainer}>
-          <Avatar
-            uri={user?.avatar!}
-            size={hp(13)}
-            rounded={THEME.radius.xxl * 1.4}
-          />
-          <Link style={styles.editIcon} asChild href="/(modal)/update-person">
-            <Feather name="camera" size={24} color={THEME.colors.text} />
-          </Link>
-        </View>
-        {/* username and role */}
-        <View
-          style={{
-            alignItems: "center",
-          }}
-        >
-          <Text style={styles.name}>{user?.name ?? ""}</Text>
-          <Text style={styles.infoText}>Role : {user?.role!}</Text>
-        </View>
+    <View style={styles.container}>
+      <View style={styles.profileSection}>
+        <Avatar uri={user?.avatar!} size={130} rounded={THEME.radius.xxl * 3} />
 
-        {/* extra info */}
-        <View
-          style={{
-            marginTop: hp(3),
-            flex: 1,
-            gap: wp(4),
-          }}
-        >
-          <Text style={styles.label}>Account settings</Text>
-
-          <SettingsItem icon="mail" title="email" subTitle={user?.email!} />
-          <View
+        <Text style={styles.name}>{capitalize(user?.name ?? "")} </Text>
+        <View style={styles.statusContainer}>
+          <Text
             style={{
-              borderWidth: StyleSheet.hairlineWidth,
-              borderColor: THEME.colors.gray,
-            }}
-          />
-
-          <SettingsItem
-            icon="phone"
-            title="Phone Number"
-            subTitle={user?.phone!}
-          />
-
-          <View
-            style={{
-              borderWidth: StyleSheet.hairlineWidth,
-              borderColor: THEME.colors.gray,
-            }}
-          />
-          <Text style={styles.label}>Extra info</Text>
-
-          <SettingsItem
-            icon="map-pin"
-            title="Location"
-            subTitle={user?.location!}
-          />
-          <View
-            style={{
-              borderWidth: StyleSheet.hairlineWidth,
-              borderColor: THEME.colors.gray,
-            }}
-          />
-          <SettingsItem icon="info" title="Bio" subTitle={user?.bio!} />
-          <View
-            style={{
-              marginTop: 20,
+              color: THEME.colors.text,
             }}
           >
-            <Button
-              title="Logout"
-              loading={isLoading}
-              hasShadow
-              buttonStyle={{
-                backgroundColor: THEME.colors.rose,
-                height: hp(6),
-                marginHorizontal: wp(5),
-                gap: wp(1),
-              }}
-              onPress={logout}
-              icon="log-out"
-            />
-          </View>
+            Status:
+          </Text>
+          <View
+            style={[
+              styles.status,
+              {
+                backgroundColor: user?.isActive ? "green" : "red",
+              },
+            ]}
+          />
         </View>
-      </ScrollView>
-    </ScreenWrapper>
+        <Button
+          buttonStyle={styles.editBtn}
+          textStyle={{ fontSize: hp(2) }}
+          title="Edit Profile"
+          loading={false}
+          onPress={() => {
+            router.push("/(modal)/update-person");
+          }}
+        />
+      </View>
+
+      <Separator my={hp(2)} />
+      {options.map(
+        ({ icon, label, isSeperator, onPress }: OptionType, index) => (
+          <SettingsItem
+            onPress={onPress}
+            key={index}
+            title={label!}
+            icon={icon!}
+            isSeperator={isSeperator}
+            showArrow={label !== "Log out"}
+          />
+        )
+      )}
+    </View>
   );
-};
+}
+
 const styles = StyleSheet.create({
-  container: { flex: 1, marginHorizontal: wp(3), gap: hp(2) },
-  avatarContainer: {
-    height: hp(12),
-    width: hp(12),
-    alignSelf: "center",
-    marginBottom: hp(2),
-  },
-  editIcon: {
-    position: "absolute",
-    bottom: -20,
-    right: -20,
-    padding: 7,
-    borderRadius: 50,
-    elevation: 7,
-    shadowColor: THEME.colors.textDark,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 5,
-    backgroundColor: "white",
-  },
-  name: {
-    fontSize: hp(3),
-    fontWeight: THEME.fonts.medium,
-    color: THEME.colors.textDark,
-  },
-  label: {
-    fontSize: hp(1.7),
-    fontWeight: THEME.fonts.medium,
-    color: THEME.colors.textLight,
-  },
-  infoText: {
-    fontSize: hp(1.6),
-    color: THEME.colors.textLight,
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  backButton: { position: "absolute", top: 20, left: 20, zIndex: 1 },
+  profileSection: { alignItems: "center" },
+  name: { fontSize: 18, fontWeight: "bold", marginTop: 10 },
+  username: { color: "#777", marginBottom: 10 },
+  editBtn: {
+    height: hp(4),
+    backgroundColor: THEME.colors.primaryDark,
+    paddingHorizontal: 25,
+    borderRadius: 10,
   },
 
-  infoContainer: {
-    marginHorizontal: 5,
-    flexDirection: "row",
+  statusContainer: {
     alignItems: "center",
-    gap: 10,
+    flexDirection: "row",
+    gap: 5,
+    marginBottom: 10,
+  },
+  status: {
+    height: hp(1.5),
+    width: hp(1.5),
+    borderRadius: hp(1),
+    borderColor: "black",
+    borderWidth: 1,
   },
 });
-
-export default Profile;

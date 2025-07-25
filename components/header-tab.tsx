@@ -14,7 +14,16 @@ export const HeaderTab = ({ title, showBackButton, style }: IHeaderMain) => {
   return (
     <View style={[styles.container, style]}>
       {showBackButton && <BackButton />}
-      <Text style={styles.title}>{capitalize(title) || ""}</Text>
+      <Text
+        style={[
+          styles.title,
+          showBackButton && {
+            width: wp(70),
+          },
+        ]}
+      >
+        {capitalize(title) || ""}
+      </Text>
     </View>
   );
 };
@@ -22,18 +31,14 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-start",
-    width: "100%",
     marginBottom: 10,
     gap: wp(2),
+    flex: 1,
   },
-  icon: {
-    backgroundColor: "#fee2e2",
-    borderRadius: THEME.radius.sm,
-    padding: 5,
-  },
+
   title: {
-    alignSelf: "center",
+    alignContent: "center",
+    textAlign: "center",
     fontSize: hp(2.7),
     fontWeight: THEME.fonts.semibold,
     color: THEME.colors.text,

@@ -8,6 +8,8 @@ export interface User {
   location?: string;
   bio?: string;
   phone?: string;
+  isActive?: string;
+  gender: string;
 }
 // Sign up DTO
 const signUpSchema = z.object({

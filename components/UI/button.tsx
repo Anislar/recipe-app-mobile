@@ -10,15 +10,15 @@ import {
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import LoadingSpinner from "./loading";
-import Feather from "@expo/vector-icons/Feather";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 interface ButtonProps {
   buttonStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   onPress?: () => void;
   title: string;
-  loading: boolean;
+  loading?: boolean;
   hasShadow?: boolean;
-  icon?: keyof typeof Feather.glyphMap;
+  icon?: keyof typeof MaterialCommunityIcons.glyphMap;
 }
 
 const Button = ({
@@ -53,7 +53,7 @@ const Button = ({
       style={[styles.button, buttonStyle, hasShadow && shadowStyle]}
       onPress={onPress}
     >
-      {icon && <Feather name={icon} size={20} color="#fff" />}
+      {icon && <MaterialCommunityIcons name={icon} size={20} color="#fff" />}
       <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     borderRadius: THEME.radius.xl,
   },
   text: {
-    fontSize: hp(2.5),
+    fontSize: hp(2),
     color: "white",
     fontWeight: THEME.fonts.bold,
   },

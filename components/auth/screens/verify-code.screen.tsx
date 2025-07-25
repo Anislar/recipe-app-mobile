@@ -89,11 +89,13 @@ const VerifyCodeScreen = () => {
                     }) => (
                       <>
                         <TextInputComponent
+                          label=""
                           maxLength={1}
                           containerStyles={{
                             height: 50,
                             width: 50,
                             borderRadius: THEME.radius.sm,
+                            padding: 0,
                             paddingHorizontal: 8,
                             gap: 0,
                             borderColor: error
