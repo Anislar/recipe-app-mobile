@@ -18,11 +18,41 @@ export default function Profile() {
   const { user, logout } = useAuthStore();
 
   const options: OptionType[] = [
-    { icon: "account-cog-outline", label: "Settings" },
-    { icon: "map-marker", label: "Address" },
-    { icon: "lock", label: "Change Password" },
+    { icon: "account-cog-outline", label: "Settings" }, // langue , notif
+    /*
+    🌐 Language: [English ▾]
+    🔔 Notifications: [✓]
+    👁️ Show Online Status: [✓]
+    📅 Joined: Feb 2023
+    📲 App Version: 1.2.0
+    */
+    { icon: "pin", label: "Post Saved" }, // post has been
+    { icon: "lock", label: "Change Password" }, // current new , set new
     { isSeperator: true },
-    { icon: "help-circle-outline", label: "Help & Support" },
+    { icon: "information-outline", label: "App info" }, // version
+
+    /*
+    import { getVersion, getBuildNumber } from "react-native-device-info";
+
+    | Item             | Example                                              |
+| ---------------- | ---------------------------------------------------- |
+| **Version**      | 1.2.3                                                |
+| **Build Number** | 42                                                   |
+| **Legal Info**   | Link or modal with Terms of Service & Privacy Policy |
+| **Last Updated** | July 25, 2025                                        |
+
+    
+    */
+    { icon: "help-circle-outline", label: "Help & Support" }, // FAQ , Report a backgroundColor
+    /*
+    FAQ	“How do I reset my password?”
+Contact Support	Form with subject & message
+Report a Bug	Let user describe the problem, attach screenshot
+
+
+    
+    */
+    { isSeperator: true },
     { icon: "logout", label: "Log out", onPress: () => logout() },
   ];
 
