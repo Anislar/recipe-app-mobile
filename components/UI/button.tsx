@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
-import LoadingSpinner from "./loading";
+import { LoadingSpinner } from "./loading";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 interface ButtonProps {
   buttonStyle?: StyleProp<ViewStyle>;
@@ -21,7 +21,7 @@ interface ButtonProps {
   icon?: keyof typeof MaterialCommunityIcons.glyphMap;
 }
 
-const Button = ({
+export const Button = ({
   buttonStyle,
   textStyle,
   onPress = () => {},
@@ -58,8 +58,6 @@ const Button = ({
     </TouchableOpacity>
   );
 };
-
-export default Button;
 
 const styles = StyleSheet.create({
   button: {

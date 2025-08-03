@@ -1,9 +1,10 @@
 export { default as ScreenWrapper } from "./screen-wrapper";
-export { default as Button } from "./UI/button";
+export { Button } from "./UI/button";
 export { default as BackButton } from "./back-button";
-export { default as LoadingSpinner } from "./UI/loading";
+export { LoadingSpinner } from "./UI/loading";
 export { default as TextInputComponent } from "./UI/text-input";
-export { default as DropdownComponent } from "./UI/dropdown";
+export { DropdownComponent } from "./UI/dropdown";
+export { SwitchComponent } from "./UI/switch";
 
 export { Separator } from "./UI/separator";
 

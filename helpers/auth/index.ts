@@ -10,6 +10,11 @@ export interface User {
   phone?: string;
   isActive?: string;
   gender: string;
+  preferences?: {
+    notification?: boolean;
+    language?: string;
+    primaryColor?: string;
+  };
 }
 // Sign up DTO
 const signUpSchema = z.object({

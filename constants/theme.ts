@@ -34,17 +34,18 @@ const colorPicker = {
 };
 
 export const COLORS = {
-  ...colorPicker.roseGold,
+  ...colorPicker.forest,
   dark: "#3E3E3E",
   darkLight: "#E1E1E1",
   gray: "#bbb",
+  darkGray: "#777",
 
   text: "#494949",
   textLight: "#7C7C7C",
   textDark: "#1D1D1D",
 
   rose: "#ef4444",
-  roseLight: "#f8717171",
+  roseLight: "#fbd0d0",
 };
 
 export const THEME = {

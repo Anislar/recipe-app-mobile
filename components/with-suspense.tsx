@@ -1,8 +1,8 @@
 import React, { Suspense } from "react";
 import { Text, View } from "react-native";
-import LoadingSpinner from "./UI/loading";
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
+import { LoadingSpinner } from "./UI/loading";
 
 export const DefaultFallback = () => (
   <View

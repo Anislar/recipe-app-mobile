@@ -1,0 +1,12 @@
+{
+    "translation": {
+      "profile":{
+        "language":"Language",
+        "notification": "Notification",
+        "preferences": "Preferences",
+        "theme":"Theme"
+
+      }
+   
+    }
+  }

@@ -5,16 +5,16 @@ interface LoadingSpinnerProps {
   size?: "large" | "small";
 }
 
-export default function LoadingSpinner({
+export const LoadingSpinner = ({
   size = "large",
   color = THEME.colors.primary,
-}: LoadingSpinnerProps) {
+}: LoadingSpinnerProps) => {
   return (
     <View style={styles.container}>
       <ActivityIndicator size={size} color={color} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

@@ -69,6 +69,7 @@ const NewPasswordScreen = () => {
               }) => (
                 <>
                   <TextInputComponent
+                    label="Password"
                     ref={inputRef}
                     containerStyles={
                       error && {
@@ -77,7 +78,6 @@ const NewPasswordScreen = () => {
                     }
                     value={value}
                     onBlur={onBlur}
-                    icon="lock"
                     suffixIcon={!showPassword ? "eye" : "eye-off"}
                     onPressIcon={() => setShowPassword((prev) => !prev)}
                     secureTextEntry={showPassword}
@@ -110,7 +110,7 @@ const NewPasswordScreen = () => {
                     }
                     value={value}
                     onBlur={onBlur}
-                    icon="lock"
+                    label="Confirm Password"
                     suffixIcon={!showPassword ? "eye" : "eye-off"}
                     onPressIcon={() => setShowPassword((prev) => !prev)}
                     secureTextEntry={showPassword}

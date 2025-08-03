@@ -1,57 +1,114 @@
-import { hp, wp } from "@/helpers/common";
-//import AntDesign from "@expo/vector-icons/AntDesign";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Separator } from "../UI/separator";
+
+import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
-interface ISettingsItem {
-  title: string;
+import { Separator } from "../UI/separator";
+
+interface ItemType {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
-  showArrow?: boolean;
-  isSeperator?: boolean;
+  label: string;
   onPress?: () => void;
+  isDanger?: boolean;
+  suffix?: React.ReactNode;
 }
-export const SettingsItem = ({
-  title,
-  showArrow,
-  icon,
-  isSeperator,
-  onPress,
-}: ISettingsItem) => {
+interface ISettingsItem {
+  group: string;
+  item: ItemType[];
+}
+export const SettingsItem = ({ group, item }: ISettingsItem) => {
   return (
     <>
-      {isSeperator ? (
+      {group === "seperator" ? (
         <Separator />
       ) : (
-        <TouchableOpacity onPress={onPress} style={styles.optionRow}>
-          <View style={styles.iconContainer}>
-            <MaterialCommunityIcons name={icon} size={20} />
+        item && (
+          <View style={styles.content}>
+            <Text style={styles.group}>{group} </Text>
+            {item.map((el, index) => {
+              const Container = el.onPress ? TouchableOpacity : View;
+
+              return (
+                <Container
+                  key={index}
+                  onPress={el.onPress}
+                  style={styles.optionRow}
+                >
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      {
+                        backgroundColor: el.isDanger
+                          ? THEME.colors.roseLight
+                          : THEME.colors.darkLight,
+                      },
+                    ]}
+                  >
+                    <MaterialCommunityIcons
+                      name={el.icon}
+                      size={20}
+                      color={
+                        el.isDanger ? THEME.colors.rose : THEME.colors.text
+                      }
+                    />
+                  </View>
+                  <Text
+                    style={[
+                      styles.optionLabel,
+                      {
+                        color: el.isDanger
+                          ? THEME.colors.rose
+                          : THEME.colors.text,
+                      },
+                    ]}
+                  >
+                    {el.label}
+                  </Text>
+
+                  {el.suffix ? (
+                    <View style={styles.suffix}>{el.suffix}</View>
+                  ) : (
+                    <MaterialCommunityIcons
+                      name="chevron-right"
+                      size={20}
+                      style={{
+                        color: el.isDanger
+                          ? THEME.colors.rose
+                          : THEME.colors.text,
+                      }}
+                    />
+                  )}
+                </Container>
+              );
+            })}
           </View>
-          <Text style={styles.optionLabel}>{title}</Text>
-          {showArrow && (
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={20}
-              style={styles.rightIcon}
-            />
-          )}
-        </TouchableOpacity>
+        )
       )}
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  content: {
+    padding: wp(1),
+  },
+  group: {
+    color: THEME.colors.gray,
+    fontSize: hp(1.6),
+    fontWeight: THEME.fonts.bold,
+  },
   iconContainer: {
-    backgroundColor: "#eee",
     padding: 5,
-    borderRadius: THEME.radius.xxl,
+    borderRadius: THEME.radius.md,
   },
   optionRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: hp(1),
+    padding: hp(1.2),
   },
   optionLabel: { flex: 1, marginLeft: wp(2), fontSize: hp(1.8) },
-  rightIcon: { color: THEME.colors.text },
+  suffix: {
+    position: "absolute",
+    right: wp(2),
+  },
 });

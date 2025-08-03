@@ -58,6 +58,7 @@ const MainLayout = () => {
       <Tabs.Screen
         name="profile"
         options={{
+          headerShown: false,
           tabBarIcon: ({ color, size, focused }) => (
             <MaterialCommunityIcons
               size={size}
@@ -65,18 +66,6 @@ const MainLayout = () => {
               color={color}
             />
           ),
-          // headerRight: () => (
-          //   <Link href="/(modal)/update-person" asChild>
-          //     <MaterialCommunityIcons
-          //       style={{
-          //         marginHorizontal: wp(3),
-          //       }}
-          //       size={26}
-          //       color={THEME.colors.text}
-          //       name="account-edit-outline"
-          //     />
-          //   </Link>
-          // ),
         }}
       />
     </Tabs>
