@@ -16,7 +16,7 @@ class AuthService {
     this.prefix = "/auth";
   }
 
-  async login(data: SignInType): Promise<ApiSuccess<any>> {
+  async signIn(data: SignInType): Promise<ApiSuccess<any>> {
     try {
       const response = await api.post(this.prefix + "/signin", data);
       return response.data;
@@ -25,7 +25,7 @@ class AuthService {
     }
   }
 
-  async signup(data: SignUpType): Promise<ApiSuccess<any>> {
+  async signUp(data: SignUpType): Promise<ApiSuccess<any>> {
     try {
       const response = await api.post(this.prefix + "/signup", data);
       return response.data;
@@ -51,7 +51,7 @@ class AuthService {
   }
   async sendCode(data: SendCodeType): Promise<ApiSuccess<any>> {
     try {
-      let url = "/password/forgot";
+      let url = "/forgot-password";
       if (data.path === "verify-email") {
         url = "/code-verify-email";
       }

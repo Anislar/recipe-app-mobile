@@ -3,7 +3,10 @@ import { useAuthRequest } from "expo-auth-session";
 import BaseOAuthButton from "./base-oauth-button";
 import { useAuthStore } from "@/store";
 import { oauthService } from "@/services";
+import { useTranslation } from "react-i18next";
 const DiscordButton: React.FC = () => {
+  const { t } = useTranslation();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const { loginWithDiscord } = useAuthStore();
@@ -38,7 +41,7 @@ const DiscordButton: React.FC = () => {
 
   return (
     <BaseOAuthButton
-      title="Continue With Discord"
+      title={t("auth.oauth.continueWithDiscord")}
       color="#5865F2"
       icon="logo-discord"
       onPress={handlePress}
@@ -47,5 +50,4 @@ const DiscordButton: React.FC = () => {
     />
   );
 };
-
 export default DiscordButton;

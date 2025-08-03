@@ -3,8 +3,11 @@ import { useAuthRequest } from "expo-auth-session";
 import BaseOAuthButton from "./base-oauth-button";
 import { useAuthStore } from "@/store";
 import { oauthService } from "@/services";
+import { useTranslation } from "react-i18next";
 
 const GoogleButton: React.FC = () => {
+  const { t } = useTranslation();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const { loginWithGoogle } = useAuthStore();
@@ -39,7 +42,7 @@ const GoogleButton: React.FC = () => {
 
   return (
     <BaseOAuthButton
-      title="Continue With Google"
+      title={t("auth.oauth.continueWithGoogle")}
       color="#DB4437"
       icon="logo-google"
       onPress={handlePress}
@@ -48,5 +51,4 @@ const GoogleButton: React.FC = () => {
     />
   );
 };
-
 export default GoogleButton;

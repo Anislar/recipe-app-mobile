@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist, createJSONStorage, PersistOptions } from "zustand/middleware";
 import { getItem, setItem, deleteItemAsync } from "expo-secure-store";
 
 import { authService, oauthService } from "@/services";
@@ -14,6 +14,7 @@ import {
 import { ApiError } from "@/type";
 import { userService } from "@/services/api/user.service";
 import { UpdateUserType } from "@/helpers/user";
+
 export interface AuthState {
   isLoading: boolean;
   error: {
@@ -32,10 +33,10 @@ export interface AuthState {
   setToken: (token: AuthState["token"]) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setResetElement: () => void;
-  //login
-  login: (data: SignInType) => Promise<boolean | string>;
-  //signup
-  signup: (data: SignUpType) => Promise<boolean | string>;
+  //signIn
+  signIn: (data: SignInType) => Promise<boolean | string>;
+  //signUp
+  signUp: (data: SignUpType) => Promise<boolean | string>;
   //reset password
   resetPassword: (data: ResetPasswordType) => Promise<boolean | string>;
   // verifyCode (verify email, forgotPassword)
@@ -65,6 +66,8 @@ export interface AuthState {
   ) => Promise<boolean | string>;
 }
 
+type AuthPersist = Pick<AuthState, "token" | "user" | "isAuthenticated">;
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
@@ -86,14 +89,14 @@ export const useAuthStore = create<AuthState>()(
           isLoading: false,
         }),
       // Login action
-      login: async (data: SignInType) => {
+      signIn: async (data: SignInType) => {
         set({
           isLoading: true,
           error: null,
         });
 
         try {
-          const response = await authService.login(data);
+          const response = await authService.signIn(data);
           const { data: userData, token } = response;
           set({
             user: userData,
@@ -116,7 +119,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       // Register action
-      signup: async (data: SignUpType) => {
+      signUp: async (data: SignUpType) => {
         set({
           isLoading: true,
           error: null,
@@ -124,7 +127,7 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           // TODO: Replace with your actual API call
-          await authService.signup(data);
+          await authService.signUp(data);
 
           set({
             isLoading: false,
@@ -400,6 +403,6 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
+    } as PersistOptions<AuthState, AuthPersist>
   )
 );

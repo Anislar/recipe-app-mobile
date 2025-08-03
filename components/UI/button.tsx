@@ -11,6 +11,7 @@ import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import { LoadingSpinner } from "./loading";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useSelectedColors } from "@/store/themeStore";
 interface ButtonProps {
   buttonStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -30,6 +31,7 @@ export const Button = ({
   hasShadow,
   icon,
 }: ButtonProps) => {
+  const selected = useSelectedColors();
   const shadowStyle = {
     shadowColor: THEME.colors.dark,
     shadowOffset: {
@@ -50,7 +52,12 @@ export const Button = ({
   return (
     <TouchableOpacity
       disabled={loading}
-      style={[styles.button, buttonStyle, hasShadow && shadowStyle]}
+      style={[
+        styles.button,
+        buttonStyle,
+        { backgroundColor: selected.primary },
+        hasShadow && shadowStyle,
+      ]}
       onPress={onPress}
     >
       {icon && <MaterialCommunityIcons name={icon} size={20} color="#fff" />}
@@ -62,7 +69,6 @@ export const Button = ({
 const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
-    backgroundColor: THEME.colors.primary,
     height: hp(6.6),
     justifyContent: "center",
     alignItems: "center",

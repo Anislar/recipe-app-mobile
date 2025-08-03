@@ -2,12 +2,17 @@ import { StyleSheet, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Link } from "expo-router";
 import { Image } from "expo-image";
+import { useTranslation } from "react-i18next";
 
 import { ScreenWrapper, Button } from "@/components";
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
+import { useSelectedColors } from "@/store/themeStore";
 
 const WelcomScreen = () => {
+  const { t } = useTranslation();
+  const selected = useSelectedColors();
+
   return (
     <ScreenWrapper bg="white">
       <StatusBar style="dark" />
@@ -20,10 +25,8 @@ const WelcomScreen = () => {
         />
         {/* welcome text */}
         <View style={{ gap: 20 }}>
-          <Text style={styles.title}>LinkUp!</Text>
-          <Text style={styles.punchline}>
-            Where every thought finds a home and every image tells a story.
-          </Text>
+          <Text style={styles.title}>{t("welcome.title")}</Text>
+          <Text style={styles.punchline}>{t("welcome.punchline")}</Text>
         </View>
         {/* footer */}
         <View style={styles.footer}>
@@ -34,23 +37,25 @@ const WelcomScreen = () => {
               textStyle={{
                 fontSize: hp(2.5),
               }}
-              title="Getting Started"
+              title={t("welcome.gettingStarted")}
             />
           </Link>
           <View style={styles.bottomTextContainer}>
-            <Text style={styles.loginText}>Already have an account?</Text>
+            <Text style={styles.loginText}>
+              {t("welcome.alreadyHaveAccount")}
+            </Text>
             <Link href="/(auth)/sign-in" push>
               <Text
                 style={[
                   styles.loginText,
                   {
                     textDecorationLine: "underline",
-                    color: THEME.colors.primaryDark,
+                    color: selected.primaryDark,
                     fontWeight: THEME.fonts.semibold,
                   },
                 ]}
               >
-                Sign In
+                {t("auth.signIn.signIn")}
               </Text>
             </Link>
           </View>

@@ -1,12 +1,128 @@
 {
-    "translation": {
-      "profile":{
-        "language":"Language",
-        "notification": "Notification",
-        "preferences": "Preferences",
-        "theme":"Theme"
+  "search": {
+    "titleTab": "Search"
+  },
+  "home": {
+    "titleTab": "Home"
+  },
+ 
+  "welcome": {
+    "title": "LinkUp!",
+    "punchline": "Connect with friends and share your moments",
+    "gettingStarted": "Getting Started",
+    "alreadyHaveAccount": "Already have an account?"
+  },
+  "auth": {
+    "enterName": "Enter your name",
+    "enterEmail": "Enter your email",
+    "enterPassword": "Enter your password",
+    "password": "password",
 
-      }
-   
+    "signIn": {
+      "welcome": "Hey,",
+      "welcomeBack": "Welcome Back",
+      "description": "Please login to continue",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign In",
+      "dontHaveAccount": "Don't have an account?",
+      "signUp": "Sign Up",
+      "emailNotVerified":"Please verify your email to continue."
+    },
+    "signUp": {
+      "lets": "Let's,",
+      "getStarted": "Get Started!",
+      "description": "Create your account to get started",
+      "signUp": "Sign Up",
+      "signIn":"Sign In",
+      "alreadyHaveAccount": "already have an account?"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "description": "Enter your email to receive a reset code",
+      "sendResetCode": "Send Reset Code",
+      "success":"Code sent! Please check your email."
+    },
+    "newPassword": {
+      "lets": "Let's,",
+      "createNewPassword": "Create a new Password",
+      "description": "Enter your new password",
+      "confirmPassword": "confirm password",
+      "enterConfirmPassword": "Enter your confirm password",
+      "resetPassword": "Reset Password",
+      "success":"Your password was reset successfully!"
+    },
+    "verifyCode": {
+      "titlePassword": "Reset password code",
+      "titleMail": "Verification Email",
+      "description":"We send you a code to verify your email!",
+      "resentCode": "resent code",
+      "confirm": "Confirm",
+      "success":"All set! Enter your new password."
+    },
+    "oauth": {
+      "continueWithGoogle": "Continue With Google",
+      "continueWithGithub": "Continue With Github",
+      "continueWithDiscord": "Continue With Discord",
+      "backToSignIn": "Back to Sign in"
     }
+  },
+  "account": {
+    "titleTab": "account",
+    "preferences": "Preferences",
+    "editPassword": "Edit password",
+    "notification": "Notification",
+
+    "account": "Account",
+    "language": "Language",
+    "edit": "Edit Profile",
+    "helpSupport": "Help & Support",
+    "appInfo": "App Info",
+    "logout": "Log out",
+    "theme": "Theme",
+    "updatePerson": {
+      "save": "Save",
+      "fullName": "Full name",
+      "gender": "Gender",
+      "male":"Male",
+      "female":"female",
+      "fullNamePlaceholder": "Enter your full name",
+      "location": "Location",
+      "locationPlaceholder": "Enter your Location",
+      "phoneNumber": "Phone number",
+      "phoneNumberPlaceholder": "Enter your phone number",
+      "about": "About",
+      "aboutPlaceholder": "Tell us a bit about yourself...",
+      "success":"Profile updated successfully!"
+    }
+  },
+  "appInfo": {
+    "app": "📱 App",
+    "version": "🔢 Version",
+    "build": "🏗️ Build",
+    "sdk": "📦 SDK",
+    "platform": "🧠 Platform",
+    "environment": "🧪 Env",
+    "development": "Development",
+    "production": "Production",
+    "checkForUpdates": "🔄 Check for Updates",
+    "rateApp": "⭐ Rate this App",
+    "storeNotAvailable": "Store not available",
+    "updateAvailable": "Update Available",
+    "installing": "Installing...",
+    "upToDate": "You're up to date 🎉",
+    "updateFailed": "Update failed"
+  },
+  "common": {
+    "error": "Error",
+    "errorOccurred": "Error occurred",
+    "select": "Select",
+    "email": "email",
+    "name":"name",
+    "loading":"Loading"
+
+  },
+  "modal": {
+    "addPost": "Add post",
+    "editProfile": "Edit Profile"
   }
+}

@@ -1,9 +1,9 @@
-import { useClearAuthStateOnFocus } from "@/hooks/useClearError";
+import { useClear } from "@/hooks/useClearError";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 
 const AuthLayout = () => {
-  useClearAuthStateOnFocus();
+  useClear();
 
   return (
     <>

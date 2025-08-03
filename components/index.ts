@@ -13,5 +13,7 @@ export { Avatar } from "./avatar";
 export { withSuspense } from "./with-suspense";
 export { ErrorBoundary } from "./error-wrapper";
 export { HeaderTab } from "./header-tab";
+export { default as BottomSheetComponent } from "./bottom-sheet";
 
 export { SettingsItem } from "./profile/setting-item";
+export { ThemeSelect } from "./profile/theme-select";

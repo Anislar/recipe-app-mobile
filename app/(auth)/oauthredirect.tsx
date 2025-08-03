@@ -7,8 +7,12 @@ import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { Button } from "@/components";
 import { showToast } from "@/helpers/toastService";
+import { useTranslation } from "react-i18next";
+import { useSelectedColors } from "@/store/themeStore";
 
 const OauthRedirect = () => {
+  const { t } = useTranslation();
+  const selected = useSelectedColors();
   const searchParams = useSearchParams();
   const token = searchParams?.get?.("token");
   const { getCurrentUser, error, setToken } = useAuthStore();
@@ -20,7 +24,7 @@ const OauthRedirect = () => {
       setTimeout(async () => {
         const response = await getCurrentUser();
         if (typeof response === "boolean") {
-          showToast("Welcome !");
+          showToast(t("auth.signIn.welcomeBack"));
           router.replace("/");
         }
       });
@@ -55,7 +59,7 @@ const OauthRedirect = () => {
           loading={false}
           hasShadow
           buttonStyle={{
-            backgroundColor: THEME.colors.primaryDark,
+            backgroundColor: selected.primaryDark,
             marginVertical: 10,
             paddingHorizontal: wp(15),
           }}

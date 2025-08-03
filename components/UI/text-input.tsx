@@ -13,6 +13,7 @@ import { Ref } from "react";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { capitalize } from "@/helpers/utils";
 
 interface TextInputInterface extends TextInputProps {
   label: string;
@@ -35,7 +36,7 @@ const TextInputComponent = ({
 }: TextInputInterface) => {
   return (
     <View style={[styles.container, containerStyles]}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && <Text style={styles.label}>{capitalize(label)}</Text>}
       <View style={styles.inputContainer}>
         <TextInput
           autoCapitalize="none"
@@ -69,14 +70,13 @@ const styles = StyleSheet.create({
     borderRadius: THEME.radius.xxl,
     borderCurve: "continuous",
     padding: wp(4),
-    height: hp(8),
+    height: hp(9),
     justifyContent: "center",
   },
   label: {
     color: THEME.colors.gray,
     fontSize: hp(1.5),
     marginBottom: 2,
-    textTransform: "capitalize",
     letterSpacing: wp(0.1),
   },
   inputContainer: {

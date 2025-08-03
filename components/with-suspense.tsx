@@ -3,29 +3,39 @@ import { Text, View } from "react-native";
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import { LoadingSpinner } from "./UI/loading";
+import i18n from "@/language/i18n";
+import { useSelectedColors } from "@/store/themeStore";
 
-export const DefaultFallback = () => (
-  <View
-    style={{
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      flexDirection: "row",
-      gap: 5,
-    }}
-  >
-    <LoadingSpinner color={THEME.colors.primary} size="large" />
-    <Text
+export const DefaultFallback = ({ isReady }: { isReady?: boolean }) => {
+  const selected = useSelectedColors();
+
+  return (
+    <View
       style={{
-        color: THEME.colors.text,
-        fontWeight: THEME.fonts.medium,
-        fontSize: hp(2),
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "row",
+        gap: 5,
+        backgroundColor: "white",
       }}
     >
-      Loading ...
-    </Text>
-  </View>
-);
+      <LoadingSpinner
+        color={selected?.primary || THEME.colors.rose}
+        size="large"
+      />
+      <Text
+        style={{
+          color: THEME.colors.text,
+          fontWeight: THEME.fonts.medium,
+          fontSize: hp(2),
+        }}
+      >
+        {!isReady ? "Loading" : i18n.t("common.loading")} ...
+      </Text>
+    </View>
+  );
+};
 
 export const withSuspense = <P extends object>(
   Component: React.LazyExoticComponent<React.ComponentType<any>>,

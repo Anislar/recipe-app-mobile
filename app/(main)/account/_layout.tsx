@@ -2,17 +2,19 @@ import { Stack } from "expo-router";
 import { HeaderTab } from "@/components";
 import { useTranslation } from "react-i18next";
 
-const SearchLayout = () => {
+const AccountLayout = () => {
   const { t } = useTranslation();
-
   const titleMap: Record<string, string> = {
-    index: t("search.titleTab"),
+    index: t("account.account"),
+    "app-info": t("appInfo.app"),
+    "help-support": t("account.helpSupport"),
+    password: t("account.editPassword"),
   };
-
   return (
     <Stack
       screenOptions={({ route }) => ({
-        headerShown: false,
+        headerShadowVisible: false,
+        headerLeft: () => <></>,
         headerTitle: () => (
           <HeaderTab
             showBackButton
@@ -22,8 +24,11 @@ const SearchLayout = () => {
       })}
     >
       <Stack.Screen name="index" />
+      <Stack.Screen name="app-info" />
+      <Stack.Screen name="help-support" />
+      <Stack.Screen name="password" />
     </Stack>
   );
 };
 
-export default SearchLayout;
+export default AccountLayout;

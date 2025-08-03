@@ -22,13 +22,19 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { updateUserSchema, UpdateUserType } from "@/helpers/user";
 import { showToast } from "@/helpers/toastService";
 import useUpload from "@/hooks/useUpload";
-const data = [
-  { label: "Male", value: "male", icon: "male" },
-  { label: "Female", value: "female", icon: "female" },
-];
-const UpdatePerson = () => {
-  const { isLoading, user, updateProfile } = useAuthStore();
+import { useTranslation } from "react-i18next";
 
+const UpdatePerson = () => {
+  const { t } = useTranslation();
+  const { isLoading, user, updateProfile } = useAuthStore();
+  const data = [
+    { label: t("account.updatePerson.male"), value: "male", icon: "male" },
+    {
+      label: t("account.updatePerson.female"),
+      value: "female",
+      icon: "female",
+    },
+  ];
   const {
     control,
     handleSubmit,
@@ -63,7 +69,7 @@ const UpdatePerson = () => {
 
     if (typeof response === "boolean") {
       router.back();
-      showToast("✅ Profile updated successfully!");
+      showToast(t("account.updatePerson.success"));
     }
   };
 
@@ -131,11 +137,11 @@ const UpdatePerson = () => {
               }) => (
                 <>
                   <TextInputComponent
-                    label="full name"
+                    label={t("account.updatePerson.fullName")}
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
-                    placeholder="Enter your full name"
+                    placeholder={t("account.updatePerson.fullNamePlaceholder")}
                     returnKeyType="next"
                     autoCapitalize="words"
                     containerStyles={
@@ -167,16 +173,18 @@ const UpdatePerson = () => {
                 }) => (
                   <View
                     style={{
-                      width: "50%",
+                      width: "45%",
                     }}
                   >
                     <TextInputComponent
+                      label={t("account.updatePerson.location")}
                       ref={inputRefs[0]}
                       value={value}
                       onBlur={onBlur}
                       onChangeText={onChange}
-                      placeholder="Location"
-                      label="location"
+                      placeholder={t(
+                        "account.updatePerson.LocationPlaceholder"
+                      )}
                       autoCapitalize="words"
                       returnKeyType="next"
                       containerStyles={{
@@ -201,11 +209,11 @@ const UpdatePerson = () => {
                 }) => (
                   <View
                     style={{
-                      width: "50%",
+                      width: "45%",
                     }}
                   >
                     <DropdownComponent
-                      label="Gender"
+                      label={t("account.updatePerson.gender")}
                       ref={dropdownRef}
                       style={{
                         borderColor: error ? THEME.colors.rose : undefined,
@@ -240,11 +248,13 @@ const UpdatePerson = () => {
                 <>
                   <TextInputComponent
                     ref={inputRefs[2]}
-                    label="phone"
+                    label={t("account.updatePerson.phoneNumber")}
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
-                    placeholder="Enter your phone number"
+                    placeholder={t(
+                      "account.updatePerson.phoneNumberPlaceholder"
+                    )}
                     keyboardType="phone-pad"
                     returnKeyType="next"
                     containerStyles={
@@ -269,12 +279,12 @@ const UpdatePerson = () => {
               }) => (
                 <>
                   <TextInputComponent
+                    label={t("account.updatePerson.about")}
                     ref={inputRefs[3]}
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}
-                    placeholder="Tell us a bit about yourself..."
-                    label="bio"
+                    placeholder={t("account.updatePerson.aboutPlaceholder")}
                     multiline
                     containerStyles={{
                       height: hp(14),
@@ -292,7 +302,7 @@ const UpdatePerson = () => {
           </View>
           <View style={{ marginTop: 20 }}>
             <Button
-              title="Save"
+              title={t("account.updatePerson.save")}
               loading={isLoading}
               hasShadow
               buttonStyle={{
@@ -354,6 +364,7 @@ const styles = StyleSheet.create({
   },
   formSection: {
     gap: hp(2.5),
+    paddingVertical: wp(3),
   },
   sectionTitle: {
     fontSize: hp(2),

@@ -1,20 +1,30 @@
 import { Link, Tabs } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-import { THEME } from "@/constants/theme";
 import { HeaderTab } from "@/components";
 import { wp } from "@/helpers/common";
+import { useTranslation } from "react-i18next";
+import { useSelectedColors } from "@/store/themeStore";
 
 const MainLayout = () => {
+  const { t } = useTranslation();
+  const selected = useSelectedColors();
+
+  const titleMap: Record<string, string> = {
+    index: t("home.titleTab"),
+    search: t("search.titleTab"),
+    account: t("account.titleTab"),
+  };
+
   return (
     <Tabs
       screenOptions={({ route }) => ({
-        tabBarActiveTintColor: THEME.colors.primaryDark,
+        tabBarActiveTintColor: selected.primaryDark,
         headerShadowVisible: false,
         headerTitle: () => (
           <HeaderTab
             showBackButton={route.name !== "index"}
-            title={route.name === "index" ? "LinkUp" : route.name}
+            title={titleMap[route.name] || route.name}
           />
         ),
       })}
@@ -22,6 +32,8 @@ const MainLayout = () => {
       <Tabs.Screen
         name="index"
         options={{
+          title: t("home.titleTab"),
+
           tabBarIcon: ({ color, size, focused }) => (
             <MaterialCommunityIcons
               size={size}
@@ -29,7 +41,6 @@ const MainLayout = () => {
               color={color}
             />
           ),
-          title: "Home",
           headerRight: () => (
             <Link href="/(modal)/add-post" asChild>
               <MaterialCommunityIcons
@@ -46,6 +57,7 @@ const MainLayout = () => {
       <Tabs.Screen
         name="search"
         options={{
+          title: t("search.titleTab"),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               size={size}
@@ -56,8 +68,10 @@ const MainLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="account"
         options={{
+          title: t("account.titleTab"),
+
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => (
             <MaterialCommunityIcons

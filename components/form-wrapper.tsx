@@ -9,18 +9,8 @@ const FormWrapper = ({ children }: IFormWrapper) => {
     <KeyboardAwareScrollView
       bottomOffset={64}
       contentContainerStyle={styles.container}
-      style={{
-        flex: 1,
-        padding: 5,
-      }}
     >
-      <ScrollView
-        style={{
-          flex: 1,
-          padding: 5,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.inner}>{children}</View>
       </ScrollView>
     </KeyboardAwareScrollView>

@@ -1,11 +1,130 @@
+{
+  "search": {
+    "titleTab": "Rechercher"
+  },
+  "home": {
+    "titleTab": "Accueil"
+  },
 
-  {
-    "translation": {
-      "profile":{
-        "language":"Langue",
-        "notification": "Notification",
-        "preferences": "Préférences",
-        "theme":"Théme"
-        }
+  "welcome": {
+    "title": "LinkUp!",
+    "punchline": "Connectez-vous avec vos amis et partagez vos moments",
+    "gettingStarted": "Commencer",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?"
+  },
+  "auth": {
+    "enterName": "Entrer votre nom",
+    "enterEmail": "Entrer votre email",
+    "enterPassword": "Entrer votre mot de passe",
+    "password": "mot de passe",
+
+    "signIn": {
+      "welcome": "Salut,",
+      "welcomeBack": "Bon retour",
+      "description": "Veuillez vous connecter pour continuer",
+      "forgotPassword": "Mot de passe oublié ?",
+      "signIn": "Se connecter",
+      "dontHaveAccount": "Vous n'avez pas de compte ?",
+      "signUp": "S'inscrire",
+      "emailNotVerified":"Veuillez vérifier votre email pour continuer."
+
+    },
+    "signUp": {
+      "lets": "Allons,",
+      "getStarted": "Commençons !",
+      "description": "Créez votre compte pour commencer",
+      "signUp": "S'inscrire",
+      "alreadyHaveAccount": "vous avez déjà un compte ?",
+      "signIn":"Se connecter"
+
+    },
+    "forgotPassword": {
+      "title": "Mot de passe oublié",
+      "description": "Entrez votre email pour recevoir un code de réinitialisation",
+      "sendResetCode": "Envoyer le code",
+      "success":"Code envoyé! Veuillez consulter votre boîte mail."
+
+    },
+    "newPassword": {
+      "lets": "Allons,",
+      "createNewPassword": "Créer un nouveau mot de passe",
+      "description": "Entrez votre nouveau mot de passe",
+      "confirmPassword": "confirmer le mot de passe",
+      "enterConfirmPassword": "Entrez votre confirmation de mot de passe",
+      "resetPassword": "Réinitialiser le mot de passe",
+      "success":"Votre mot de passe a été réinitialisé avec succès !"
+    },
+    "verifyCode": {
+      "titlePassword": "Réinitialisation du mot de passe",
+      "titleMail": "E-mail de vérification",
+      "description":"Nous vous envoyons un code pour vérifier votre email !",
+
+      "resentCode": "renvoyer le code",
+      "confirm": "Confirmer",
+      "success":"Tout est prêt! Saisissez votre nouveau mot de passe."
+    },
+    "oauth": {
+      "continueWithGoogle": "Continuer avec Google",
+      "continueWithGithub": "Continuer avec Github",
+      "continueWithDiscord": "Continuer avec Discord",
+      "backToSignIn": "Retour à la connexion"
     }
+  },
+  "account": {
+    "titleTab":"Compte",
+    "edit": "Modifier le profil",
+    "editPassword": "Modifier Mot de passe",
+    "helpSupport": "Aide & Support",
+    "appInfo": "Info App",
+    "logout": "Déconnexion",
+    "language": "Langue",
+    "notification": "Notification",
+    "preferences": "Préférences",
+    "theme": "Thème",
+    "account": "Compte",
+    "updatePerson": {
+      "save": "Enregistrer",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Entrez votre nom complet",
+      "gender": "Genre",
+      "male":"Homme",
+      "female":"Femme",
+      "location": "Localisation",
+      "locationPlaceholder": "Entrez votre localisation",
+      "phoneNumber": "Numéro de téléphone",
+      "phoneNumberPlaceholder": "Entrez votre numéro de téléphone",
+      "about": "À propos",
+      "aboutPlaceholder": "Parlez-nous un peu de vous...",
+      "success":"Profile updated successfully!"
+    }
+  },
+  "appInfo": {
+    "app": "📱 App",
+    "version": "🔢 Version",
+    "build": "🏗️ Build",
+    "sdk": "📦 SDK",
+    "platform": "🧠 Plateforme",
+    "environment": "🧪 Env",
+    "development": "Développement",
+    "production": "Production",
+    "checkForUpdates": "🔄 Vérifier les mises à jour",
+    "rateApp": "⭐ Évaluer cette app",
+    "storeNotAvailable": "Boutique non disponible",
+    "updateAvailable": "Mise à jour disponible",
+    "installing": "Installation...",
+    "upToDate": "Vous êtes à jour 🎉",
+    "updateFailed": "Échec de la mise à jour"
+  },
+  "common": {
+    "error": "Erreur",
+    "errorOccurred": "Une erreur s'est produite",
+    "select": "Sélectionner",
+    "email": "email",
+    "name": "nom",
+    "loading": "Chargement"
+  },
+  "modal": {
+    "addPost": "Ajouter un post",
+    "editProfile": "Modifier le profil"
+  }
 }

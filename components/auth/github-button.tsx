@@ -3,7 +3,9 @@ import { useAuthRequest } from "expo-auth-session";
 import BaseOAuthButton from "./base-oauth-button";
 import { useAuthStore } from "@/store";
 import { oauthService } from "@/services";
+import { useTranslation } from "react-i18next";
 const GithubButton: FC = () => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
   const { loginWithGithub } = useAuthStore();
@@ -38,7 +40,7 @@ const GithubButton: FC = () => {
 
   return (
     <BaseOAuthButton
-      title="Continue With Github"
+      title={t("auth.oauth.continueWithGithub")}
       color="black"
       icon="logo-github"
       onPress={handlePress}

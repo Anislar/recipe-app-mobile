@@ -3,18 +3,23 @@ import { Stack } from "expo-router";
 import { HeaderTab } from "@/components";
 import { THEME } from "@/constants/theme";
 import { wp } from "@/helpers/common";
+import { useTranslation } from "react-i18next";
+import { useSelectedColors } from "@/store/themeStore";
 
 const ModalLayout = () => {
+  const { t } = useTranslation();
+  const selected = useSelectedColors();
+
   const titleMap: Record<string, string> = {
-    "add-post": "New Post",
-    "update-person": "Edit Profile",
+    "add-post": t("modal.addPost"),
+    "update-person": t("modal.editProfile"),
   };
 
   return (
     <Stack
       screenOptions={({ route }) => ({
         presentation: "modal",
-        tabBarActiveTintColor: THEME.colors.primaryDark,
+        tabBarActiveTintColor: selected.primaryDark,
         headerShadowVisible: false,
         headerTitle: () => (
           <HeaderTab
@@ -28,8 +33,8 @@ const ModalLayout = () => {
         headerLeft: () => <></>,
       })}
     >
-      <Stack.Screen name="add-post" options={{ title: "Add post" }} />
-      <Stack.Screen name="update-person" options={{ title: "Edit Profile" }} />
+      <Stack.Screen name="add-post" />
+      <Stack.Screen name="update-person" />
     </Stack>
   );
 };

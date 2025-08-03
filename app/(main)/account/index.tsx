@@ -1,10 +1,13 @@
 import { View, Text, StyleSheet } from "react-native";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
+import { lazy, Suspense, useRef } from "react";
 
 import {
   Avatar,
   Button,
   DropdownComponent,
+  LoadingSpinner,
   SettingsItem,
   SwitchComponent,
 } from "@/components";
@@ -12,23 +15,60 @@ import { THEME } from "@/constants/theme";
 import { useAuthStore } from "@/store";
 import { hp, wp } from "@/helpers/common";
 import { capitalize } from "@/helpers/utils";
-import { Lang } from "@/language/lang";
-import { useTranslation } from "react-i18next";
+import { Lang, loadLanguageAsync } from "@/language/i18n";
+import { useSelectedColors } from "@/store/themeStore";
+
+const BottomSheetComponent = lazy(() =>
+  import("@/components").then((el) => ({ default: el.BottomSheetComponent }))
+);
+
+const ThemeSelect = lazy(() =>
+  import("@/components").then((el) => ({ default: el.ThemeSelect }))
+);
 
 interface OptionType {
   group: string;
   item?: any[];
 }
-export default function Profile() {
+export default function Account() {
   const { user, logout, setUser } = useAuthStore();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const selected = useSelectedColors();
+
+  const themeSheetRef = useRef<any>(null);
+  const handleOpenThemeSheet = () => {
+    themeSheetRef.current?.snapToIndex(0);
+  };
   const options: OptionType[] = [
     {
-      group: t("profile.preferences"),
+      group: t("account.preferences"),
       item: [
         {
+          icon: "translate",
+          label: t("account.language"),
+          suffix: (
+            <DropdownComponent
+              style={styles.suffix}
+              labelField="label"
+              valueField="value"
+              value={user?.preferences?.language ?? "fr"}
+              data={Lang}
+              onChange={async (item) => {
+                setUser({
+                  ...user!,
+                  preferences: {
+                    ...(user?.preferences ?? {}),
+                    language: item.value,
+                  },
+                });
+                await loadLanguageAsync(item.value as "fr" | "en");
+              }}
+            />
+          ),
+        },
+        {
           icon: "bell-outline",
-          label: t("profile.notification"),
+          label: t("account.notification"),
           suffix: (
             <SwitchComponent
               style={styles.suffix}
@@ -45,33 +85,11 @@ export default function Profile() {
             />
           ),
         },
-        {
-          icon: "translate",
-          label: t("profile.language"),
-          suffix: (
-            <DropdownComponent
-              style={styles.suffix}
-              labelField="label"
-              valueField="value"
-              value={user?.preferences?.language ?? "fr"}
-              data={Lang}
-              onChange={(item) => {
-                i18n.changeLanguage(item.value);
-                setUser({
-                  ...user!,
-                  preferences: {
-                    ...(user?.preferences ?? {}),
-                    language: item.value,
-                  },
-                });
-              }}
-            />
-          ),
-        },
+
         {
           icon: "format-color-fill",
-          label: t("profile.theme"),
-          onPress: () => {},
+          label: t("account.theme"),
+          onPress: handleOpenThemeSheet,
         },
       ],
     },
@@ -79,28 +97,28 @@ export default function Profile() {
       group: "seperator",
     },
     {
-      group: "Account",
+      group: t("account.account"),
       item: [
         {
           icon: "lock",
-          label: "Change Password",
-          onPress: () => router.push("/(main)/profile/password"),
+          label: t("account.editPassword"),
+          onPress: () => router.push("/(main)/account/password"),
         },
 
         {
           icon: "help-circle-outline",
-          label: "Help & Support",
-          onPress: () => router.push("/(main)/profile/help-support"),
+          label: t("account.helpSupport"),
+          //onPress: () => router.push("/(main)/account/help-support"),
         },
         {
           icon: "information-outline",
-          label: "App info",
-          onPress: () => router.push("/(main)/profile/app-info"),
+          label: t("account.appInfo"),
+          onPress: () => router.push("/(main)/account/app-info"),
         },
         {
           isDanger: true,
           icon: "logout",
-          label: "Log out",
+          label: t("account.logout"),
           onPress: () => logout(),
         },
       ],
@@ -144,9 +162,12 @@ Report a Bug	Let user describe the problem, attach screenshot
           <Text style={styles.email}>{user?.email}</Text>
         </View>
         <Button
-          buttonStyle={styles.editBtn}
+          buttonStyle={[
+            styles.editBtn,
+            { backgroundColor: selected.primaryDark },
+          ]}
           textStyle={{ fontSize: hp(2) }}
-          title="Edit Profile"
+          title={t("account.edit")}
           loading={false}
           onPress={() => {
             router.push("/(modal)/update-person");
@@ -161,6 +182,12 @@ Report a Bug	Let user describe the problem, attach screenshot
           item={option.item!}
         />
       ))}
+
+      <Suspense fallback={<LoadingSpinner />}>
+        <BottomSheetComponent snapPoints={["35%"]} ref={themeSheetRef}>
+          <ThemeSelect />
+        </BottomSheetComponent>
+      </Suspense>
     </View>
   );
 }
@@ -176,7 +203,6 @@ const styles = StyleSheet.create({
   },
   editBtn: {
     height: hp(4),
-    backgroundColor: THEME.colors.primaryDark,
     paddingHorizontal: 25,
     borderRadius: 10,
   },
