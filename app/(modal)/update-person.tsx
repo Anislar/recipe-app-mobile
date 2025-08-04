@@ -35,18 +35,23 @@ const UpdatePerson = () => {
       icon: "female",
     },
   ];
+  const { pickImage, status, progress, file } = useUpload({ source: "post" });
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<UpdateUserType>({
     resolver: zodResolver(updateUserSchema),
+    values: {
+      avatar: file?.url,
+    },
     defaultValues: {
       name: user?.name || undefined,
       bio: user?.bio || undefined,
       location: user?.location || undefined,
       phone: user?.phone || undefined,
-      avatar: user?.avatar || undefined,
+      avatar: file?.url || user?.avatar || undefined,
       gender: (user?.gender as "male" | "female") || "male",
     },
   });
@@ -57,7 +62,6 @@ const UpdatePerson = () => {
     useRef<TextInput>(null),
   ];
   const dropdownRef = useRef<IDropdownRef>(null);
-  const { pickImage, status, progress, file } = useUpload({ source: "post" });
 
   const onSubmit: SubmitHandler<UpdateUserType> = async (data) => {
     const avatar = file?.url || user?.avatar!;
@@ -122,7 +126,7 @@ const UpdatePerson = () => {
 
           {(status === "error" || errors["avatar"]?.message) && (
             <Text style={styles.errorText}>
-              🚨 Error: Failed to upload file...
+              🚨 {t("account.updatePerson.errorImage")}
             </Text>
           )}
           <Separator my={hp(2)} />
@@ -183,12 +187,12 @@ const UpdatePerson = () => {
                       onBlur={onBlur}
                       onChangeText={onChange}
                       placeholder={t(
-                        "account.updatePerson.LocationPlaceholder"
+                        "account.updatePerson.locationPlaceholder"
                       )}
                       autoCapitalize="words"
                       returnKeyType="next"
                       containerStyles={{
-                        height: hp(8),
+                        height: hp(9),
                         borderColor: error ? THEME.colors.rose : undefined,
                       }}
                       onSubmitEditing={() => dropdownRef.current?.open()}
@@ -216,6 +220,7 @@ const UpdatePerson = () => {
                       label={t("account.updatePerson.gender")}
                       ref={dropdownRef}
                       style={{
+                        height: hp(9),
                         borderColor: error ? THEME.colors.rose : undefined,
                       }}
                       labelField="label"
@@ -225,7 +230,7 @@ const UpdatePerson = () => {
                       data={data}
                       onChange={(item) => {
                         onChange(item.value);
-                        inputRefs[2].current?.focus();
+                        inputRefs[1].current?.focus();
                       }}
                     />
 
@@ -247,7 +252,7 @@ const UpdatePerson = () => {
               }) => (
                 <>
                   <TextInputComponent
-                    ref={inputRefs[2]}
+                    ref={inputRefs[1]}
                     label={t("account.updatePerson.phoneNumber")}
                     value={value}
                     onBlur={onBlur}
@@ -260,7 +265,7 @@ const UpdatePerson = () => {
                     containerStyles={
                       error && { borderColor: THEME.colors.rose }
                     }
-                    onSubmitEditing={() => inputRefs[3].current?.focus()}
+                    onSubmitEditing={() => inputRefs[2].current?.focus()}
                   />
                   {error && (
                     <Text style={styles.errorText}>{error.message}</Text>
@@ -280,7 +285,7 @@ const UpdatePerson = () => {
                 <>
                   <TextInputComponent
                     label={t("account.updatePerson.about")}
-                    ref={inputRefs[3]}
+                    ref={inputRefs[2]}
                     value={value}
                     onBlur={onBlur}
                     onChangeText={onChange}

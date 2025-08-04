@@ -8,7 +8,7 @@
  
   "welcome": {
     "title": "LinkUp!",
-    "punchline": "Connect with friends and share your moments",
+    "punchline": "Moments are better together, Share them with the ones you love.",
     "gettingStarted": "Getting Started",
     "alreadyHaveAccount": "Already have an account?"
   },
@@ -89,12 +89,14 @@
       "female":"female",
       "fullNamePlaceholder": "Enter your full name",
       "location": "Location",
-      "locationPlaceholder": "Enter your Location",
+      "locationPlaceholder": "Location...",
       "phoneNumber": "Phone number",
       "phoneNumberPlaceholder": "Enter your phone number",
       "about": "About",
       "aboutPlaceholder": "Tell us a bit about yourself...",
-      "success":"Profile updated successfully!"
+      "success":"Profile updated successfully!",
+      "errorImage":"Error: Failed to upload file..."
+
     }
   },
   "appInfo": {

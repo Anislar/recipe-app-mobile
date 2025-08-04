@@ -32,7 +32,7 @@ interface OptionType {
 }
 export default function Account() {
   const { user, logout, setUser } = useAuthStore();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const selected = useSelectedColors();
 
   const themeSheetRef = useRef<any>(null);
@@ -51,7 +51,7 @@ export default function Account() {
               style={styles.suffix}
               labelField="label"
               valueField="value"
-              value={user?.preferences?.language ?? "fr"}
+              value={user?.preferences?.language ?? i18n.language}
               data={Lang}
               onChange={async (item) => {
                 setUser({
@@ -61,7 +61,7 @@ export default function Account() {
                     language: item.value,
                   },
                 });
-                await loadLanguageAsync(item.value as "fr" | "en");
+                await loadLanguageAsync(item.value);
               }}
             />
           ),
@@ -172,7 +172,7 @@ export default function Account() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, padding: wp(0.5) },
   profileSection: { alignItems: "center", marginBottom: hp(2) },
   name: { fontSize: hp(2.2), fontWeight: THEME.fonts.bold, marginTop: 10 },
   email: {

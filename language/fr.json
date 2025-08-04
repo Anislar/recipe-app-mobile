@@ -8,7 +8,7 @@
 
   "welcome": {
     "title": "LinkUp!",
-    "punchline": "Connectez-vous avec vos amis et partagez vos moments",
+    "punchline": "Les moments sont plus beaux à plusieurs, Partagez-les avec ceux que vous aimez.",
     "gettingStarted": "Commencer",
     "alreadyHaveAccount": "Vous avez déjà un compte ?"
   },
@@ -92,12 +92,13 @@
       "male":"Homme",
       "female":"Femme",
       "location": "Localisation",
-      "locationPlaceholder": "Entrez votre localisation",
+      "locationPlaceholder": "Localisation...",
       "phoneNumber": "Numéro de téléphone",
       "phoneNumberPlaceholder": "Entrez votre numéro de téléphone",
       "about": "À propos",
       "aboutPlaceholder": "Parlez-nous un peu de vous...",
-      "success":"Profile updated successfully!"
+      "success":"Profile updated successfully!",
+      "errorImage":"Erreur : Échec du téléchargement du fichier..."
     }
   },
   "appInfo": {

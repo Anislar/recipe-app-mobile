@@ -11,6 +11,7 @@ class UserService {
 
   async getCurrentUser(): Promise<ApiSuccess<any>> {
     try {
+      console.log("-");
       const response = await api.get(this.prefix + "/me");
       return response.data;
     } catch (error) {

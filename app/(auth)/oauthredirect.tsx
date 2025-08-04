@@ -26,7 +26,7 @@ const OauthRedirect = () => {
           showToast(t("auth.signIn.welcomeBack"));
           router.replace("/");
         }
-      }, 0);
+      }, 100);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);

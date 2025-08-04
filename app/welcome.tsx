@@ -22,7 +22,7 @@ const WelcomScreen = () => {
           contentFit="contain"
         />
         {/* welcome text */}
-        <View style={{ gap: 20 }}>
+        <View style={{ gap: hp(2) }}>
           <Text style={styles.title}>{t("welcome.title")}</Text>
           <Text style={styles.punchline}>{t("welcome.punchline")}</Text>
         </View>
@@ -66,12 +66,12 @@ const WelcomScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-around",
     alignItems: "center",
-    backgroundColor: "white",
     paddingHorizontal: wp(4),
+    gap: hp(10),
   },
   image: {
+    marginTop: hp(10),
     width: wp(100),
     height: hp(30),
     alignSelf: "center",
@@ -83,13 +83,12 @@ const styles = StyleSheet.create({
     fontWeight: THEME.fonts.extraBold,
   },
   punchline: {
-    color: THEME.colors.text,
-    paddingHorizontal: wp(10),
-    fontSize: hp(1.8),
+    color: THEME.colors.darkGray,
+    fontSize: hp(2),
     textAlign: "center",
   },
   footer: {
-    gap: 30,
+    gap: hp(3),
     width: "100%",
   },
   bottomTextContainer: {
