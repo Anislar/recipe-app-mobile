@@ -1,5 +1,5 @@
 import { View, Text, StyleProp, ViewStyle, StyleSheet } from "react-native";
-import React from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BackButton from "./back-button";
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
@@ -11,8 +11,10 @@ interface IHeaderMain {
   style?: StyleProp<ViewStyle>;
 }
 export const HeaderTab = ({ title, showBackButton, style }: IHeaderMain) => {
+  const { top } = useSafeAreaInsets();
+
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, style, { paddingTop: -top }]}>
       {showBackButton && <BackButton />}
       <Text
         style={[
@@ -31,8 +33,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
-    gap: wp(2),
     flex: 1,
   },
 

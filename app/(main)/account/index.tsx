@@ -8,6 +8,7 @@ import {
   Button,
   DropdownComponent,
   LoadingSpinner,
+  ScreenWrapper,
   SettingsItem,
   SwitchComponent,
 } from "@/components";
@@ -16,7 +17,7 @@ import { useAuthStore } from "@/store";
 import { hp, wp } from "@/helpers/common";
 import { capitalize } from "@/helpers/utils";
 import { Lang, loadLanguageAsync } from "@/language/i18n";
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 
 const BottomSheetComponent = lazy(() =>
   import("@/components").then((el) => ({ default: el.BottomSheetComponent }))
@@ -102,13 +103,13 @@ export default function Account() {
         {
           icon: "lock",
           label: t("account.editPassword"),
-          onPress: () => router.push("/(main)/account/password"),
+          onPress: () => router.push("/(main)/account/edit-password"),
         },
 
         {
           icon: "help-circle-outline",
           label: t("account.helpSupport"),
-          //onPress: () => router.push("/(main)/account/help-support"),
+          onPress: () => router.push("/(main)/account/help-support"),
         },
         {
           icon: "information-outline",
@@ -153,47 +154,53 @@ Report a Bug	Let user describe the problem, attach screenshot
   ];
 
   return (
-    <View style={styles.container}>
-      <View style={styles.profileSection}>
-        <Avatar uri={user?.avatar!} size={130} rounded={THEME.radius.xxl * 3} />
+    <ScreenWrapper bg="white">
+      <View style={styles.container}>
+        <View style={styles.profileSection}>
+          <Avatar
+            uri={user?.avatar!}
+            size={130}
+            rounded={THEME.radius.xxl * 3}
+          />
 
-        <Text style={styles.name}>{capitalize(user?.name ?? "")} </Text>
-        <View style={styles.statusContainer}>
-          <Text style={styles.email}>{user?.email}</Text>
+          <Text style={styles.name}>{capitalize(user?.name ?? "")} </Text>
+          <View style={styles.statusContainer}>
+            <Text style={styles.email}>{user?.email}</Text>
+          </View>
+          <Button
+            buttonStyle={[
+              styles.editBtn,
+              { backgroundColor: selected.primaryDark },
+            ]}
+            textStyle={{ fontSize: hp(2) }}
+            title={t("account.edit")}
+            loading={false}
+            onPress={() => {
+              router.push("/(modal)/update-person");
+            }}
+          />
         </View>
-        <Button
-          buttonStyle={[
-            styles.editBtn,
-            { backgroundColor: selected.primaryDark },
-          ]}
-          textStyle={{ fontSize: hp(2) }}
-          title={t("account.edit")}
-          loading={false}
-          onPress={() => {
-            router.push("/(modal)/update-person");
-          }}
-        />
+
+        {options.map((option: OptionType, index) => (
+          <SettingsItem
+            key={`settings_item_${index}`}
+            group={option.group}
+            item={option.item!}
+          />
+        ))}
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <BottomSheetComponent snapPoints={["35%"]} ref={themeSheetRef}>
+            <ThemeSelect />
+          </BottomSheetComponent>
+        </Suspense>
       </View>
-
-      {options.map((option: OptionType, index) => (
-        <SettingsItem
-          key={`settings_item_${index}`}
-          group={option.group}
-          item={option.item!}
-        />
-      ))}
-
-      <Suspense fallback={<LoadingSpinner />}>
-        <BottomSheetComponent snapPoints={["35%"]} ref={themeSheetRef}>
-          <ThemeSelect />
-        </BottomSheetComponent>
-      </Suspense>
-    </View>
+    </ScreenWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  container: { flex: 1 },
   profileSection: { alignItems: "center", marginBottom: hp(2) },
   name: { fontSize: hp(2.2), fontWeight: THEME.fonts.bold, marginTop: 10 },
   email: {

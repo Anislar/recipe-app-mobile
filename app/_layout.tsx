@@ -12,7 +12,6 @@ import { DefaultFallback } from "@/components/with-suspense";
 
 import i18n, { loadStoredLanguage } from "../language/i18n";
 
-// Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {

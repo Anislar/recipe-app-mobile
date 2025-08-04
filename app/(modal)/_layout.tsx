@@ -4,7 +4,7 @@ import { HeaderTab } from "@/components";
 import { THEME } from "@/constants/theme";
 import { wp } from "@/helpers/common";
 import { useTranslation } from "react-i18next";
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 
 const ModalLayout = () => {
   const { t } = useTranslation();

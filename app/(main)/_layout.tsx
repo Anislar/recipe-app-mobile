@@ -4,7 +4,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { HeaderTab } from "@/components";
 import { wp } from "@/helpers/common";
 import { useTranslation } from "react-i18next";
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 
 const MainLayout = () => {
   const { t } = useTranslation();
@@ -70,8 +70,6 @@ const MainLayout = () => {
       <Tabs.Screen
         name="account"
         options={{
-          title: t("account.titleTab"),
-
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => (
             <MaterialCommunityIcons

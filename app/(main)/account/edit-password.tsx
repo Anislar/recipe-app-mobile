@@ -1,7 +1,10 @@
+import { useRef, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
+
 import {
-  BackButton,
   Button,
   FormWrapper,
   ScreenWrapper,
@@ -9,32 +12,30 @@ import {
 } from "@/components";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
-import { useRef, useState } from "react";
 import { useAuthStore } from "@/store";
-import { StyleSheet, Text, TextInput, View } from "react-native";
 import { resetPasswordSchema, ResetPasswordType } from "@/helpers/auth";
-import { useLocalSearchParams, router } from "expo-router";
 import { showToast } from "@/helpers/toastService";
-import { useTranslation } from "react-i18next";
+import { router } from "expo-router";
 
 const NewPasswordScreen = () => {
   const { t } = useTranslation();
 
-  const { email } = useLocalSearchParams();
-
-  const inputRef = useRef<TextInput>(null);
+  const user = useAuthStore((s) => s.user);
+  const inputRefs = [useRef<TextInput>(null), useRef<TextInput>(null)];
   const [showPassword, setShowPassword] = useState(true);
 
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ResetPasswordType>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      email: email as string,
+      email: user?.email as string,
       password: "",
       confirmPassword: "",
+      currentPassword: "",
     },
   });
 
@@ -46,26 +47,54 @@ const NewPasswordScreen = () => {
 
     if (typeof response === "boolean") {
       showToast(t("auth.newPassword.success"));
-      router.push("/sign-in");
+      reset();
+      router.back();
     }
   };
   return (
     <ScreenWrapper bg="white">
       <FormWrapper>
         <View style={styles.container}>
-          <BackButton size={26} />
-          {/* Welcome text */}
-          <View>
-            <Text style={styles.welcomeText}>{t("auth.newPassword.lets")}</Text>
-            <Text style={styles.welcomeText}>
-              {t("auth.newPassword.createNewPassword")}
-            </Text>
-          </View>
           {/* form */}
           <View style={styles.form}>
             <Text style={styles.form_description}>
               {t("auth.newPassword.description")}
             </Text>
+            {!user?.provider && (
+              <Controller
+                control={control}
+                render={({
+                  field: { onBlur, onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <>
+                    <TextInputComponent
+                      label={t("auth.newPassword.currentPassword")}
+                      containerStyles={
+                        error && {
+                          borderColor: THEME.colors.rose,
+                        }
+                      }
+                      value={value}
+                      onBlur={onBlur}
+                      onSubmitEditing={() => inputRefs[0].current?.focus()}
+                      enterKeyHint="next"
+                      suffixIcon={!showPassword ? "eye" : "eye-off"}
+                      onPressIcon={() => setShowPassword((prev) => !prev)}
+                      secureTextEntry={showPassword}
+                      placeholder={t("auth.newPassword.enterCurrentPassword")}
+                      onChangeText={onChange}
+                    />
+                    {error && (
+                      <Text style={{ color: THEME.colors.rose }}>
+                        {error.message}
+                      </Text>
+                    )}
+                  </>
+                )}
+                name="currentPassword"
+              />
+            )}
             <Controller
               control={control}
               render={({
@@ -75,7 +104,7 @@ const NewPasswordScreen = () => {
                 <>
                   <TextInputComponent
                     label={t("auth.password")}
-                    ref={inputRef}
+                    ref={inputRefs[0]}
                     containerStyles={
                       error && {
                         borderColor: THEME.colors.rose,
@@ -88,6 +117,8 @@ const NewPasswordScreen = () => {
                     secureTextEntry={showPassword}
                     placeholder={t("auth.enterPassword")}
                     onChangeText={onChange}
+                    enterKeyHint="next"
+                    onSubmitEditing={() => inputRefs[1].current?.focus()}
                   />
                   {error && (
                     <Text style={{ color: THEME.colors.rose }}>
@@ -108,7 +139,7 @@ const NewPasswordScreen = () => {
                 <>
                   <TextInputComponent
                     label={t("auth.newPassword.confirmPassword")}
-                    ref={inputRef}
+                    ref={inputRefs[1]}
                     containerStyles={
                       error && {
                         borderColor: THEME.colors.rose,
@@ -121,6 +152,7 @@ const NewPasswordScreen = () => {
                     secureTextEntry={showPassword}
                     placeholder={t("auth.newPassword.enterConfirmPassword")}
                     onChangeText={onChange}
+                    enterKeyHint="done"
                   />
                   {error && (
                     <Text style={{ color: THEME.colors.rose }}>
@@ -143,7 +175,11 @@ const NewPasswordScreen = () => {
             )}
 
             {/* Button */}
+
             <Button
+              buttonStyle={{
+                marginTop: hp(2),
+              }}
               title={t("auth.newPassword.resetPassword")}
               loading={isLoading}
               onPress={handleSubmit(onSubmit)}
@@ -165,16 +201,12 @@ const styles = StyleSheet.create({
     gap: hp(3.5),
     paddingHorizontal: wp(5),
   },
-  welcomeText: {
-    fontSize: hp(4),
-    fontWeight: THEME.fonts.bold,
-    color: THEME.colors.text,
-  },
+
   form: {
     gap: hp(2),
   },
   form_description: {
-    fontSize: hp(1.5),
+    fontSize: hp(1.6),
     color: THEME.colors.text,
   },
   footer: {

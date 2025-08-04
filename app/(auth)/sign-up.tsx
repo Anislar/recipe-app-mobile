@@ -19,7 +19,7 @@ import { signUpSchema, type SignUpType } from "@/helpers/auth";
 import { showToast } from "@/helpers/toastService";
 import { useClear } from "@/hooks/useClearError";
 import { useTranslation } from "react-i18next";
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 
 const SocialButtonComponent = lazy(() =>
   import("@/components/auth").then((el) => ({

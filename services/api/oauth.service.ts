@@ -30,7 +30,6 @@ export class OAuthService {
     data: OAuthCallbackData
   ) {
     try {
-      // Send the authorization code to your backend
       const result = await authService.oauthCallback(provider, {
         code: data.code,
         codeVerifier: data.codeVerifier,

@@ -4,7 +4,7 @@ import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import { LoadingSpinner } from "./UI/loading";
 import i18n from "@/language/i18n";
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 
 export const DefaultFallback = ({ isReady }: { isReady?: boolean }) => {
   const selected = useSelectedColors();

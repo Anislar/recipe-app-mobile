@@ -10,10 +10,10 @@ export interface User {
   phone?: string;
   isActive?: string;
   gender: string;
+  provider?: string;
   preferences?: {
     notification?: boolean;
     language?: string;
-    primaryColor?: string;
   };
 }
 // Sign up DTO
@@ -54,6 +54,10 @@ type VerifyCodeType = z.infer<typeof verifyCodeSchema>;
 const resetPasswordSchema = z
   .object({
     email: z.string().email("Invalid email format (eg: ex@example.com)"),
+    currentPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters long")
+      .optional(),
     password: z.string().min(8, "Password must be at least 8 characters long"),
     confirmPassword: z
       .string()

@@ -46,8 +46,10 @@
       "lets": "Let's,",
       "createNewPassword": "Create a new Password",
       "description": "Enter your new password",
+      "currentPassword":"Current password",
       "confirmPassword": "confirm password",
       "enterConfirmPassword": "Enter your confirm password",
+      "enterCurrentPassword": "Enter your current password",
       "resetPassword": "Reset Password",
       "success":"Your password was reset successfully!"
     },
@@ -120,6 +122,10 @@
     "name":"name",
     "loading":"Loading"
 
+  },
+  "support":{
+    "help":"Need More Help?",
+    "email":"Email Support"
   },
   "modal": {
     "addPost": "Add post",

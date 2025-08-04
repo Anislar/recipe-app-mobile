@@ -1,8 +1,9 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
-import { colorPicker, ThemeKey, useThemeStore } from "@/store/themeStore";
+import { useThemeStore } from "@/store";
 import { THEME } from "@/constants/theme";
-import { hp } from "@/helpers/common";
+import { hp, wp } from "@/helpers/common";
+import { colorPicker, ThemeKey } from "@/store/themeStore";
 
 export const ThemeSelect = () => {
   const selected = useThemeStore((s) => s.selected);
@@ -44,7 +45,7 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: hp(5),
+    gap: wp(10),
   },
   colorCircle: {
     width: hp(5.2),

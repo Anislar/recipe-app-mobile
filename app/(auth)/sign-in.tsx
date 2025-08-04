@@ -17,7 +17,7 @@ import { THEME } from "@/constants/theme";
 import { SignInSchema, type SignInType } from "@/helpers/auth";
 import { showToast } from "@/helpers/toastService";
 import { t } from "i18next";
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 
 const SocialButtonComponent = lazy(() =>
   import("@/components/auth").then((el) => ({

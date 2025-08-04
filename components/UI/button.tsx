@@ -11,7 +11,7 @@ import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import { LoadingSpinner } from "./loading";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 interface ButtonProps {
   buttonStyle?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;

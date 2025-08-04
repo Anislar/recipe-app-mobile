@@ -1,13 +1,11 @@
 import { useClear } from "@/hooks/useClearError";
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 
 const AuthLayout = () => {
   useClear();
 
   return (
     <>
-      <StatusBar style="dark" />
       <Stack
         screenOptions={{
           headerShown: false,

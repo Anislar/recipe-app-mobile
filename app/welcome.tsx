@@ -1,5 +1,4 @@
 import { StyleSheet, Text, View } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import { Link } from "expo-router";
 import { Image } from "expo-image";
 import { useTranslation } from "react-i18next";
@@ -7,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { ScreenWrapper, Button } from "@/components";
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 
 const WelcomScreen = () => {
   const { t } = useTranslation();
@@ -15,7 +14,6 @@ const WelcomScreen = () => {
 
   return (
     <ScreenWrapper bg="white">
-      <StatusBar style="dark" />
       <View style={styles.container}>
         {/* welcom image */}
         <Image

@@ -49,8 +49,10 @@
       "lets": "Allons,",
       "createNewPassword": "Créer un nouveau mot de passe",
       "description": "Entrez votre nouveau mot de passe",
+      "currentPassword":"Mot de passe actuel",
       "confirmPassword": "confirmer le mot de passe",
       "enterConfirmPassword": "Entrez votre confirmation de mot de passe",
+      "enterCurrentPassword": "Entrez votre mot de passe actuel",
       "resetPassword": "Réinitialiser le mot de passe",
       "success":"Votre mot de passe a été réinitialisé avec succès !"
     },
@@ -122,6 +124,11 @@
     "email": "email",
     "name": "nom",
     "loading": "Chargement"
+  },
+  "support":{
+    "help":"Besoin de plus d'aide ?",
+    "email":"Assistance par e-mail"
+
   },
   "modal": {
     "addPost": "Ajouter un post",

@@ -1,4 +1,4 @@
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { THEME } from "@/constants/theme";
 

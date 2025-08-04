@@ -8,7 +8,7 @@ import { hp, wp } from "@/helpers/common";
 import { Button } from "@/components";
 import { showToast } from "@/helpers/toastService";
 import { useTranslation } from "react-i18next";
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 
 const OauthRedirect = () => {
   const { t } = useTranslation();

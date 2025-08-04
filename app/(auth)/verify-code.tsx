@@ -17,7 +17,7 @@ import { VerifyCodeType, verifyCodeSchema } from "@/helpers/auth";
 import { Fragment, useRef, useState } from "react";
 import { showToast } from "@/helpers/toastService";
 import { useTranslation } from "react-i18next";
-import { useSelectedColors } from "@/store/themeStore";
+import { useSelectedColors } from "@/store";
 
 const VerifyCodeScreen = () => {
   const { t } = useTranslation();

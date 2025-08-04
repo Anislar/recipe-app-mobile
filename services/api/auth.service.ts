@@ -63,7 +63,11 @@ class AuthService {
   }
   async resetPassword(data: ResetPasswordType): Promise<ApiSuccess<any>> {
     try {
-      const response = await api.post(this.prefix + "/reset-password", data);
+      let url = "/reset-password";
+      if (data.currentPassword) {
+        url = "/change-password";
+      }
+      const response = await api.post(this.prefix + url, data);
       return response.data;
     } catch (error) {
       return handleApiError(error);
