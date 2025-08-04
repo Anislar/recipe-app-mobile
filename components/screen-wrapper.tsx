@@ -14,7 +14,6 @@ const ScreenWrapper = ({
   return (
     <>
       <StatusBar style="auto" />
-
       <View style={[styles.container, { backgroundColor: bg, paddingTop }]}>
         {children}
       </View>
@@ -27,6 +26,6 @@ export default ScreenWrapper;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: wp(1),
+    paddingHorizontal: wp(2),
   },
 });

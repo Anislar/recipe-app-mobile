@@ -4,19 +4,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   LayoutAnimation,
-  Platform,
-  UIManager,
 } from "react-native";
-import React, { useState } from "react";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useState } from "react";
+
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-if (
-  Platform.OS === "android" &&
-  UIManager.setLayoutAnimationEnabledExperimental
-) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+
 type AccordionProps = {
   title: string;
   content: string;

@@ -4,7 +4,7 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
 
-import { useAuthStore } from "@/store";
+import { useAuthStore, useSelectedColors } from "@/store";
 import { THEME } from "@/constants/theme";
 import {
   BackButton,
@@ -19,7 +19,6 @@ import { signUpSchema, type SignUpType } from "@/helpers/auth";
 import { showToast } from "@/helpers/toastService";
 import { useClear } from "@/hooks/useClearError";
 import { useTranslation } from "react-i18next";
-import { useSelectedColors } from "@/store";
 
 const SocialButtonComponent = lazy(() =>
   import("@/components/auth").then((el) => ({

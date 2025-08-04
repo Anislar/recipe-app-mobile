@@ -249,6 +249,10 @@ export const useAuthStore = create<AuthState>()(
         } catch (error: ApiError | any) {
           set({
             isLoading: false,
+            error: {
+              message: error.message,
+              code: error.code || "GET_CURRENT_USER",
+            },
           });
           return error.code || "GET_CURRENT_USER";
         }

@@ -3,7 +3,7 @@ import { lazy, Suspense, useRef, useState } from "react";
 import { Link, router } from "expo-router";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuthStore } from "@/store";
+import { useAuthStore, useSelectedColors } from "@/store";
 import {
   BackButton,
   Button,
@@ -17,7 +17,6 @@ import { THEME } from "@/constants/theme";
 import { SignInSchema, type SignInType } from "@/helpers/auth";
 import { showToast } from "@/helpers/toastService";
 import { t } from "i18next";
-import { useSelectedColors } from "@/store";
 
 const SocialButtonComponent = lazy(() =>
   import("@/components/auth").then((el) => ({

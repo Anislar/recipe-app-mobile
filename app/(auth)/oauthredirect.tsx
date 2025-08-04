@@ -1,14 +1,13 @@
 import { useEffect } from "react";
 import { Text, View } from "react-native";
 import { useSearchParams, useRouter } from "expo-router/build/hooks";
-import { useAuthStore } from "@/store";
+import { useAuthStore, useSelectedColors } from "@/store";
 import { DefaultFallback } from "@/components/with-suspense";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { Button } from "@/components";
 import { showToast } from "@/helpers/toastService";
 import { useTranslation } from "react-i18next";
-import { useSelectedColors } from "@/store";
 
 const OauthRedirect = () => {
   const { t } = useTranslation();
@@ -27,7 +26,7 @@ const OauthRedirect = () => {
           showToast(t("auth.signIn.welcomeBack"));
           router.replace("/");
         }
-      });
+      }, 0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
@@ -47,7 +46,7 @@ const OauthRedirect = () => {
           style={{
             color: THEME.colors.rose,
             fontWeight: THEME.fonts.medium,
-            fontSize: hp(2.5),
+            fontSize: hp(2),
           }}
         >
           {error.message}

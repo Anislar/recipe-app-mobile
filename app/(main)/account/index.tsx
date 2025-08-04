@@ -13,11 +13,10 @@ import {
   SwitchComponent,
 } from "@/components";
 import { THEME } from "@/constants/theme";
-import { useAuthStore } from "@/store";
+import { useAuthStore, useSelectedColors } from "@/store";
 import { hp, wp } from "@/helpers/common";
 import { capitalize } from "@/helpers/utils";
 import { Lang, loadLanguageAsync } from "@/language/i18n";
-import { useSelectedColors } from "@/store";
 
 const BottomSheetComponent = lazy(() =>
   import("@/components").then((el) => ({ default: el.BottomSheetComponent }))
@@ -124,33 +123,6 @@ export default function Account() {
         },
       ],
     },
-
-    /*
-    📅 Joined: Feb 2023
-    📲 App Version: 1.2.0
-    */
-
-    /*
-    import { getVersion, getBuildNumber } from "react-native-device-info";
-
-    | Item             | Example                                              |
-| ---------------- | ---------------------------------------------------- |
-| **Version**      | 1.2.3                                                |
-| **Build Number** | 42                                                   |
-| **Legal Info**   | Link or modal with Terms of Service & Privacy Policy |
-| **Last Updated** | July 25, 2025                                        |
-
-    
-    */
-    // FAQ , Report a backgroundColor
-    /*
-    FAQ	“How do I reset my password?”
-Contact Support	Form with subject & message
-Report a Bug	Let user describe the problem, attach screenshot
-
-
-    
-    */
   ];
 
   return (
@@ -190,7 +162,7 @@ Report a Bug	Let user describe the problem, attach screenshot
         ))}
 
         <Suspense fallback={<LoadingSpinner />}>
-          <BottomSheetComponent snapPoints={["35%"]} ref={themeSheetRef}>
+          <BottomSheetComponent snapPoints={["40%"]} ref={themeSheetRef}>
             <ThemeSelect />
           </BottomSheetComponent>
         </Suspense>
