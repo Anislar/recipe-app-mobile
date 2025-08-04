@@ -48,7 +48,7 @@ const MainLayout = () => {
                   marginHorizontal: wp(3),
                 }}
                 size={26}
-                name="plus-box-outline"
+                name="plus-circle-outline"
               />
             </Link>
           ),

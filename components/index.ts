@@ -10,6 +10,7 @@ export { default as Accordion } from "./UI/accordion";
 export { Separator } from "./UI/separator";
 
 export { default as FormWrapper } from "./form-wrapper";
+export { default as RichTextEditor } from "./rich-text-editor";
 export { Avatar } from "./avatar";
 export { withSuspense } from "./with-suspense";
 export { ErrorBoundary } from "./error-wrapper";
