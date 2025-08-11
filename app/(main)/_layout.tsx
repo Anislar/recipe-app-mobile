@@ -5,6 +5,7 @@ import { HeaderTab } from "@/components";
 import { wp } from "@/helpers/common";
 import { useTranslation } from "react-i18next";
 import { useSelectedColors } from "@/store";
+import { THEME } from "@/constants/theme";
 
 const MainLayout = () => {
   const { t } = useTranslation();
@@ -47,8 +48,9 @@ const MainLayout = () => {
                 style={{
                   marginHorizontal: wp(3),
                 }}
-                size={26}
-                name="plus-circle-outline"
+                size={wp(8)}
+                name="plus-box-multiple"
+                color={THEME.colors.text}
               />
             </Link>
           ),

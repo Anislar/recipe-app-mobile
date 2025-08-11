@@ -29,6 +29,18 @@ class FileService {
       return handleApiError(error);
     }
   }
+  async deleteFile(data: FormData): Promise<ApiSuccess<any>> {
+    try {
+      const response = await api.post(this.prefix + "/remove-file", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return handleApiError(error);
+    }
+  }
 }
 
 const fileService = new FileService();

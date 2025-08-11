@@ -1,4 +1,4 @@
-import React, { Ref } from "react";
+import { Ref } from "react";
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import { Dropdown, IDropdownRef } from "react-native-element-dropdown";
 import { DropdownProps } from "react-native-element-dropdown/lib/typescript/components/Dropdown/model";
@@ -56,14 +56,15 @@ const styles = StyleSheet.create({
     borderColor: THEME.colors.textLight,
     borderRadius: THEME.radius.xxl,
     borderCurve: "continuous",
+    height: hp(12),
+    marginBottom: 2,
     padding: wp(4),
-    height: hp(8),
     justifyContent: "center",
   },
   label: {
     color: THEME.colors.gray,
     fontSize: hp(1.5),
-    marginBottom: 2,
+    marginBottom: 10,
     textTransform: "capitalize",
     letterSpacing: wp(0.1),
   },

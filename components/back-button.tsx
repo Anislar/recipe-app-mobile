@@ -1,7 +1,6 @@
 import { Pressable, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useAuthStore } from "@/store";
 import { hp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
 
@@ -9,12 +8,10 @@ interface BackButtonProps {
   size?: number;
 }
 const BackButton = ({ size = 25 }: BackButtonProps) => {
-  const reset = useAuthStore((state) => state.setResetElement);
   return (
     <Pressable
       style={styles.button}
       onPress={() => {
-        reset();
         router.back();
       }}
     >

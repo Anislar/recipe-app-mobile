@@ -1,2 +1,2 @@
-export { useAuthStore } from "./authStore";
-export { useThemeStore, useSelectedColors } from "./themeStore";
+export { useAuthStore } from "./auth.store";
+export { useThemeStore, useSelectedColors } from "./theme.store";

@@ -1,11 +1,11 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import {
   RichEditor,
   RichToolbar,
   actions,
 } from "react-native-pell-rich-editor";
+import { t } from "i18next";
 
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
@@ -15,54 +15,43 @@ interface RichTextEditorProps extends Partial<RichEditor> {
 }
 const RichTextEditor = forwardRef<RichEditor, RichTextEditorProps>(
   ({ onChange, ...props }, ref) => {
-    const [emojiVisible, setEmojiVisible] = useState(false);
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.content}>
         <RichToolbar
           editor={ref}
           actions={[
-            actions.setBold,
-            actions.setItalic,
-
-            actions.setStrikethrough,
-            actions.setUnderline,
+            "bold",
+            "italic",
+            "strikeThrough",
+            "underline",
+            "heading1",
+            "heading3",
+            "heading5",
             actions.insertOrderedList,
-            actions.code,
-            actions.heading1,
-            actions.heading3,
-            actions.heading5,
-            "insertEmoji",
+            actions.insertBulletsList,
+            "code",
           ]}
           style={styles.toolbar}
           selectedIconTint={THEME.colors.text}
           iconMap={{
-            insertEmoji: ({ tintColor }: any) => (
-              <MaterialCommunityIcons
-                size={20}
-                onPress={() => setEmojiVisible((p) => !p)}
-                name="emoticon"
-                color={tintColor}
-              />
-            ),
-
             [actions.heading1]: ({ tintColor }: any) => (
-              <Text style={[styles.tib, { color: tintColor }]}>H1</Text>
+              <Text style={[styles.toolbarIcon, { color: tintColor }]}>H1</Text>
             ),
             [actions.heading3]: ({ tintColor }: any) => (
-              <Text style={[styles.tib, { color: tintColor }]}>H3</Text>
+              <Text style={[styles.toolbarIcon, { color: tintColor }]}>H3</Text>
             ),
             [actions.heading5]: ({ tintColor }: any) => (
-              <Text style={[styles.tib, { color: tintColor }]}>H5</Text>
+              <Text style={[styles.toolbarIcon, { color: tintColor }]}>H5</Text>
             ),
           }}
         />
         <RichEditor
-          editorStyle={styles.richText}
-          {...props}
           ref={ref}
+          editorStyle={styles.richText}
           containerStyle={styles.containerStyle}
-          placeholder="What's in your mind ?"
+          placeholder={t("post.content.placeholder")}
           onChange={(text) => onChange(text)}
+          {...props}
         />
       </View>
     );
@@ -70,23 +59,25 @@ const RichTextEditor = forwardRef<RichEditor, RichTextEditorProps>(
 );
 RichTextEditor.displayName = "RichTextEditor";
 const styles = StyleSheet.create({
+  content: { flex: 1 },
   containerStyle: {
     flex: 1,
     padding: 5,
-    maxHeight: hp(30),
-    minHeight: hp(30),
-    borderWidth: 1.5,
-    borderBottomLeftRadius: THEME.radius.sm,
+    maxHeight: hp(20),
+    minHeight: hp(20),
+    borderWidth: 1,
     borderBottomRightRadius: THEME.radius.sm,
+    borderBottomLeftRadius: THEME.radius.sm,
     borderColor: THEME.colors.darkLight,
   },
-  richText: {},
+  richText: {
+    color: THEME.colors.text,
+  },
   toolbar: {
     borderTopRightRadius: THEME.radius.sm,
     borderTopLeftRadius: THEME.radius.sm,
-    backgroundColor: THEME.colors.gray,
   },
-  tib: {
+  toolbarIcon: {
     textAlign: "center",
   },
 });

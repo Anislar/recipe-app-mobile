@@ -3,6 +3,8 @@ import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { fileService } from "@/services/api/file.service";
 import { showToast } from "@/helpers/toastService";
+import { Alert } from "react-native";
+import { useTranslation } from "react-i18next";
 
 interface uploadFileInterface {
   source: "user" | "post";
@@ -19,26 +21,54 @@ const useUpload = ({ source }: uploadFileInterface) => {
     STATUS.IDLE
   );
   const [file, setFile] = useState<any>(null);
-
+  const { t } = useTranslation();
+  // Pick image
   const pickImage = async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted)
+      return Alert.alert(
+        t("file.permissionDeniedTitle"),
+        t("file.permissionDeniedDescription")
+      );
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
-      quality: 1,
+      quality: 0.8,
       mediaTypes: "images",
     });
     if (!result.canceled) {
-      await uploadFile(result.assets[0]);
+      return await uploadFile(result.assets[0]);
     } else {
       showToast("You did not select image!");
     }
   };
+  // Pick Document
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({
       type: "*/*",
       copyToCacheDirectory: true,
     });
     if (!result.canceled) {
-      await uploadFile(result.assets[0]);
+      return await uploadFile(result.assets[0]);
+    } else {
+      showToast("You did not select image!");
+    }
+  };
+
+  // Pick phot
+  const takePhoto = async () => {
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    if (!perm.granted)
+      return Alert.alert(
+        t("file.permissionDeniedTitle"),
+        t("file.permissionDeniedDescription")
+      );
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      quality: 0.8,
+      mediaTypes: "livePhotos",
+    });
+    if (!result.canceled) {
+      return await uploadFile(result.assets[0]);
     } else {
       showToast("You did not select image!");
     }
@@ -62,6 +92,7 @@ const useUpload = ({ source }: uploadFileInterface) => {
       showToast("File uploaded successfully!");
       setFile(res.data);
       setStatus(STATUS.SUCCESS);
+      return res.data;
     } catch (error) {
       setStatus(STATUS.ERROR);
       console.error("Upload failed:", error);
@@ -69,8 +100,33 @@ const useUpload = ({ source }: uploadFileInterface) => {
       return null;
     }
   };
+  const deleteFile = async (fileUrl: string) => {
+    try {
+      setStatus(STATUS.UPLOADING);
 
-  return { progress, pickDocument, pickImage, status, file };
+      const formData = new FormData();
+      formData.append("file", fileUrl);
+      formData.append("source", source);
+      await fileService.deleteFile(formData);
+      showToast("File Removed successfully!");
+      setFile(null);
+      setStatus(STATUS.SUCCESS);
+    } catch (error) {
+      setStatus(STATUS.ERROR);
+      console.error("Upload failed:", error);
+      showToast("Failed to remove file.");
+      return null;
+    }
+  };
+  return {
+    progress,
+    pickDocument,
+    pickImage,
+    takePhoto,
+    status,
+    file,
+    deleteFile,
+  };
 };
 
 export default useUpload;

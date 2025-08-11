@@ -61,7 +61,7 @@
       "titleMail": "E-mail de vérification",
       "description":"Nous vous envoyons un code pour vérifier votre email !",
 
-      "resentCode": "renvoyer le code",
+      "resentCode": "Renvoyer le code",
       "confirm": "Confirmer",
       "success":"Tout est prêt! Saisissez votre nouveau mot de passe."
     },
@@ -97,8 +97,7 @@
       "phoneNumberPlaceholder": "Entrez votre numéro de téléphone",
       "about": "À propos",
       "aboutPlaceholder": "Parlez-nous un peu de vous...",
-      "success":"Profile updated successfully!",
-      "errorImage":"Erreur : Échec du téléchargement du fichier..."
+      "success":"Profile updated successfully!"
     }
   },
   "appInfo": {
@@ -124,7 +123,11 @@
     "select": "Sélectionner",
     "email": "email",
     "name": "nom",
-    "loading": "Chargement"
+    "loading": "Chargement",
+    "errorImage":"Erreur : Échec du téléchargement du fichier...",
+    "submit":"Valider"
+
+
   },
   "support":{
     "help":"Besoin de plus d'aide ?",
@@ -134,5 +137,42 @@
   "modal": {
     "addPost": "Ajouter un post",
     "editProfile": "Modifier le profil"
+  },
+  "post":{
+    "preview":"aperçu",
+    "createSuccess":"Publication créée avec succès!",
+
+    "content":{
+      "placeholder":"Qu'est-ce que tu as en tête ?",
+      "label":"Contenu"
+    },
+    "category":{
+      "placeholder":"Sélectionnez une catégorie",
+      "label":"Catégorie",
+      "title":"Aidez-nous à catégoriser ceci"
+    },
+    "file":{
+      "placeholder":"Ajouter une photo, un fichier ou une image",
+      "subtitle":"Format pris en charge : images (jpeg, png, jpg, webp, gif) et PDF",
+      "label":"Fichier",
+      "file":"fichier",
+      "image":"image",
+      "photo":"photo"
+    },
+    "location":{
+      "placeholderMin":"Votre emplacement",
+      "infoSave":"Pour notes: \"Vos modifications sont enregistrées automatiquement...\"",
+      "placeholder": "Choisissez votre emplacement actuel",
+      "label":"Localisation",
+      "permissionDeniedTitle": "Autorisation requise",
+      "permissionDeniedDescription":"L'autorisation d'accès à l'emplacement a été refusée"
+
+    }
+
+  },
+  
+  "file":{
+    "permissionDeniedTitle":"Autorisation requise",
+    "permissionDeniedDescription":"Veuillez accorder à la galerie la permission de sélectionner des images."
   }
 }

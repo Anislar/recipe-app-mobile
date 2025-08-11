@@ -1,6 +1,12 @@
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { router } from "expo-router";
-import { useRef } from "react";
+import { lazy, Suspense, useRef } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IDropdownRef } from "react-native-element-dropdown";
@@ -14,6 +20,7 @@ import {
   LoadingSpinner,
   Separator,
   DropdownComponent,
+  LocationSelector,
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
@@ -24,9 +31,17 @@ import { showToast } from "@/helpers/toastService";
 import useUpload from "@/hooks/useUpload";
 import { useTranslation } from "react-i18next";
 
+const BottomSheetComponent = lazy(() =>
+  import("@/components").then((el) => ({ default: el.BottomSheetComponent }))
+);
+const SelectLocation = lazy(() =>
+  import("@/components").then((el) => ({ default: el.SelectLocation }))
+);
 const UpdatePerson = () => {
   const { t } = useTranslation();
   const { isLoading, user, updateProfile } = useAuthStore();
+  const bottomSheetRef = useRef<any>(null);
+
   const data = [
     { label: t("account.updatePerson.male"), value: "male", icon: "male" },
     {
@@ -125,9 +140,7 @@ const UpdatePerson = () => {
           </View>
 
           {(status === "error" || errors["avatar"]?.message) && (
-            <Text style={styles.errorText}>
-              🚨 {t("account.updatePerson.errorImage")}
-            </Text>
+            <Text style={styles.errorText}>🚨 {t("common.errorImage")}</Text>
           )}
           <Separator my={hp(2)} />
           <View style={styles.formSection}>
@@ -171,36 +184,18 @@ const UpdatePerson = () => {
               <Controller
                 control={control}
                 name="location"
-                render={({
-                  field: { onChange, onBlur, value },
-                  fieldState: { error },
-                }) => (
-                  <View
+                render={() => (
+                  <LocationSelector
+                    control={control}
                     style={{
-                      width: "45%",
+                      flexDirection: "column",
+                      height: hp(9),
+                      borderRadius: THEME.radius.xxl,
                     }}
-                  >
-                    <TextInputComponent
-                      label={t("account.updatePerson.location")}
-                      ref={inputRefs[0]}
-                      value={value}
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      placeholder={t(
-                        "account.updatePerson.locationPlaceholder"
-                      )}
-                      autoCapitalize="words"
-                      returnKeyType="next"
-                      containerStyles={{
-                        height: hp(9),
-                        borderColor: error ? THEME.colors.rose : undefined,
-                      }}
-                      onSubmitEditing={() => dropdownRef.current?.open()}
-                    />
-                    {error && (
-                      <Text style={styles.errorText}>{error.message}</Text>
-                    )}
-                  </View>
+                    onOpen={() => {
+                      bottomSheetRef.current?.snapToIndex(0);
+                    }}
+                  />
                 )}
               />
               {/* Gender */}
@@ -319,6 +314,14 @@ const UpdatePerson = () => {
           </View>
         </View>
       </FormWrapper>
+      <Suspense fallback={<LoadingSpinner />}>
+        <BottomSheetComponent snapPoints={["40%"]} ref={bottomSheetRef}>
+          <SelectLocation
+            close={() => bottomSheetRef.current.close()}
+            control={control}
+          />
+        </BottomSheetComponent>
+      </Suspense>
     </ScreenWrapper>
   );
 };

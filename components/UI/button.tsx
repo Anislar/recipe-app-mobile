@@ -53,9 +53,9 @@ export const Button = ({
     <TouchableOpacity
       disabled={loading}
       style={[
+        { backgroundColor: selected.primary },
         styles.button,
         buttonStyle,
-        { backgroundColor: selected.primary },
         hasShadow && shadowStyle,
       ]}
       onPress={onPress}

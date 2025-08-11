@@ -1,4 +1,4 @@
-import { View, Text, StyleProp, ViewStyle, StyleSheet } from "react-native";
+import { View, Text, StyleProp, StyleSheet, TextStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BackButton from "./back-button";
 import { hp, wp } from "@/helpers/common";
@@ -8,17 +8,18 @@ import { capitalize } from "@/helpers/utils";
 interface IHeaderMain {
   title: string;
   showBackButton?: boolean;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<TextStyle>;
 }
 export const HeaderTab = ({ title, showBackButton, style }: IHeaderMain) => {
   const { top } = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, style, { paddingTop: -top }]}>
+    <View style={[styles.container, { paddingTop: -top }]}>
       {showBackButton && <BackButton />}
       <Text
         style={[
           styles.title,
+          style,
           showBackButton && {
             width: wp(70),
           },
@@ -31,13 +32,12 @@ export const HeaderTab = ({ title, showBackButton, style }: IHeaderMain) => {
 };
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
   },
 
   title: {
-    alignContent: "center",
     textAlign: "center",
     fontSize: hp(2.7),
     fontWeight: THEME.fonts.semibold,

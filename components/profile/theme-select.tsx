@@ -3,7 +3,7 @@ import React from "react";
 import { useThemeStore } from "@/store";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
-import { colorPicker, ThemeKey } from "@/store/themeStore";
+import { colorPicker, ThemeKey } from "@/store/theme.store";
 
 export const ThemeSelect = () => {
   const selected = useThemeStore((s) => s.selected);
