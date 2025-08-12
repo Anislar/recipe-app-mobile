@@ -23,9 +23,9 @@ export { SettingsItem } from "./profile/setting-item";
 export { ThemeSelect } from "./profile/theme-select";
 
 // Post component
-export { default as Category } from "./post/select-category";
-export { default as SelectFile } from "./post/select-file";
-export { default as PostContent } from "./post/post-content";
-export { default as CategorySelector } from "./post/category-selector";
-export { default as LocationSelector } from "./post/location-selector";
-export { default as SelectLocation } from "./post/select-location";
+export { SelectCategory } from "./post/select-category";
+export { SelectFile } from "./post/select-file";
+export { PostContent } from "./post/post-content";
+export { CategorySelector } from "./post/category-selector";
+export { LocationSelector } from "./post/location-selector";
+export { SelectLocation } from "./post/select-location";

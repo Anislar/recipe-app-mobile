@@ -20,7 +20,7 @@ interface LocationSelectorProps {
   onOpen: () => void;
   labelExterne?: boolean;
 }
-const LocationSelector = ({
+export const LocationSelector = ({
   style,
   onOpen,
   control,
@@ -105,4 +105,3 @@ const styles = StyleSheet.create({
     letterSpacing: wp(0.1),
   },
 });
-export default LocationSelector;

@@ -20,48 +20,51 @@ const CATEGORY_OPTIONS = [
   { label: "Food", value: "food", icon: "food" },
   { label: "Art", value: "art", icon: "palette" },
 ];
-interface CategoryProps {
+interface SelectCategoryProps {
   onChange: (item: any) => void;
   itemSelected: string;
 }
-const Category = ({ onChange, itemSelected }: CategoryProps) => {
+export const SelectCategory = ({
+  onChange,
+  itemSelected,
+}: SelectCategoryProps) => {
   const selected = useSelectedColors();
   const { t } = useTranslation();
   return (
-    <>
-      <Text style={styles.categoryTitle}>{t("post.category.title")} :</Text>
-      <FlatList
-        scrollEnabled={false}
-        data={CATEGORY_OPTIONS}
-        keyExtractor={(item) => item.value.toString()}
-        contentContainerStyle={styles.listContainer}
-        ItemSeparatorComponent={() => <Separator my={2} />}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.categoryItemContainer}
-            activeOpacity={0.7}
-            onPress={() => onChange(item)}
-          >
-            <View style={styles.categoryName}>
-              <MaterialCommunityIcons
-                name={item.icon as any}
-                size={24}
-                color={selected.primary}
-              />
-              <Text style={styles.label}>{item.label}</Text>
-            </View>
+    <FlatList
+      scrollEnabled={false}
+      ListHeaderComponent={() => (
+        <Text style={styles.categoryTitle}>{t("post.category.title")} :</Text>
+      )}
+      data={CATEGORY_OPTIONS}
+      keyExtractor={(item) => item.value.toString()}
+      contentContainerStyle={styles.listContainer}
+      ItemSeparatorComponent={() => <Separator my={2} />}
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          style={styles.categoryItemContainer}
+          activeOpacity={0.7}
+          onPress={() => onChange(item)}
+        >
+          <View style={styles.categoryName}>
+            <MaterialCommunityIcons
+              name={item.icon as any}
+              size={24}
+              color={selected.primary}
+            />
+            <Text style={styles.label}>{item.label}</Text>
+          </View>
 
-            {item.value === itemSelected && (
-              <MaterialCommunityIcons
-                name="check-circle"
-                size={24}
-                color="#009b58"
-              />
-            )}
-          </TouchableOpacity>
-        )}
-      />
-    </>
+          {item.value === itemSelected && (
+            <MaterialCommunityIcons
+              name="check-circle"
+              size={24}
+              color="#009b58"
+            />
+          )}
+        </TouchableOpacity>
+      )}
+    />
   );
 };
 const styles = StyleSheet.create({
@@ -91,4 +94,3 @@ const styles = StyleSheet.create({
     color: THEME.colors.text,
   },
 });
-export default Category;

@@ -8,6 +8,7 @@ export interface Post {
   location?: string;
   likes_count: number;
   userId?: string;
+  createdAt?: string;
 }
 // polls schema
 const pollSchema = z
@@ -26,16 +27,17 @@ const pollSchema = z
     { message: "Poll options must be unique" }
   );
 
-const categoryOptionSchema = z.object({
-  value: z.enum(["general", "tech", "travel", "food", "art"]),
-  label: z.string(),
-  icon: z.string(),
-});
+// const categoryOptionSchema = z.object({
+//   value: ,
+//   label: z.string(),
+//   icon: z.string(),
+// });
+
 // add post DTO
 const addPostSchema = z.object({
-  content: z.string().min(3, "At least 3 caracters"),
+  content: z.string().min(3, "At least 3 characters"),
+
   file: z
-    .string()
     .url("Invalid avatar URL")
     .regex(
       /^https?:\/\/res\.cloudinary\.com\//,
@@ -43,14 +45,17 @@ const addPostSchema = z.object({
     )
     .optional(),
 
-  category: categoryOptionSchema.optional(),
+  category: z.enum(["general", "tech", "travel", "food", "art"], {
+    message: "You must select a category",
+  }),
+
   location: z
     .string()
-    .min(3, "At least 3 caracters")
-    .max(255, "Max is 255 caracters")
+    .min(3, "At least 3 characters")
+    .max(255, "Max is 255 characters")
     .optional(),
-  polls: pollSchema.optional(),
 });
+
 type AddPostType = z.infer<typeof addPostSchema>;
 
 export { addPostSchema, AddPostType };

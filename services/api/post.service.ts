@@ -11,11 +11,7 @@ class PostService {
 
   async addPost(data: AddPostType): Promise<ApiSuccess<any>> {
     try {
-      let newData = {
-        ...data,
-        category: data.category?.value,
-      };
-      const response = await api.post(this.prefix + "/", { newData });
+      const response = await api.post(this.prefix + "/", { data });
       return response.data;
     } catch (error) {
       return handleApiError(error);

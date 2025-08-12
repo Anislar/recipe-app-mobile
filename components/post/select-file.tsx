@@ -18,7 +18,11 @@ interface FileProps {
   pickImage: () => void;
   pickDocument: () => void;
 }
-const SelectFile = ({ pickImage, takePhoto, pickDocument }: FileProps) => {
+export const SelectFile = ({
+  pickImage,
+  takePhoto,
+  pickDocument,
+}: FileProps) => {
   const selected = useSelectedColors();
   const { t } = useTranslation();
 
@@ -97,4 +101,3 @@ const styles = StyleSheet.create({
     color: THEME.colors.text,
   },
 });
-export default SelectFile;

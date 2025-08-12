@@ -100,6 +100,7 @@
       "success":"Profile updated successfully!"
     }
   },
+
   "appInfo": {
     "app": "📱 App",
     "version": "🔢 Version",
@@ -125,7 +126,9 @@
     "name": "nom",
     "loading": "Chargement",
     "errorImage":"Erreur : Échec du téléchargement du fichier...",
-    "submit":"Valider"
+    "submit":"Valider",
+    "cancel":"Annuler"
+
 
 
   },
@@ -136,12 +139,15 @@
   },
   "modal": {
     "addPost": "Ajouter un post",
-    "editProfile": "Modifier le profil"
+    "editProfile": "Modifier le profil",
+    "detailPost":"Détail du post"
+
   },
   "post":{
     "preview":"aperçu",
     "createSuccess":"Publication créée avec succès!",
-
+    "notFound": "Publication introuvable",
+    "notFoundMessage": "La publication que vous recherchez n'existe pas ou a été supprimée.",
     "content":{
       "placeholder":"Qu'est-ce que tu as en tête ?",
       "label":"Contenu"

@@ -9,42 +9,64 @@ import { Controller } from "react-hook-form";
 
 interface CategorySelectorProps {
   control: any;
+  itemSelected: {
+    value: string;
+    label: string;
+    icon: string;
+  } | null;
   onOpen: () => void;
 }
-const CategorySelector = ({ control, onOpen }: CategorySelectorProps) => {
+export const CategorySelector = ({
+  control,
+  itemSelected,
+  onOpen,
+}: CategorySelectorProps) => {
   const selected = useSelectedColors();
   const { t } = useTranslation();
 
   return (
     <View style={styles.itemContainer}>
-      <Text style={styles.label}>{t("post.category.label")}:</Text>
+      <Text style={styles.label}>
+        {t("post.category.label")}
+        <Text style={{ color: THEME.colors.rose }}> *</Text>:
+      </Text>
       <Controller
         control={control}
         name="category"
-        render={({ field: { value }, fieldState: { error } }) => (
-          <TouchableOpacity
-            style={styles.selectorButton}
-            onPress={() => onOpen()}
-            activeOpacity={0.7}
-          >
-            <View style={styles.button}>
+        render={({ fieldState: { error } }) => (
+          <>
+            <TouchableOpacity
+              style={styles.selectorButton}
+              onPress={() => onOpen()}
+              activeOpacity={0.7}
+            >
+              <View style={styles.button}>
+                <MaterialCommunityIcons
+                  name={(itemSelected?.icon as any) ?? "tag"}
+                  size={28}
+                  color={selected.primary}
+                />
+                <Text
+                  style={[
+                    styles.label,
+                    itemSelected?.label && styles.selectedLabel,
+                  ]}
+                >
+                  {itemSelected?.label ?? t("post.category.placeholder")}
+                </Text>
+              </View>
               <MaterialCommunityIcons
-                name={(value?.icon as any) ?? "tag"}
+                name="chevron-right"
                 size={28}
-                color={selected.primary}
+                color={THEME.colors.darkGray}
               />
-              <Text
-                style={[styles.label, value?.label && styles.selectedLabel]}
-              >
-                {value?.label ?? t("post.category.placeholder")}
+            </TouchableOpacity>
+            {error && (
+              <Text style={styles.errorText}>
+                {t("common.error") + " : " + error.message}
               </Text>
-            </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={28}
-              color={THEME.colors.darkGray}
-            />
-          </TouchableOpacity>
+            )}
+          </>
         )}
       />
     </View>
@@ -84,4 +106,3 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
-export default CategorySelector;

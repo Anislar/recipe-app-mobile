@@ -1,19 +1,21 @@
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 import { HeaderTab } from "@/components";
 import { hp, wp } from "@/helpers/common";
-import { useSelectedColors } from "@/store";
+import { useAuthStore, useSelectedColors } from "@/store";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { THEME } from "@/constants/theme";
+import { usePostStore } from "@/store/post.store";
 
 const ModalLayout = () => {
   const { t } = useTranslation();
   const selected = useSelectedColors();
-
-  const titleMap: Record<string, string> = {
-    "add-post": t("modal.addPost"),
-    "update-person": t("modal.editProfile"),
+  const setResetPost = usePostStore((state) => state.setResetElement);
+  const titleMap: Record<string, any> = {
+    "add-post": { title: t("modal.addPost"), onPress: setResetPost },
+    "detail-post": { title: t("modal.detailPost"), onPress: () => {} },
+    "update-person": { title: t("modal.editProfile"), onPress: () => {} },
   };
 
   return (
@@ -25,7 +27,8 @@ const ModalLayout = () => {
         headerTitle: () => (
           <HeaderTab
             showBackButton
-            title={titleMap[route.name]}
+            title={titleMap[route.name].title}
+            cb={titleMap[route.name].onPress}
             style={styles.header}
           />
         ),
@@ -36,7 +39,7 @@ const ModalLayout = () => {
         name="add-post"
         options={{
           headerRight: () => (
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/detail-post")}>
               <Text
                 style={[
                   styles.preview,
@@ -50,6 +53,7 @@ const ModalLayout = () => {
         }}
       />
       <Stack.Screen name="update-person" />
+      <Stack.Screen name="detail-post" />
     </Stack>
   );
 };

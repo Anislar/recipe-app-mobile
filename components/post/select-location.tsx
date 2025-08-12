@@ -16,7 +16,7 @@ interface CategoryProps {
   onEditSubmit?: () => void;
   close: () => void;
 }
-const SelectLocation = ({
+export const SelectLocation = ({
   control,
   ref,
   onEditSubmit,
@@ -157,4 +157,3 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
-export default SelectLocation;

@@ -9,13 +9,19 @@ interface IHeaderMain {
   title: string;
   showBackButton?: boolean;
   style?: StyleProp<TextStyle>;
+  cb?: () => void;
 }
-export const HeaderTab = ({ title, showBackButton, style }: IHeaderMain) => {
+export const HeaderTab = ({
+  title,
+  showBackButton,
+  style,
+  cb,
+}: IHeaderMain) => {
   const { top } = useSafeAreaInsets();
 
   return (
     <View style={[styles.container, { paddingTop: -top }]}>
-      {showBackButton && <BackButton />}
+      {showBackButton && <BackButton cb={cb} />}
       <Text
         style={[
           styles.title,

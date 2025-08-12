@@ -20,6 +20,7 @@ interface ButtonProps {
   loading?: boolean;
   hasShadow?: boolean;
   icon?: keyof typeof MaterialCommunityIcons.glyphMap;
+  type?: "primary" | "text";
 }
 
 export const Button = ({
@@ -30,6 +31,7 @@ export const Button = ({
   loading,
   hasShadow,
   icon,
+  type = "primary",
 }: ButtonProps) => {
   const selected = useSelectedColors();
   const shadowStyle = {
@@ -53,15 +55,25 @@ export const Button = ({
     <TouchableOpacity
       disabled={loading}
       style={[
-        { backgroundColor: selected.primary },
         styles.button,
+        {
+          backgroundColor: type === "text" ? "white" : selected.primary,
+        },
         buttonStyle,
         hasShadow && shadowStyle,
       ]}
       onPress={onPress}
     >
       {icon && <MaterialCommunityIcons name={icon} size={20} color="#fff" />}
-      <Text style={[styles.text, textStyle]}>{title}</Text>
+      <Text
+        style={[
+          styles.text,
+          type === "text" && { color: selected.primaryDark },
+          textStyle,
+        ]}
+      >
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 };

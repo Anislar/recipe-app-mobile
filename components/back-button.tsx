@@ -6,12 +6,14 @@ import { THEME } from "@/constants/theme";
 
 interface BackButtonProps {
   size?: number;
+  cb?: () => void;
 }
-const BackButton = ({ size = 25 }: BackButtonProps) => {
+const BackButton = ({ size = 25, cb }: BackButtonProps) => {
   return (
     <Pressable
       style={styles.button}
       onPress={() => {
+        cb?.();
         router.back();
       }}
     >

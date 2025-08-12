@@ -1,4 +1,4 @@
-export const getUserImage = (uri: string) => {
+export const getUserImage = (uri?: string) => {
   if (uri) {
     return { uri };
   }

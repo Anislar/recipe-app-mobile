@@ -1,7 +1,9 @@
-import { StyleSheet, Text } from "react-native";
-import { lazy, Suspense, useRef, useState } from "react";
+import { StyleSheet } from "react-native";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { t } from "i18next";
+import { router } from "expo-router";
 
 import {
   ScreenWrapper,
@@ -14,20 +16,19 @@ import {
   SelectLocation,
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
-import { addPostSchema, AddPostType } from "@/helpers/post";
+import { addPostSchema, AddPostType, Post } from "@/helpers/post";
 import useUpload from "@/hooks/useUpload";
 import FileSelector from "@/components/post/file-selector";
-import { t } from "i18next";
+
 import { usePostStore } from "@/store/post.store";
 import { showToast } from "@/helpers/toastService";
-import { router } from "expo-router";
 
 const BottomSheetComponent = lazy(() =>
   import("@/components").then((el) => ({ default: el.BottomSheetComponent }))
 );
 
-const Category = lazy(() =>
-  import("@/components").then((el) => ({ default: el.Category }))
+const SelectCategory = lazy(() =>
+  import("@/components").then((el) => ({ default: el.SelectCategory }))
 );
 const SelectFile = lazy(() =>
   import("@/components").then((el) => ({ default: el.SelectFile }))
@@ -47,25 +48,31 @@ const AddPost = () => {
   } = useUpload({
     source: "post",
   });
+  const { isLoading, addPost, setPost, post } = usePostStore();
+
   const { control, handleSubmit, watch, setValue, reset } =
     useForm<AddPostType>({
       resolver: zodResolver(addPostSchema),
+      defaultValues: {
+        category: (post?.category as any) ?? "",
+        content: post?.content ?? "",
+        file: post?.file ?? undefined,
+        location: post?.location ?? undefined,
+      },
     });
   const [step, setStep] = useState<BottomSheetType>("category");
-  const categorySelected = watch("category");
-  const { isLoading, addPost } = usePostStore();
-  const handlePost: SubmitHandler<AddPostType> = async (data: AddPostType) => {
-    const response = await addPost(data);
-    if (typeof response === "string") {
-      showToast(t("post.createSuccess"));
-      reset();
-      router.back();
-    }
-  };
+  const [categorySelected, setCategorySelected] = useState<{
+    value: string;
+    label: string;
+    icon: string;
+  } | null>(null);
+
+  // open bottomSheet
   const handleOpenBottomSheet = (item: BottomSheetType) => {
     setStep(item);
-    bottomSheetRef.current?.snapToIndex(0);
+    bottomSheetRef.current?.expand();
   };
+  // handle upload
   const handleUploadFile = async (type: string) => {
     let result: any = null;
     bottomSheetRef.current.close();
@@ -84,6 +91,8 @@ const AddPost = () => {
     }
     setValue("file", result?.url, { shouldValidate: true });
   };
+
+  // BottomSheetContent
   const BottomSheetContent = {
     file: {
       snapPoints: ["25%"],
@@ -100,10 +109,11 @@ const AddPost = () => {
       snapPoints: ["50%"],
 
       content: (
-        <Category
+        <SelectCategory
           itemSelected={categorySelected?.value!}
           onChange={(item) => {
-            setValue("category", item, { shouldValidate: true });
+            setValue("category", item.value, { shouldValidate: true });
+            setCategorySelected(item);
             setTimeout(() => {
               bottomSheetRef.current.close();
             }, 300);
@@ -122,13 +132,42 @@ const AddPost = () => {
       ),
     },
   };
+
+  // handle Submission in real time
+  useEffect(() => {
+    const subscription = watch((values) => setPost(values as Post));
+    return () => subscription.unsubscribe();
+  }, [watch, setPost]);
+
+  useEffect(() => {
+    if (post) {
+      reset({
+        category: (post.category as any) ?? "",
+        content: post.content ?? "",
+        file: post.file ?? undefined,
+        location: post.location ?? undefined,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [post?.content, reset]);
+
+  // submit
+  const handlePost: SubmitHandler<AddPostType> = async (data: AddPostType) => {
+    const response = await addPost(data);
+    if (typeof response === "string") {
+      showToast(t("post.createSuccess"));
+      reset();
+      router.back();
+    }
+  };
   return (
     <ScreenWrapper bg="white">
       <FormWrapper style={styles.content}>
         {/* Content */}
         <PostContent control={control} />
-        {/* Category */}
+        {/* SelectCategory */}
         <CategorySelector
+          itemSelected={categorySelected}
           control={control}
           onOpen={() => handleOpenBottomSheet("category")}
         />
@@ -150,6 +189,20 @@ const AddPost = () => {
           onOpen={() => handleOpenBottomSheet("location")}
         />
         {/* Submit */}
+        <Button
+          type="text"
+          onPress={() => {
+            setPost(null);
+            reset({
+              category: undefined,
+              content: "",
+              file: undefined,
+              location: undefined,
+            });
+            setCategorySelected(null);
+          }}
+          title={t("common.cancel")}
+        />
         <Button
           loading={isLoading}
           onPress={handleSubmit(handlePost)}

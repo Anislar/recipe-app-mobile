@@ -122,7 +122,8 @@
     "name": "name",
     "loading": "Loading",
     "errorImage": "Error: Failed to upload file...",
-    "submit":"submit"
+    "submit":"submit",
+    "cancel":"Cancel"
   },
   "support": {
     "help": "Need More Help?",
@@ -130,11 +131,14 @@
   },
   "modal": {
     "addPost": "Add post",
-    "editProfile": "Edit Profile"
+    "editProfile": "Edit Profile",
+    "detailPost":"Detail Post"
   },
   "post":{
     "preview":"preview",
     "createSuccess":"Post Create successfully!",
+    "notFound": "Post not found",
+    "notFoundMessage": "The post you're looking for doesn't exist or has been removed.",
     "content":{
       "placeholder": "What's in your mind ?",
       "label":"Content"

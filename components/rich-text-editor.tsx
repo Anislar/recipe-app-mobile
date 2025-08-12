@@ -1,20 +1,27 @@
-import { forwardRef } from "react";
+import { t } from "i18next";
+import { forwardRef, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
+
 import {
+  actions,
   RichEditor,
   RichToolbar,
-  actions,
 } from "react-native-pell-rich-editor";
-import { t } from "i18next";
 
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 
 interface RichTextEditorProps extends Partial<RichEditor> {
   onChange: (text: string) => void;
+  value: string;
 }
 const RichTextEditor = forwardRef<RichEditor, RichTextEditorProps>(
-  ({ onChange, ...props }, ref) => {
+  ({ onChange, value, ...props }, ref) => {
+    useEffect(() => {
+      if (!value) {
+        (ref as any)?.current.setContentHTML("");
+      }
+    }, [value, ref]);
     return (
       <View style={styles.content}>
         <RichToolbar

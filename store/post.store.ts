@@ -45,7 +45,6 @@ export const usePostStore = create<PostStore>((set) => ({
     set({
       error: null,
       isLoading: false,
-      posts: [],
       post: null,
     }),
   addPost: async (data: AddPostType) => {

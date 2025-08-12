@@ -10,3 +10,19 @@ export const handleApiError = (error: any) => {
   }
   throw error;
 };
+export const isImageUrl = (url?: string) =>
+  !!url && /(\.png|\.jpg|\.jpeg|\.gif|\.webp)$/i.test(url);
+
+export const formatDate = (value?: string, locale: string = "en") => {
+  if (!value) value = "";
+  const d = new Date(value || new Date());
+  if (Number.isNaN(d.getTime())) return "";
+  try {
+    return new Intl.DateTimeFormat(locale, {
+      dateStyle: "long",
+      timeStyle: "short",
+    }).format(d);
+  } catch {
+    return d.toLocaleString(locale);
+  }
+};
