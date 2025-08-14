@@ -18,6 +18,7 @@ interface ButtonProps {
   onPress?: () => void;
   title: string;
   loading?: boolean;
+  disabled?: boolean;
   hasShadow?: boolean;
   icon?: keyof typeof MaterialCommunityIcons.glyphMap;
   type?: "primary" | "text";
@@ -29,6 +30,7 @@ export const Button = ({
   onPress = () => {},
   title,
   loading,
+  disabled,
   hasShadow,
   icon,
   type = "primary",
@@ -53,13 +55,14 @@ export const Button = ({
   }
   return (
     <TouchableOpacity
-      disabled={loading}
+      disabled={disabled || loading}
       style={[
         styles.button,
         {
           backgroundColor: type === "text" ? "white" : selected.primary,
         },
         buttonStyle,
+        disabled && { backgroundColor: selected.primary + "90" },
         hasShadow && shadowStyle,
       ]}
       onPress={onPress}

@@ -1,4 +1,11 @@
-import { View, Text, StyleProp, StyleSheet, TextStyle } from "react-native";
+import {
+  View,
+  Text,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BackButton from "./back-button";
 import { hp, wp } from "@/helpers/common";
@@ -9,18 +16,20 @@ interface IHeaderMain {
   title: string;
   showBackButton?: boolean;
   style?: StyleProp<TextStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
   cb?: () => void;
 }
 export const HeaderTab = ({
   title,
   showBackButton,
   style,
+  containerStyle,
   cb,
 }: IHeaderMain) => {
   const { top } = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { paddingTop: -top }]}>
+    <View style={[styles.container, { paddingTop: -top }, containerStyle]}>
       {showBackButton && <BackButton cb={cb} />}
       <Text
         style={[

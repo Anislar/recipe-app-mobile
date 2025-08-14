@@ -45,7 +45,6 @@ export const usePostStore = create<PostStore>((set) => ({
     set({
       error: null,
       isLoading: false,
-      post: null,
     }),
   addPost: async (data: AddPostType) => {
     set({
@@ -55,21 +54,22 @@ export const usePostStore = create<PostStore>((set) => ({
 
     try {
       const response = await postService.addPost(data);
-      set({
+      set((state) => ({
+        posts: [response.data.data, ...state.posts],
         post: response.data.data,
         isLoading: false,
         error: null,
-      });
+      }));
       return true;
     } catch (error: ApiError | any) {
       set({
         isLoading: false,
         error: {
           message: error.message,
-          code: error.code || "POST_FAILED",
+          code: error.code || "POST_ADD_FAILED",
         },
       });
-      return error.code || "POST_FAILED";
+      return error.code || "POST_ADD_FAILED";
     }
   },
 }));

@@ -1,11 +1,9 @@
-import { Link, Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useTranslation } from "react-i18next";
 
 import { HeaderTab } from "@/components";
-import { wp } from "@/helpers/common";
-import { useTranslation } from "react-i18next";
 import { useSelectedColors } from "@/store";
-import { THEME } from "@/constants/theme";
 
 const MainLayout = () => {
   const { t } = useTranslation();
@@ -42,18 +40,6 @@ const MainLayout = () => {
               color={color}
             />
           ),
-          headerRight: () => (
-            <Link href="/(modal)/add-post" asChild>
-              <MaterialCommunityIcons
-                style={{
-                  marginHorizontal: wp(3),
-                }}
-                size={wp(8)}
-                name="plus-box-multiple"
-                color={THEME.colors.text}
-              />
-            </Link>
-          ),
         }}
       />
       <Tabs.Screen
@@ -69,6 +55,35 @@ const MainLayout = () => {
           ),
         }}
       />
+      <Tabs.Screen
+        name="add-post"
+        options={{
+          title: t("modal.addPost"),
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons size={size} name="plus-box" color={color} />
+          ),
+        }}
+        listeners={() => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            router.push("/(modal)/add-post");
+          },
+        })}
+      />
+      <Tabs.Screen
+        name="chat"
+        options={{
+          title: t("chat.titleTab"),
+          tabBarIcon: ({ color, size, focused }) => (
+            <MaterialCommunityIcons
+              size={size}
+              name={focused ? "chat" : "chat-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="account"
         options={{

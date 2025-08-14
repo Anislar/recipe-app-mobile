@@ -1,12 +1,12 @@
-import { router, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 import { HeaderTab } from "@/components";
-import { hp, wp } from "@/helpers/common";
-import { useAuthStore, useSelectedColors } from "@/store";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { THEME } from "@/constants/theme";
+import { hp, wp } from "@/helpers/common";
+import { useSelectedColors } from "@/store";
 import { usePostStore } from "@/store/post.store";
+import { StyleSheet } from "react-native";
 
 const ModalLayout = () => {
   const { t } = useTranslation();
@@ -14,14 +14,13 @@ const ModalLayout = () => {
   const setResetPost = usePostStore((state) => state.setResetElement);
   const titleMap: Record<string, any> = {
     "add-post": { title: t("modal.addPost"), onPress: setResetPost },
-    "detail-post": { title: t("modal.detailPost"), onPress: () => {} },
     "update-person": { title: t("modal.editProfile"), onPress: () => {} },
   };
 
   return (
     <Stack
       screenOptions={({ route }) => ({
-        presentation: "modal",
+        //presentation: "modal",
         tabBarActiveTintColor: selected.primaryDark,
         headerShadowVisible: false,
         headerTitle: () => (
@@ -35,25 +34,8 @@ const ModalLayout = () => {
         headerLeft: () => <></>,
       })}
     >
-      <Stack.Screen
-        name="add-post"
-        options={{
-          headerRight: () => (
-            <TouchableOpacity onPress={() => router.push("/detail-post")}>
-              <Text
-                style={[
-                  styles.preview,
-                  { backgroundColor: selected.primaryDark },
-                ]}
-              >
-                {t("post.preview")}
-              </Text>
-            </TouchableOpacity>
-          ),
-        }}
-      />
+      <Stack.Screen name="add-post" />
       <Stack.Screen name="update-person" />
-      <Stack.Screen name="detail-post" />
     </Stack>
   );
 };
@@ -61,7 +43,7 @@ const styles = StyleSheet.create({
   header: {
     flex: 1,
   },
-  preview: {
+  post: {
     padding: wp(1.9),
     borderRadius: THEME.radius.xl,
     color: "white",

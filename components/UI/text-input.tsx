@@ -16,7 +16,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { capitalize } from "@/helpers/utils";
 
 interface TextInputInterface extends TextInputProps {
-  label: string;
+  label?: string;
   containerStyles?: StyleProp<ViewStyle>;
   inputStyles?: StyleProp<TextStyle>;
   suffixIcon?: keyof typeof MaterialCommunityIcons.glyphMap;

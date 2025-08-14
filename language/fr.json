@@ -5,7 +5,9 @@
   "home": {
     "titleTab": "Accueil"
   },
-
+  "chat": {
+    "titleTab": "Discussion"
+  },
   "welcome": {
     "title": "LinkUp!",
     "punchline": "Les moments sont plus beaux à plusieurs, Partagez-les avec ceux que vous aimez.",
@@ -144,7 +146,7 @@
 
   },
   "post":{
-    "preview":"aperçu",
+    "post":"Publier",
     "createSuccess":"Publication créée avec succès!",
     "notFound": "Publication introuvable",
     "notFoundMessage": "La publication que vous recherchez n'existe pas ou a été supprimée.",
@@ -163,7 +165,7 @@
       "label":"Fichier",
       "file":"fichier",
       "image":"image",
-      "photo":"photo"
+      "camera":"camera"
     },
     "location":{
       "placeholderMin":"Votre emplacement",

@@ -11,7 +11,7 @@ class PostService {
 
   async addPost(data: AddPostType): Promise<ApiSuccess<any>> {
     try {
-      const response = await api.post(this.prefix + "/", { data });
+      const response = await api.post(this.prefix + "/", data);
       return response.data;
     } catch (error) {
       return handleApiError(error);

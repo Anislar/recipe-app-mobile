@@ -22,10 +22,10 @@ export { Separator } from "./UI/separator";
 export { SettingsItem } from "./profile/setting-item";
 export { ThemeSelect } from "./profile/theme-select";
 
+// Location component
+export { LocationSelector } from "./profile/location-selector";
+export { SelectLocation } from "./profile/select-location";
 // Post component
-export { SelectCategory } from "./post/select-category";
-export { SelectFile } from "./post/select-file";
-export { PostContent } from "./post/post-content";
-export { CategorySelector } from "./post/category-selector";
-export { LocationSelector } from "./post/location-selector";
-export { SelectLocation } from "./post/select-location";
+
+export { PostCard } from "./post/post-card";
+export { CategoryItem } from "./post/post-category";

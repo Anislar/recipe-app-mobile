@@ -26,3 +26,7 @@ export const formatDate = (value?: string, locale: string = "en") => {
     return d.toLocaleString(locale);
   }
 };
+export const addHttps = (url: string) => {
+  if (!url.startsWith("https")) return url.replace("http", "https");
+  return url;
+};

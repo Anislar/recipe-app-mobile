@@ -9,6 +9,7 @@ export interface Post {
   likes_count: number;
   userId?: string;
   createdAt?: string;
+  liked: boolean;
 }
 // polls schema
 const pollSchema = z
@@ -45,9 +46,12 @@ const addPostSchema = z.object({
     )
     .optional(),
 
-  category: z.enum(["general", "tech", "travel", "food", "art"], {
-    message: "You must select a category",
-  }),
+  category: z.enum(
+    ["general", "tech", "travel", "food", "art", "fitness", "lifestyle"],
+    {
+      message: "You must select a category",
+    }
+  ),
 
   location: z
     .string()

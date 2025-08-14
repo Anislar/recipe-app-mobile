@@ -5,6 +5,7 @@ import { fileService } from "@/services/api/file.service";
 import { showToast } from "@/helpers/toastService";
 import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
+import { addHttps } from "@/helpers/utils";
 
 interface uploadFileInterface {
   source: "user" | "post";
@@ -90,9 +91,10 @@ const useUpload = ({ source }: uploadFileInterface) => {
       formData.append("source", source);
       const res = await fileService.uploadFile(formData, setProgress);
       showToast("File uploaded successfully!");
-      setFile(res.data);
+      const data = { ...res.data, url: addHttps(res.data.url) };
+      setFile(data);
       setStatus(STATUS.SUCCESS);
-      return res.data;
+      return data;
     } catch (error) {
       setStatus(STATUS.ERROR);
       console.error("Upload failed:", error);
