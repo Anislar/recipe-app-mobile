@@ -28,12 +28,6 @@ const pollSchema = z
     { message: "Poll options must be unique" }
   );
 
-// const categoryOptionSchema = z.object({
-//   value: ,
-//   label: z.string(),
-//   icon: z.string(),
-// });
-
 // add post DTO
 const addPostSchema = z.object({
   content: z.string().min(3, "At least 3 characters"),
@@ -61,5 +55,4 @@ const addPostSchema = z.object({
 });
 
 type AddPostType = z.infer<typeof addPostSchema>;
-
 export { addPostSchema, AddPostType };

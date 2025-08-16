@@ -2,27 +2,42 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Post } from "@/helpers/post";
-import { useAuthStore } from "@/store";
 import { categories } from "@/helpers/post/utils";
 import { THEME } from "@/constants/theme";
+import { formatDate } from "@/helpers/utils";
+import { User } from "@/helpers/auth";
+import { Avatar } from "../avatar";
+import { hp } from "@/helpers/common";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { PostContent } from "./post-content";
 
 interface PostCardProps {
-  post: Post;
+  post: Partial<Post> & {
+    user: Partial<User>;
+  };
 }
 export const PostCard = ({ post }: PostCardProps) => {
-  const user = useAuthStore((state) => state.user);
-  const handleLike = (postId: string) => {};
+  const handleLike = (postId: string | undefined) => {};
   const categorie = categories.find((cat) => cat.id === post.category);
   return (
     <View style={styles.postCard}>
       <View style={styles.postHeader}>
         <View style={styles.userInfo}>
-          <Image source={{ uri: user?.avatar }} style={styles.avatar} />
+          <Avatar
+            uri={post.user?.avatar!}
+            size={hp(6)}
+            style={styles.avatar}
+            rounded={THEME.radius.xxl * 2}
+          />
           <View style={styles.userDetails}>
-            <Text style={styles.userName}>{user?.name}</Text>
-            <Text style={styles.userHandle}>
-              {user?.role} • {post.createdAt}
+            <Text style={styles.userName}>
+              {post.user?.name + " "}
+              <Text style={styles.userHandle}>
+                •<MaterialCommunityIcons size={15} name="map-marker-outline" />
+                {post.location ?? "N/A"}
+              </Text>
             </Text>
+            <Text style={styles.userHandle}>{formatDate(post.createdAt)}</Text>
           </View>
         </View>
         <View style={styles.categoryBadge}>
@@ -38,11 +53,15 @@ export const PostCard = ({ post }: PostCardProps) => {
           </Text>
         </View>
       </View>
-
-      <Text style={styles.postContent}>{post.content}</Text>
+      <PostContent content={post.content!} />
 
       {post.file && (
-        <Image source={{ uri: post.file }} style={styles.postImage} />
+        <Image
+          transition={100}
+          contentFit="contain"
+          source={{ uri: post.file }}
+          style={styles.postImage}
+        />
       )}
 
       <View style={styles.postActions}>
@@ -66,7 +85,7 @@ export const PostCard = ({ post }: PostCardProps) => {
             size={20}
             color={THEME.colors.grey2}
           />
-          {/* <Text style={styles.actionText}>{post.comments}</Text> */}
+          <Text style={styles.actionText}>0</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.actionButton}>
@@ -95,9 +114,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
     marginRight: 12,
   },
   userDetails: {
@@ -110,7 +126,7 @@ const styles = StyleSheet.create({
   },
   userHandle: {
     fontSize: 14,
-    color: "#6b7280",
+    color: THEME.colors.grey2,
     marginTop: 2,
   },
   categoryBadge: {
@@ -123,12 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "500",
   },
-  postContent: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: "#374151",
-    marginBottom: 12,
-  },
+
   postImage: {
     width: "100%",
     height: 200,

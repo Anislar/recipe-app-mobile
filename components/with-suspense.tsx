@@ -1,13 +1,14 @@
 import React, { Suspense } from "react";
 import { Text, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import { LoadingSpinner } from "./UI/loading";
-import i18n from "@/language/i18n";
 import { useSelectedColors } from "@/store";
 
 export const DefaultFallback = ({ isReady }: { isReady?: boolean }) => {
   const selected = useSelectedColors();
+  const { t } = useTranslation();
 
   return (
     <View
@@ -31,7 +32,7 @@ export const DefaultFallback = ({ isReady }: { isReady?: boolean }) => {
           fontSize: hp(2),
         }}
       >
-        {!isReady ? "Loading" : i18n.t("common.loading")} ...
+        {!isReady ? "Loading" : t("common.loading")} ...
       </Text>
     </View>
   );

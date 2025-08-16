@@ -6,15 +6,17 @@ import { UpdateUserType } from "@/helpers/user";
 class UserService {
   private prefix: string;
   constructor() {
-    this.prefix = "/user";
+    this.prefix = "user";
   }
 
   async getCurrentUser(): Promise<ApiSuccess<any>> {
     try {
-      console.log("-");
+      console.log(this.prefix + "/me");
+
       const response = await api.get(this.prefix + "/me");
       return response.data;
     } catch (error) {
+      console.log("🚀 ~ UserService ~ getCurrentUser ~ error:", error);
       return handleApiError(error);
     }
   }

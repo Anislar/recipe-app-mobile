@@ -65,7 +65,7 @@ const OauthRedirect = () => {
         />
       </View>
     );
-  return <DefaultFallback />;
+  return <DefaultFallback isReady />;
 };
 
 export default OauthRedirect;

@@ -1,9 +1,8 @@
 import { create } from "zustand";
 
-import { ApiError } from "@/type";
+import { ApiError, CategoryIDs } from "@/type";
 import { AddPostType, Post } from "@/helpers/post";
 import { postService } from "@/services/api/post.service";
-
 export interface PostStore {
   isLoading: boolean;
   error: {
@@ -12,12 +11,14 @@ export interface PostStore {
   } | null;
   // post data
   post: Post | null;
+  category: CategoryIDs;
   posts: Post[];
 
   setLoading: (isLoading: boolean) => void;
   setError: (error: PostStore["error"] | null) => void;
   // post data
   setPost: (user: PostStore["post"]) => void;
+  setCategory: (category: CategoryIDs) => void;
   setPosts: (posts: Post[], replace?: boolean) => void;
   addPosts: (post: Post) => void;
   clearPosts: () => void;
@@ -31,10 +32,12 @@ export const usePostStore = create<PostStore>((set) => ({
   error: null,
   post: null,
   posts: [],
+  category: "general",
   // Basic actions
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
   setPost: (post) => set({ post }),
+  setCategory: (category) => set({ category }),
   setPosts: (posts: Post[], replace: boolean = true) =>
     set((state) => ({
       posts: replace ? posts : [...state.posts, ...posts],

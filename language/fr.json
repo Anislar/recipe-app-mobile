@@ -28,8 +28,7 @@
       "signIn": "Se connecter",
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "signUp": "S'inscrire",
-      "emailNotVerified":"Veuillez vérifier votre email pour continuer."
-
+      "emailNotVerified": "Veuillez vérifier votre email pour continuer."
     },
     "signUp": {
       "lets": "Allons,",
@@ -37,35 +36,33 @@
       "description": "Créez votre compte pour commencer",
       "signUp": "S'inscrire",
       "alreadyHaveAccount": "vous avez déjà un compte ?",
-      "signIn":"Se connecter"
-
+      "signIn": "Se connecter"
     },
     "forgotPassword": {
       "title": "Mot de passe oublié",
       "description": "Entrez votre email pour recevoir un code de réinitialisation",
       "sendResetCode": "Envoyer le code",
-      "success":"Code envoyé! Veuillez consulter votre boîte mail."
-
+      "success": "Code envoyé! Veuillez consulter votre boîte mail."
     },
     "newPassword": {
       "lets": "Allons,",
       "createNewPassword": "Créer un nouveau mot de passe",
       "description": "Entrez votre nouveau mot de passe",
-      "currentPassword":"Mot de passe actuel",
+      "currentPassword": "Mot de passe actuel",
       "confirmPassword": "confirmer le mot de passe",
       "enterConfirmPassword": "Entrez votre confirmation de mot de passe",
       "enterCurrentPassword": "Entrez votre mot de passe actuel",
       "resetPassword": "Réinitialiser le mot de passe",
-      "success":"Votre mot de passe a été réinitialisé avec succès !"
+      "success": "Votre mot de passe a été réinitialisé avec succès !"
     },
     "verifyCode": {
       "titlePassword": "Réinitialisation du mot de passe",
       "titleMail": "E-mail de vérification",
-      "description":"Nous vous envoyons un code pour vérifier votre email !",
+      "description": "Nous vous envoyons un code pour vérifier votre email !",
 
       "resentCode": "Renvoyer le code",
       "confirm": "Confirmer",
-      "success":"Tout est prêt! Saisissez votre nouveau mot de passe."
+      "success": "Tout est prêt! Saisissez votre nouveau mot de passe."
     },
     "oauth": {
       "continueWithGoogle": "Continuer avec Google",
@@ -75,7 +72,7 @@
     }
   },
   "account": {
-    "titleTab":"Compte",
+    "titleTab": "Compte",
     "edit": "Modifier le profil",
     "editPassword": "Modifier Mot de passe",
     "helpSupport": "Aide & Support",
@@ -91,15 +88,15 @@
       "fullName": "Nom complet",
       "fullNamePlaceholder": "Entrez votre nom complet",
       "gender": "Genre",
-      "male":"Homme",
-      "female":"Femme",
+      "male": "Homme",
+      "female": "Femme",
       "location": "Localisation",
       "locationPlaceholder": "Localisation...",
       "phoneNumber": "Numéro de téléphone",
       "phoneNumberPlaceholder": "Entrez votre numéro de téléphone",
       "about": "À propos",
       "aboutPlaceholder": "Parlez-nous un peu de vous...",
-      "success":"Profile updated successfully!"
+      "success": "Profile updated successfully!"
     }
   },
 
@@ -127,60 +124,60 @@
     "email": "email",
     "name": "nom",
     "loading": "Chargement",
-    "errorImage":"Erreur : Échec du téléchargement du fichier...",
-    "submit":"Valider",
-    "cancel":"Annuler"
-
-
-
+    "errorImage": "Erreur : Échec du téléchargement du fichier...",
+    "submit": "Valider",
+    "cancel": "Annuler"
   },
-  "support":{
-    "help":"Besoin de plus d'aide ?",
-    "email":"Assistance par e-mail"
-
+  "support": {
+    "help": "Besoin de plus d'aide ?",
+    "email": "Assistance par e-mail"
   },
   "modal": {
     "addPost": "Ajouter un post",
     "editProfile": "Modifier le profil",
-    "detailPost":"Détail du post"
-
+    "detailPost": "Détail du post"
   },
-  "post":{
-    "post":"Publier",
-    "createSuccess":"Publication créée avec succès!",
+  "post": {
+    "post": "Publier",
+    "createSuccess": "Publication créée avec succès!",
     "notFound": "Publication introuvable",
     "notFoundMessage": "La publication que vous recherchez n'existe pas ou a été supprimée.",
-    "content":{
-      "placeholder":"Qu'est-ce que tu as en tête ?",
-      "label":"Contenu"
+    "empty": {
+      "title": "Pas encore de publications",
+      "subtitle": "Soyez le premier à partager quelque chose d'extraordinaire !"
     },
-    "category":{
-      "placeholder":"Sélectionnez une catégorie",
-      "label":"Catégorie",
-      "title":"Aidez-nous à catégoriser ceci"
+    "content": {
+      "placeholder": "Qu'est-ce que tu as en tête ?",
+      "label": "Contenu"
     },
-    "file":{
-      "placeholder":"Ajouter une photo, un fichier ou une image",
-      "subtitle":"Format pris en charge : images (jpeg, png, jpg, webp, gif) et PDF",
-      "label":"Fichier",
-      "file":"fichier",
-      "image":"image",
-      "camera":"camera"
+    "category": {
+      "placeholder": "Sélectionnez une catégorie",
+      "label": "Catégorie",
+      "title": "Aidez-nous à catégoriser ceci"
     },
-    "location":{
-      "placeholderMin":"Votre emplacement",
-      "infoSave":"Pour notes: \"Vos modifications sont enregistrées automatiquement...\"",
+    "file": {
+      "placeholder": "Ajouter une photo, un fichier ou une image",
+      "subtitle": "Format pris en charge : images (jpeg, png, jpg, webp, gif) et PDF",
+      "label": "Fichier",
+      "file": "fichier",
+      "image": "image",
+      "camera": "camera"
+    },
+    "extra": {
+      "label": "Extra"
+    },
+    "location": {
+      "placeholderMin": "Votre emplacement",
+      "infoSave": "Pour notes: \"Vos modifications sont enregistrées automatiquement...\"",
       "placeholder": "Choisissez votre emplacement actuel",
-      "label":"Localisation",
+      "label": "Localisation",
       "permissionDeniedTitle": "Autorisation requise",
-      "permissionDeniedDescription":"L'autorisation d'accès à l'emplacement a été refusée"
-
+      "permissionDeniedDescription": "L'autorisation d'accès à l'emplacement a été refusée"
     }
-
   },
-  
-  "file":{
-    "permissionDeniedTitle":"Autorisation requise",
-    "permissionDeniedDescription":"Veuillez accorder à la galerie la permission de sélectionner des images."
+
+  "file": {
+    "permissionDeniedTitle": "Autorisation requise",
+    "permissionDeniedDescription": "Veuillez accorder à la galerie la permission de sélectionner des images."
   }
 }

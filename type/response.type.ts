@@ -17,4 +17,12 @@ interface ApiSuccess<T> {
   token?: string;
   timestamp: string;
 }
-export { ApiError, ApiSuccess };
+interface ApiQueryParams<F = Record<string, any>> {
+  signal?: any;
+  page?: number;
+  limit?: number;
+  filters?: F;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}
+export { ApiError, ApiSuccess, ApiQueryParams };

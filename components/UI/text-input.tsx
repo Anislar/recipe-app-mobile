@@ -18,6 +18,7 @@ import { capitalize } from "@/helpers/utils";
 interface TextInputInterface extends TextInputProps {
   label?: string;
   containerStyles?: StyleProp<ViewStyle>;
+  labelStyle?: StyleProp<TextStyle>;
   inputStyles?: StyleProp<TextStyle>;
   suffixIcon?: keyof typeof MaterialCommunityIcons.glyphMap;
   onPressIcon?: () => void;
@@ -27,6 +28,7 @@ interface TextInputInterface extends TextInputProps {
 const TextInputComponent = ({
   label,
   containerStyles,
+  labelStyle,
   inputStyles,
   suffixIcon,
   onPressIcon,
@@ -36,7 +38,9 @@ const TextInputComponent = ({
 }: TextInputInterface) => {
   return (
     <View style={[styles.container, containerStyles]}>
-      {label && <Text style={styles.label}>{capitalize(label)}</Text>}
+      {label && (
+        <Text style={[styles.label, labelStyle]}>{capitalize(label)}</Text>
+      )}
       <View style={styles.inputContainer}>
         <TextInput
           autoCapitalize="none"

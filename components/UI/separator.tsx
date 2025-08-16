@@ -4,7 +4,7 @@ import { hp, wp } from "@/helpers/common";
 
 export const Separator = ({
   my = hp(1.5),
-  mx = wp(2),
+  mx = wp(5),
 }: {
   my?: number;
   mx?: number;
@@ -17,8 +17,8 @@ export const Separator = ({
 };
 const style = StyleSheet.create({
   separator: {
-    opacity: 0.6,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: THEME.colors.gray,
+    //opacity: 0.6,
+    height: 1,
+    backgroundColor: THEME.colors.gray,
   },
 });

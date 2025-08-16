@@ -28,7 +28,7 @@ const ModalLayout = () => {
             showBackButton
             title={titleMap[route.name].title}
             cb={titleMap[route.name].onPress}
-            style={styles.header}
+            titleStyle={styles.header}
           />
         ),
         headerLeft: () => <></>,
@@ -41,7 +41,8 @@ const ModalLayout = () => {
 };
 const styles = StyleSheet.create({
   header: {
-    flex: 1,
+    // flex: 1,
+    paddingRight: wp(10),
   },
   post: {
     padding: wp(1.9),

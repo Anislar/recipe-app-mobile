@@ -125,8 +125,8 @@
     "name": "name",
     "loading": "Loading",
     "errorImage": "Error: Failed to upload file...",
-    "submit":"submit",
-    "cancel":"Cancel"
+    "submit": "submit",
+    "cancel": "Cancel"
   },
   "support": {
     "help": "Need More Help?",
@@ -135,41 +135,48 @@
   "modal": {
     "addPost": "Add post",
     "editProfile": "Edit Profile",
-    "detailPost":"Detail Post"
+    "detailPost": "Detail Post"
   },
-  "post":{
-    "post":"Post",
-    "createSuccess":"Post Create successfully!",
+  "post": {
+    "post": "Post",
+    "createSuccess": "Post Create successfully!",
     "notFound": "Post not found",
     "notFoundMessage": "The post you're looking for doesn't exist or has been removed.",
-    "content":{
+    "empty": {
+      "title": "No Posts Yet",
+      "subtitle": "Be the first to share something amazing!"
+    },
+
+    "content": {
       "placeholder": "What's in your mind ?",
-      "label":"Content"
+      "label": "Content"
     },
-    "category":{
-      "placeholder":"Select Category",
-      "label":"Category",
-      "title":"Help us categorize this"
+    "category": {
+      "placeholder": "Select Category",
+      "label": "Category",
+      "title": "Help us categorize this"
     },
-    "file":{
-      "placeholder":"Tap to add photo, file, or image",
-      "subtitle":"Supported: images (jpeg, png, jpg, webp, gif) and PDFs",
-      "label":"File",
-      "file":"file",
-      "image":"image",
-      "camera":"camera"
+    "extra": {
+      "label": "Extra"
     },
-    "location":{
-      "placeholderMin":"Your location",
-      "infoSave":"For notes: \"Your changes save automatically...\"",
+    "file": {
+      "placeholder": "Tap to add photo, file, or image",
+      "subtitle": "Supported: images (jpeg, png, jpg, webp, gif) and PDFs",
+      "label": "File",
+      "file": "file",
+      "image": "image",
+      "camera": "camera"
+    },
+    "location": {
+      "placeholderMin": "Your location",
+      "infoSave": "For notes: \"Your changes save automatically...\"",
       "placeholder": "Choose your current location",
-      "label":"Location",
+      "label": "Location",
       "permissionDeniedTitle": "Permission required",
       "permissionDeniedDescription": "Permission to access location was denied!"
-  
     }
   },
-  
+
   "file": {
     "permissionDeniedTitle": "Permission required",
     "permissionDeniedDescription": "Please grant gallery permission to select images."

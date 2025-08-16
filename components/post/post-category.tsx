@@ -1,8 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
-import { CategoryType } from "@/type";
 import { THEME } from "@/constants/theme";
+import { hp, wp } from "@/helpers/common";
+import { CategoryType } from "@/type";
 
 interface CategoryItemProps {
   category: CategoryType;
@@ -18,15 +19,14 @@ export const CategoryItem = ({
   <TouchableOpacity
     style={[
       styles.categoryItem,
-      isSelected && { backgroundColor: category.color + "20" },
+      isSelected && {
+        backgroundColor: category.color + "20",
+        borderColor: category.color,
+      },
     ]}
     onPress={onPress}
   >
-    <Ionicons
-      name={category.icon}
-      size={20}
-      color={isSelected ? category.color : THEME.colors.grey2}
-    />
+    <Ionicons name={category.icon} size={20} color={category.color} />
     <Text
       style={[styles.categoryItemText, isSelected && { color: category.color }]}
     >
@@ -39,16 +39,17 @@ const styles = StyleSheet.create({
   categoryItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 12,
-    borderRadius: 20,
-    backgroundColor: "#f3f4f6",
+    paddingHorizontal: wp(2.5),
+    paddingVertical: hp(1.2),
+    borderRadius: THEME.radius.xl,
+    borderWidth: 1,
+    gap: 5,
+    borderColor: THEME.colors.grey2 + "60",
   },
   categoryItemText: {
-    marginLeft: 6,
-    fontSize: 14,
-    fontWeight: "500",
+    fontSize: hp(1.4),
+    fontWeight: THEME.fonts.medium,
+    padding: 0,
     color: THEME.colors.grey2,
   },
 });

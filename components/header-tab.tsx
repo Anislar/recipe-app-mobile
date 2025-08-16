@@ -1,47 +1,37 @@
 import {
-  View,
-  Text,
   StyleProp,
   StyleSheet,
+  Text,
   TextStyle,
+  View,
   ViewStyle,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import BackButton from "./back-button";
-import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
+import { hp, wp } from "@/helpers/common";
 import { capitalize } from "@/helpers/utils";
+import BackButton from "./back-button";
 
 interface IHeaderMain {
   title: string;
   showBackButton?: boolean;
-  style?: StyleProp<TextStyle>;
+  titleStyle?: StyleProp<TextStyle>;
   containerStyle?: StyleProp<ViewStyle>;
+  suffixIcon?: React.ReactNode;
   cb?: () => void;
 }
 export const HeaderTab = ({
   title,
   showBackButton,
-  style,
+  titleStyle,
   containerStyle,
+  suffixIcon,
   cb,
 }: IHeaderMain) => {
-  const { top } = useSafeAreaInsets();
-
   return (
-    <View style={[styles.container, { paddingTop: -top }, containerStyle]}>
+    <View style={[styles.container, containerStyle]}>
       {showBackButton && <BackButton cb={cb} />}
-      <Text
-        style={[
-          styles.title,
-          style,
-          showBackButton && {
-            width: wp(70),
-          },
-        ]}
-      >
-        {capitalize(title) || ""}
-      </Text>
+      <Text style={[styles.title, titleStyle]}>{capitalize(title) || ""}</Text>
+      {suffixIcon && <View style={styles.suffixIcon}>{suffixIcon}</View>}
     </View>
   );
 };
@@ -50,12 +40,19 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
+    width: wp(85),
   },
 
   title: {
     textAlign: "center",
-    fontSize: hp(2.7),
+
+    fontSize: hp(3.5),
     fontWeight: THEME.fonts.semibold,
     color: THEME.colors.text,
+    flex: 1,
+  },
+  suffixIcon: {
+    width: wp(20),
+    alignItems: "flex-end",
   },
 });

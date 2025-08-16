@@ -1,8 +1,21 @@
 import { lazy, Suspense, useLayoutEffect, useRef } from "react";
+import { Image } from "expo-image";
+import { router, useNavigation } from "expo-router";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslation } from "react-i18next";
 
 import {
   Avatar,
   Button,
+  CategoryItem,
   LoadingSpinner,
   ScreenWrapper,
   Separator,
@@ -14,21 +27,9 @@ import { addPostSchema, AddPostType } from "@/helpers/post";
 import { categories } from "@/helpers/post/utils";
 import { showToast } from "@/helpers/toastService";
 import useUpload from "@/hooks/useUpload";
-import { useAuthStore } from "@/store";
+import { useAuthStore, useSelectedColors } from "@/store";
 import { usePostStore } from "@/store/post.store";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Image } from "expo-image";
-import { router, useNavigation } from "expo-router";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
 
 const BottomSheetComponent = lazy(() =>
   import("@/components").then((el) => ({ default: el.BottomSheetComponent }))
@@ -36,6 +37,7 @@ const BottomSheetComponent = lazy(() =>
 const SelectLocation = lazy(() =>
   import("@/components").then((el) => ({ default: el.SelectLocation }))
 );
+
 const AddPost = () => {
   const user = useAuthStore((state) => state.user);
   const { addPost, isLoading, error: errorApi } = usePostStore();
@@ -49,6 +51,7 @@ const AddPost = () => {
   });
   const locationRef = useRef<any>(null);
   const { t } = useTranslation();
+  const selected = useSelectedColors();
   const { pickImage, takePhoto, file, progress, status, deleteFile } =
     useUpload({
       source: "post",
@@ -71,7 +74,7 @@ const AddPost = () => {
           onPress={handleSubmit(handlePost)}
           disabled={!content?.length}
           loading={isLoading}
-          buttonStyle={styles.post}
+          buttonStyle={styles.postBtn}
         />
       ),
     });
@@ -94,52 +97,42 @@ const AddPost = () => {
           </View>
         </View>
         {/* Category Selection */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categorySelection}
-        >
-          <Controller
-            name="category"
-            control={control}
-            render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <>
-                {categories.slice(1).map((category) => (
-                  <TouchableOpacity
-                    key={category.id}
-                    style={[
-                      styles.categorySelectItem,
-                      value === category.id && {
-                        backgroundColor: category.color,
-                        borderColor: category.color,
-                      },
-                    ]}
-                    onPress={() => onChange(category.id)}
-                  >
-                    <Ionicons
-                      name={category.icon}
-                      size={18}
-                      color={value === category.id ? "#ffffff" : category.color}
+        <View style={styles.container}>
+          <Text style={styles.label}>
+            {t("post.category.placeholder")}
+            {" :"}
+          </Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.categorySelection}
+          >
+            <Controller
+              name="category"
+              control={control}
+              render={({
+                field: { value, onChange },
+                fieldState: { error },
+              }) => (
+                <>
+                  {categories.slice(1).map((category) => (
+                    <CategoryItem
+                      key={category.id}
+                      category={category}
+                      isSelected={value === category.id}
+                      onPress={() => onChange(category.id)}
                     />
-                    <Text
-                      style={[
-                        styles.categorySelectText,
-                        value === category.id && { color: "#ffffff" },
-                      ]}
-                    >
-                      {category.name}
+                  ))}
+                  {error && (
+                    <Text style={styles.errorText}>
+                      {t("common.error") + ":" + error.message}
                     </Text>
-                  </TouchableOpacity>
-                ))}
-                {error && (
-                  <Text style={styles.errorText}>
-                    {t("common.error") + ":" + error.message}
-                  </Text>
-                )}
-              </>
-            )}
-          />
-        </ScrollView>
+                  )}
+                </>
+              )}
+            />
+          </ScrollView>
+        </View>
         <Separator />
         {/* Content Input */}
         <Controller
@@ -151,19 +144,21 @@ const AddPost = () => {
           }) => (
             <>
               <TextInputComponent
+                label={t("post.content.label") + " :"}
                 containerStyles={styles.contentInput}
                 placeholder={t("post.content.placeholder")}
                 placeholderTextColor={THEME.colors.gray}
+                labelStyle={styles.label}
                 multiline
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
-                maxLength={280}
+                maxLength={500}
                 scrollEnabled={false}
               />
 
               <Text style={styles.characterCount}>
-                {value?.length ?? 0}/280
+                {value?.length ?? 0}/500
               </Text>
               {error && (
                 <Text style={styles.errorText}>
@@ -174,46 +169,76 @@ const AddPost = () => {
           )}
         />
         {/* Media Options */}
-        <Separator />
+        <Separator my={hp(2)} />
+
         {errorApi && (
           <Text style={styles.errorText}>
             {t("common.error") + ":" + errorApi?.message}
           </Text>
         )}
-        <View style={styles.mediaOptions}>
-          <TouchableOpacity style={styles.mediaOption} onPress={pickImage}>
-            <Ionicons name="image-outline" size={20} color="#3b82f6" />
-            <Text style={styles.mediaOptionText}>{t("post.file.image")} </Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.mediaOption} onPress={takePhoto}>
-            <Ionicons name="camera-outline" size={20} color="#3b82f6" />
-            <Text style={styles.mediaOptionText}>{t("post.file.camera")} </Text>
-          </TouchableOpacity>
+        <View style={styles.container}>
+          <Text style={styles.label}>
+            {t("post.extra.label")}
+            {" :"}
+          </Text>
+          <View style={styles.mediaOptions}>
+            <TouchableOpacity style={styles.mediaOption} onPress={pickImage}>
+              <Ionicons
+                name="image-outline"
+                size={20}
+                color={selected.primary}
+              />
+              <Text
+                style={[styles.mediaOptionText, { color: selected.primary }]}
+              >
+                {t("post.file.image")}{" "}
+              </Text>
+            </TouchableOpacity>
 
-          <Controller
-            name="location"
-            control={control}
-            render={({ field: { value }, fieldState: { error } }) => (
-              <View style={styles.locationContainer}>
-                <TouchableOpacity
-                  style={styles.mediaOption}
-                  onPress={() => locationRef.current?.expand()}
-                >
-                  <Ionicons name="location-outline" size={20} color="#3b82f6" />
-                  <Text style={styles.location}>
-                    {value ?? t("post.location.placeholderMin")}
-                  </Text>
-                </TouchableOpacity>
+            <TouchableOpacity style={styles.mediaOption} onPress={takePhoto}>
+              <Ionicons
+                name="camera-outline"
+                size={20}
+                color={selected.primary}
+              />
+              <Text
+                style={[styles.mediaOptionText, { color: selected.primary }]}
+              >
+                {t("post.file.camera")}{" "}
+              </Text>
+            </TouchableOpacity>
 
-                {error && (
-                  <Text style={styles.errorText}>
-                    {t("common.error") + ":" + error.message}
-                  </Text>
-                )}
-              </View>
-            )}
-          />
+            <Controller
+              name="location"
+              control={control}
+              render={({ field: { value }, fieldState: { error } }) => (
+                <View>
+                  <TouchableOpacity
+                    style={styles.mediaOption}
+                    onPress={() => locationRef.current?.expand()}
+                  >
+                    <Ionicons
+                      name="location-outline"
+                      size={20}
+                      color={selected.primary}
+                    />
+                    <Text
+                      style={[styles.location, { color: selected.primary }]}
+                    >
+                      {value ?? t("post.location.placeholderMin")}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {error && (
+                    <Text style={[styles.errorText, { paddingLeft: wp(2) }]}>
+                      {t("common.error") + ":" + error?.message}
+                    </Text>
+                  )}
+                </View>
+              )}
+            />
+          </View>
         </View>
 
         {(status === "error" || errors["file"]?.message) && (
@@ -262,16 +287,22 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  post: {
-    paddingHorizontal: wp(4),
+  postBtn: {
+    paddingHorizontal: wp(2.5),
     paddingVertical: wp(1),
     height: hp(4),
   },
+  container: {
+    paddingHorizontal: wp(3),
+    gap: wp(1.5),
+  },
+
   // user info
   userInfo: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: wp(5),
+    paddingVertical: hp(1),
     marginBottom: hp(1.5),
     gap: wp(2),
   },
@@ -292,50 +323,41 @@ const styles = StyleSheet.create({
   },
   // category
   categorySelection: {
-    marginHorizontal: wp(2),
-    flex: 1,
+    gap: wp(1.5),
   },
-  categorySelectItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginRight: 8,
-    borderRadius: THEME.radius.xl,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-  },
-  categorySelectText: {
-    marginLeft: 6,
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#374151",
+
+  label: {
+    fontSize: hp(1.6),
+    color: THEME.colors.darkGray,
+    fontWeight: THEME.fonts.medium,
   },
 
   // content
   contentInput: {
+    borderRadius: 0,
     marginHorizontal: wp(2),
     fontSize: hp(1.4),
     lineHeight: 24,
     borderWidth: 0,
     color: "#374151",
-    height: "auto",
-    maxHeight: hp(40),
+    //backgroundColor: "red",
+    minHeight: hp(40),
     justifyContent: "flex-start",
-    padding: wp(1.5),
+    padding: 0,
+    paddingHorizontal: wp(1),
   },
   characterCount: {
     textAlign: "right",
     marginHorizontal: 20,
     fontSize: hp(1.4),
     color: THEME.colors.grey2,
-    marginBottom: hp(2),
+    // marginBottom: hp(2),
   },
   // action
   mediaOptions: {
     flexDirection: "row",
-    paddingHorizontal: wp(5),
-    gap: wp(5),
+    alignItems: "flex-start",
+    gap: wp(1.5),
   },
   mediaOption: {
     flexDirection: "row",
@@ -402,13 +424,6 @@ const styles = StyleSheet.create({
     fontSize: hp(2),
     fontWeight: THEME.fonts.medium,
     color: THEME.colors.text,
-  },
-  locationContainer: {
-    flexDirection: "row",
-    gap: wp(1),
-    alignItems: "center",
-    paddingVertical: hp(2),
-    paddingHorizontal: wp(2),
   },
   location: {
     fontSize: hp(1.6),
