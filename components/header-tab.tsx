@@ -23,14 +23,28 @@ export const HeaderTab = ({
   title,
   showBackButton,
   titleStyle,
-  containerStyle,
   suffixIcon,
   cb,
 }: IHeaderMain) => {
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View
+      style={[
+        styles.container,
+        {
+          width: wp(!showBackButton ? 90 : 85),
+        },
+      ]}
+    >
       {showBackButton && <BackButton cb={cb} />}
-      <Text style={[styles.title, titleStyle]}>{capitalize(title) || ""}</Text>
+      <Text
+        style={[
+          styles.title,
+          showBackButton && { textAlign: "center" },
+          titleStyle,
+        ]}
+      >
+        {capitalize(title) || ""}
+      </Text>
       {suffixIcon && <View style={styles.suffixIcon}>{suffixIcon}</View>}
     </View>
   );
@@ -40,12 +54,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    width: wp(85),
   },
 
   title: {
-    textAlign: "center",
-
+    marginLeft: wp(2),
     fontSize: hp(3.5),
     fontWeight: THEME.fonts.semibold,
     color: THEME.colors.text,

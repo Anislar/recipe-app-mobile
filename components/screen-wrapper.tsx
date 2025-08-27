@@ -10,7 +10,7 @@ const ScreenWrapper = ({
   bg: string;
 }) => {
   const { top } = useSafeAreaInsets();
-  const paddingTop = top > 10 ? 10 : top;
+  const paddingTop = top > 25 ? 25 : top;
   return (
     <View style={[styles.container, { backgroundColor: bg, paddingTop }]}>
       <StatusBar style="dark" />
@@ -25,6 +25,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: wp(0.5),
-    paddingVertical: 0,
+    paddingTop: 10,
   },
 });

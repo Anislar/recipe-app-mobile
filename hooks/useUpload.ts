@@ -128,6 +128,7 @@ const useUpload = ({ source }: uploadFileInterface) => {
     status,
     file,
     deleteFile,
+    setFile,
   };
 };
 

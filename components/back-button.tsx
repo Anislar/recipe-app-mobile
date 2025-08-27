@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { hp } from "@/helpers/common";
@@ -10,7 +10,7 @@ interface BackButtonProps {
 }
 const BackButton = ({ size = 25, cb }: BackButtonProps) => {
   return (
-    <Pressable
+    <TouchableOpacity
       style={styles.button}
       onPress={() => {
         cb?.();
@@ -22,7 +22,7 @@ const BackButton = ({ size = 25, cb }: BackButtonProps) => {
         size={size}
         color={THEME.colors.text}
       />
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

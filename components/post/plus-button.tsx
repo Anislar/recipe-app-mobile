@@ -17,7 +17,7 @@ export const PlusButton = () => {
         },
       ]}
       activeOpacity={0.7}
-      onPress={() => router.push("/(modal)/add-post")}
+      onPress={() => router.push("/add-post")}
     >
       <MaterialCommunityIcons name="plus" color="white" size={wp(10)} />
     </TouchableOpacity>
@@ -25,10 +25,11 @@ export const PlusButton = () => {
 };
 const styles = StyleSheet.create({
   plusButton: {
-    top: -hp(2),
+    top: -hp(2.5),
+    left: hp(1.5),
     justifyContent: "center",
     alignItems: "center",
-    width: hp(10),
+    width: hp(8),
     height: hp(8),
     borderRadius: THEME.radius.lg,
     //flex: 1,

@@ -5,15 +5,12 @@ import { HeaderTab } from "@/components";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { useSelectedColors } from "@/store";
-import { usePostStore } from "@/store/post.store";
 import { StyleSheet } from "react-native";
 
 const ModalLayout = () => {
   const { t } = useTranslation();
   const selected = useSelectedColors();
-  const setResetPost = usePostStore((state) => state.setResetElement);
   const titleMap: Record<string, any> = {
-    "add-post": { title: t("modal.addPost"), onPress: setResetPost },
     "update-person": { title: t("modal.editProfile"), onPress: () => {} },
   };
 
@@ -34,7 +31,6 @@ const ModalLayout = () => {
         headerLeft: () => <></>,
       })}
     >
-      <Stack.Screen name="add-post" />
       <Stack.Screen name="update-person" />
     </Stack>
   );

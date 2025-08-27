@@ -15,13 +15,15 @@ import { useTranslation } from "react-i18next";
 import { THEME } from "@/constants/theme";
 import { postService } from "@/services/api/post.service";
 import { DefaultFallback } from "@/components/with-suspense";
-import { usePostStore } from "@/store/post.store";
+import { useMemo, useState } from "react";
+import { CategoryIDs } from "@/type";
 
 const HomePage = () => {
   const { t } = useTranslation();
-  const { setCategory, category } = usePostStore();
-
+  const [category, setCategory] = useState<CategoryIDs>("general");
   const {
+    isError,
+    isRefetching,
     data,
     fetchNextPage,
     hasNextPage,
@@ -50,10 +52,10 @@ const HomePage = () => {
       return undefined;
     },
   });
-  const posts =
-    data?.pages.flatMap((page) => (page as any).data?.results) ?? [];
-  console.log("🚀 ~ HomePage ~ posts:", posts);
-
+  const posts = useMemo(
+    () => data?.pages.flatMap((page) => (page as any).data?.results) ?? [],
+    [data?.pages]
+  );
   return (
     <ScreenWrapper bg="white">
       {/* Categories */}
@@ -92,74 +94,14 @@ const HomePage = () => {
         <>
           <FlatList
             ListEmptyComponent={
-              <NoPosts showRefreshButton onRefresh={() => refetch()} />
+              <NoPosts
+                showRefreshButton={isError}
+                onRefresh={() => refetch()}
+              />
             }
-            data={
-              posts
-              //   [
-              //   {
-              //     id: 1,
-              //     user: {
-              //       name: "Sarah Chen",
-              //       username: "@sarahc",
-              //       avatar: "https://randomuser.me/api/portraits/women/1.jpg",
-              //     },
-              //     content:
-              //       "Just finished an amazing hiking trail! The view was absolutely breathtaking 🌄",
-              //     image: "https://picsum.photos/400/300?random=1",
-              //     category: "travel",
-              //     likes: 124,
-              //     comments: 18,
-              //     time: "2h",
-              //     liked: false,
-              //   },
-              //   {
-              //     id: 2,
-              //     user: {
-              //       name: "Alex Rodriguez",
-              //       username: "@alexr",
-              //       avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-              //     },
-              //     content: "Coffee and code - perfect Sunday morning combo ☕️💻",
-              //     category: "tech",
-              //     likes: 89,
-              //     comments: 12,
-              //     time: "4h",
-              //     liked: true,
-              //   },
-              //   {
-              //     id: 3,
-              //     user: {
-              //       name: "Maya Patel",
-              //       username: "@mayap",
-              //       avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-              //     },
-              //     content:
-              //       "New art piece finished! Mixed media on canvas. What do you think?",
-              //     image: "https://picsum.photos/400/300?random=2",
-              //     category: "art",
-              //     likes: 156,
-              //     comments: 24,
-              //     time: "6h",
-              //     liked: false,
-              //   },
-              //   {
-              //     id: 4,
-              //     user: {
-              //       name: "John Smith",
-              //       username: "@johns",
-              //       avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-              //     },
-              //     content: "Amazing pasta at this new Italian restaurant! 🍝✨",
-              //     image: "https://picsum.photos/400/300?random=3",
-              //     category: "food",
-              //     likes: 78,
-              //     comments: 9,
-              //     time: "8h",
-              //     liked: false,
-              //   },
-              // ]
-            }
+            refreshing={isRefetching}
+            onRefresh={() => refetch()}
+            data={posts}
             renderItem={({ item }) => <PostCard post={item as any} />}
             keyExtractor={(item) => item.id.toString()}
             showsVerticalScrollIndicator={false}
@@ -208,6 +150,7 @@ const styles = StyleSheet.create({
   },
   noMorePost: {
     fontSize: hp(2.5),
+    marginBottom: hp(2.5),
     color: THEME.colors.gray,
     textAlign: "center",
     fontWeight: THEME.fonts.medium,

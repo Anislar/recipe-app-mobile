@@ -1,14 +1,22 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Image } from "expo-image";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { THEME } from "@/constants/theme";
+import { User } from "@/helpers/auth";
+import { hp } from "@/helpers/common";
 import { Post } from "@/helpers/post";
 import { categories } from "@/helpers/post/utils";
-import { THEME } from "@/constants/theme";
 import { formatDate } from "@/helpers/utils";
-import { User } from "@/helpers/auth";
-import { Avatar } from "../avatar";
-import { hp } from "@/helpers/common";
+import { useAuthStore } from "@/store";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Image } from "expo-image";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Avatar } from "../avatar";
+import ContextMenu from "../UI/context-menu";
 import { PostContent } from "./post-content";
 
 interface PostCardProps {
@@ -17,10 +25,11 @@ interface PostCardProps {
   };
 }
 export const PostCard = ({ post }: PostCardProps) => {
+  const userId = useAuthStore((s) => s.user?.id);
   const handleLike = (postId: string | undefined) => {};
   const categorie = categories.find((cat) => cat.id === post.category);
   return (
-    <View style={styles.postCard}>
+    <Pressable style={styles.postCard}>
       <View style={styles.postHeader}>
         <View style={styles.userInfo}>
           <Avatar
@@ -52,13 +61,15 @@ export const PostCard = ({ post }: PostCardProps) => {
             {categorie?.name}
           </Text>
         </View>
+        {/* menu */}
+        {post?.user?.id === userId && <ContextMenu menuWidth={120} />}
       </View>
       <PostContent content={post.content!} />
 
       {post.file && (
         <Image
           transition={100}
-          contentFit="contain"
+          contentFit="cover"
           source={{ uri: post.file }}
           style={styles.postImage}
         />
@@ -92,7 +103,7 @@ export const PostCard = ({ post }: PostCardProps) => {
           <Ionicons name="share-outline" size={20} color={THEME.colors.grey2} />
         </TouchableOpacity>
       </View>
-    </View>
+    </Pressable>
   );
 };
 const styles = StyleSheet.create({
@@ -133,6 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f3f4f6",
     paddingHorizontal: 8,
     paddingVertical: 4,
+    marginTop: 5,
     borderRadius: 12,
   },
   categoryText: {
@@ -164,5 +176,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#6b7280",
     fontWeight: "500",
+  },
+  menu: {
+    paddingHorizontal: 5,
   },
 });

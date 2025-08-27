@@ -8,7 +8,6 @@ class PostService {
   constructor() {
     this.prefix = "/post";
   }
-
   async addPost(data: AddPostType): Promise<ApiSuccess<any>> {
     try {
       const response = await api.post(this.prefix + "/", data);
@@ -30,6 +29,18 @@ class PostService {
         signal: data.signal,
       });
       return response.data;
+    } catch (error) {
+      return handleApiError(error);
+    }
+  }
+  async deletePost(id: string) {
+    try {
+    } catch (error) {
+      return handleApiError(error);
+    }
+  }
+  async updatePost(id: string, data: ApiQueryParams) {
+    try {
     } catch (error) {
       return handleApiError(error);
     }
