@@ -9,24 +9,24 @@ export interface Post {
   likes_count: number;
   userId?: string;
   createdAt?: string;
-  liked: boolean;
+  is_liked: boolean;
 }
 // polls schema
-const pollSchema = z
-  .object({
-    question: z.string().min(3, "Question must be at least 3 characters"),
-    options: z
-      .array(z.string().min(1, "Option cannot be empty"))
-      .min(2, "At least 2 options required")
-      .max(5, "Max 5 options allowed"),
-    expiresAt: z.iso.datetime().optional(),
-  })
-  .refine(
-    ({ options }) =>
-      new Set(options.map((o) => o.trim().toLowerCase())).size ===
-      options.length,
-    { message: "Poll options must be unique" }
-  );
+// const pollSchema = z
+//   .object({
+//     question: z.string().min(3, "Question must be at least 3 characters"),
+//     options: z
+//       .array(z.string().min(1, "Option cannot be empty"))
+//       .min(2, "At least 2 options required")
+//       .max(5, "Max 5 options allowed"),
+//     expiresAt: z.iso.datetime().optional(),
+//   })
+//   .refine(
+//     ({ options }) =>
+//       new Set(options.map((o) => o.trim().toLowerCase())).size ===
+//       options.length,
+//     { message: "Poll options must be unique" }
+//   );
 
 // add post DTO
 const addPostSchema = z.object({
@@ -54,5 +54,5 @@ const addPostSchema = z.object({
     .optional(),
 });
 
-type AddPostType = z.infer<typeof addPostSchema>;
-export { addPostSchema, AddPostType };
+type PostType = z.infer<typeof addPostSchema>;
+export { addPostSchema, PostType };

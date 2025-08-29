@@ -1,8 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Image } from "expo-image";
-import { router, useNavigation } from "expo-router";
-import { lazy, Suspense, useCallback, useLayoutEffect, useRef } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { lazy, Suspense, useLayoutEffect, useRef } from "react";
+import { Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import {
   ScrollView,
@@ -23,14 +21,11 @@ import {
 } from "@/components";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
-import { addPostSchema, AddPostType } from "@/helpers/post";
 import { categories } from "@/helpers/post/utils";
-import { showToast } from "@/helpers/toastService";
-import { usePostMutations } from "@/hooks/useMutationPost";
-import useUpload from "@/hooks/useUpload";
-import { useAuthStore } from "@/store";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { ApiSuccess } from "@/type";
+import { useAuthStore } from "@/store";
+import { useNavigation } from "expo-router";
+import { useSetPost } from "@/hooks/post/useSetPost";
 
 const BottomSheetComponent = lazy(() =>
   import("@/components").then((el) => ({ default: el.BottomSheetComponent }))
@@ -40,57 +35,31 @@ const SelectLocation = lazy(() =>
 );
 
 const AddPost = () => {
-  // user hooks
+  const { t } = useTranslation();
+  const navigation = useNavigation();
   const user = useAuthStore((state) => state.user);
+  // bottom Ref
+  const locationRef = useRef<any>(null);
 
-  // use form
   const {
     control,
     handleSubmit,
-    watch,
-    formState: { errors },
-    reset,
-  } = useForm<AddPostType>({
-    resolver: zodResolver(addPostSchema),
-  });
-  // bottom Ref
-  const locationRef = useRef<any>(null);
-  const { t } = useTranslation();
-  // file
-  const { pickImage, takePhoto, file, progress, status, deleteFile, setFile } =
-    useUpload({
-      source: "post",
-    });
-  // mutation post
-  const {
-    create: {
-      isPending: isLoading,
-      error: errorApi,
-      reset: resetPost,
-      mutateAsync,
-    },
-  } = usePostMutations();
+    errors,
+    // query
+    isLoading,
+    errorApi,
+    //upload
+    pickImage,
+    takePhoto,
+    file,
+    progress,
+    status,
+    handleDeleteImage,
+    handlePost,
+    contentLength,
+  } = useSetPost();
 
-  const handlePost: SubmitHandler<AddPostType> = async (data: AddPostType) => {
-    if (file) {
-      data = {
-        ...data,
-        file: file?.url ?? "",
-      };
-    }
-    const res: ApiSuccess<any> = await mutateAsync(data);
-    if (res.success) {
-      resetPost();
-      reset();
-      router.back();
-      setFile(null);
-      showToast(t("post.createSuccess"));
-    }
-  };
-  // set navigation right icon
-  const contentLength = watch("content")?.trim()?.length ?? 0;
-  const navigation = useNavigation();
-
+  // add right icon
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -105,8 +74,7 @@ const AddPost = () => {
       ),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contentLength, isLoading, navigation, t]);
-
+  }, [contentLength, isLoading]);
   return (
     <ScreenWrapper bg="white">
       <ScrollView style={styles.content} showsVerticalScrollIndicator>
@@ -243,12 +211,12 @@ const AddPost = () => {
                       color={THEME.colors.textDark}
                     />
                     <Text style={styles.location}>
-                      {value ?? t("post.location.placeholderMin")}
+                      {value || t("post.location.placeholderMin")}
                     </Text>
                   </TouchableOpacity>
 
                   {error && (
-                    <Text style={[styles.errorText, { paddingLeft: wp(2) }]}>
+                    <Text style={styles.errorText}>
                       {t("common.error") + ":" + error?.message}
                     </Text>
                   )}
@@ -271,7 +239,7 @@ const AddPost = () => {
           <View style={styles.imagePreview}>
             <Image
               source={{
-                uri: file.url as string,
+                uri: file?.url as string,
               }}
               transition={100}
               contentFit="cover"
@@ -279,7 +247,7 @@ const AddPost = () => {
             />
             <TouchableOpacity
               style={styles.removeImageButton}
-              onPress={() => deleteFile(file.url)}
+              onPress={handleDeleteImage}
             >
               <Ionicons name="close" size={16} color="white" />
             </TouchableOpacity>
@@ -308,6 +276,7 @@ const styles = StyleSheet.create({
   },
   postBtn: {
     marginRight: 10,
+    marginTop: 3,
     paddingHorizontal: wp(2.5),
     paddingVertical: wp(1),
     height: hp(4),

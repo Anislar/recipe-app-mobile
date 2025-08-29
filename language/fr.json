@@ -126,7 +126,9 @@
     "loading": "Chargement",
     "errorImage": "Erreur : Échec du téléchargement du fichier...",
     "submit": "Valider",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "confirmation": "Confirmation requise",
+    "areYouSure": "Êtes-vous sûr de vouloir effectuer cette action ?"
   },
   "support": {
     "help": "Besoin de plus d'aide ?",
@@ -139,7 +141,6 @@
   },
   "post": {
     "post": "Publier",
-    "createSuccess": "Publication créée avec succès!",
     "notFound": "Publication introuvable",
     "notFoundMessage": "La publication que vous recherchez n'existe pas ou a été supprimée.",
     "empty": {
@@ -173,6 +174,13 @@
       "label": "Localisation",
       "permissionDeniedTitle": "Autorisation requise",
       "permissionDeniedDescription": "L'autorisation d'accès à l'emplacement a été refusée"
+    },
+    "action": {
+      "update": "modifier",
+      "delete": "supprimer",
+      "createSuccess": "Publication créée avec succès!",
+      "updateSuccess": "Publication modifiée avec succès!",
+      "deleteSuccess": "Publication supprimée avec succès!"
     }
   },
 

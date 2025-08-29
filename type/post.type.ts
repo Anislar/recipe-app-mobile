@@ -14,3 +14,7 @@ export type CategoryType = {
   icon: keyof typeof Ionicons.glyphMap;
   color: string;
 };
+export enum LikeTargetType {
+  POST = "post",
+  COMMENT = "comment",
+}

@@ -5,12 +5,14 @@ import { wp } from "@/helpers/common";
 const ScreenWrapper = ({
   children,
   bg,
+  pt,
 }: {
   children: React.ReactNode;
   bg: string;
+  pt?: number;
 }) => {
   const { top } = useSafeAreaInsets();
-  const paddingTop = top > 25 ? 25 : top;
+  const paddingTop = typeof pt !== "undefined" ? pt : top > 25 ? 25 : top;
   return (
     <View style={[styles.container, { backgroundColor: bg, paddingTop }]}>
       <StatusBar style="dark" />
@@ -25,6 +27,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: wp(0.5),
-    paddingTop: 10,
   },
 });

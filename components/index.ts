@@ -17,6 +17,8 @@ export { DropdownComponent } from "./UI/dropdown";
 export { SwitchComponent } from "./UI/switch";
 export { default as Accordion } from "./UI/accordion";
 export { Separator } from "./UI/separator";
+export { ContextMenu } from "./UI/context-menu";
+export { ModalConfirm } from "./UI/modal-confirm";
 
 // Profile component
 export { SettingsItem } from "./profile/setting-item";

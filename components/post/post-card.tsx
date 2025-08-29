@@ -9,27 +9,117 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Image } from "expo-image";
 import {
+  Alert,
+  Platform,
   Pressable,
+  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { Avatar } from "../avatar";
-import ContextMenu from "../UI/context-menu";
 import { PostContent } from "./post-content";
+import { router } from "expo-router";
+import { ContextMenu } from "../UI/context-menu";
+import { lazy, Suspense, useEffect, useState, useTransition } from "react";
+import { LoadingSpinner } from "../UI/loading";
+import { usePostMutations } from "@/hooks/post/useMutationPost";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
+const ModalConfirm = lazy(() =>
+  import("../UI/modal-confirm").then((module) => ({
+    default: module.ModalConfirm,
+  }))
+);
 interface PostCardProps {
   post: Partial<Post> & {
     user: Partial<User>;
   };
+  index: number;
 }
-export const PostCard = ({ post }: PostCardProps) => {
+export const PostCard = ({ post, index }: PostCardProps) => {
   const userId = useAuthStore((s) => s.user?.id);
-  const handleLike = (postId: string | undefined) => {};
+  const [isVisible, setIsVisible] = useState(false);
+
+  const {
+    remove: { mutateAsync: deletePost, isPending: isLoading, error, isError },
+    setLike: { mutateAsync: likePost },
+  } = usePostMutations();
+  const [isPending, startTransition] = useTransition();
+
+  const handleClick = (action: "update" | "delete") => {
+    switch (action) {
+      case "update":
+        router.push({
+          pathname: "/add-post",
+          params: {
+            post: JSON.stringify(post),
+          },
+        });
+
+        break;
+      case "delete":
+        setIsVisible(true);
+        break;
+      default:
+        break;
+    }
+  };
   const categorie = categories.find((cat) => cat.id === post.category);
+
+  // delete post
+  const handleDeletePost = async () => {
+    await deletePost(post?.id as string);
+    setIsVisible(false);
+  };
+  // handle Like
+  const handleLike = async () => {
+    startTransition(() => {
+      if (post.is_liked) {
+        post.is_liked = false;
+        post.likes_count = (post.likes_count || 1) - 1;
+      } else {
+        post.is_liked = true;
+        post.likes_count = (post.likes_count || 0) + 1;
+      }
+      likePost(post?.id as string);
+    });
+  };
+  // handle share
+  const handleShare = async () => {
+    try {
+      let message = "";
+
+      if (post.content) {
+        message += `📝 ${post.content}\n\n`;
+      }
+
+      if (post.file) {
+        message += `📎 Check this out: ${post.file}\n\n`;
+      }
+
+      message += "🔗 Shared via link-up — discover more posts!";
+
+      await Share.share(
+        {
+          message,
+          url: Platform.OS === "ios" && post.file ? post.file : undefined,
+        },
+        {
+          dialogTitle: "Share this post",
+        }
+      );
+    } catch (error: any) {
+      Alert.alert("Error sharing post", error.message || "");
+    }
+  };
+
   return (
-    <Pressable style={styles.postCard}>
+    <Animated.View
+      entering={FadeInDown.delay(index * 100).duration(400)}
+      style={styles.postCard}
+    >
       <View style={styles.postHeader}>
         <View style={styles.userInfo}>
           <Avatar
@@ -62,7 +152,13 @@ export const PostCard = ({ post }: PostCardProps) => {
           </Text>
         </View>
         {/* menu */}
-        {post?.user?.id === userId && <ContextMenu menuWidth={120} />}
+        {post?.user?.id === userId && (
+          <ContextMenu
+            onUpdate={() => handleClick("update")}
+            onDelete={() => handleClick("delete")}
+            menuWidth={120}
+          />
+        )}
       </View>
       <PostContent content={post.content!} />
 
@@ -78,14 +174,17 @@ export const PostCard = ({ post }: PostCardProps) => {
       <View style={styles.postActions}>
         <TouchableOpacity
           style={styles.actionButton}
-          onPress={() => handleLike(post.id)}
+          onPress={handleLike}
+          disabled={isPending}
         >
           <Ionicons
-            name={post.liked ? "heart" : "heart-outline"}
+            name={post.is_liked ? "heart" : "heart-outline"}
             size={20}
-            color={post.liked ? "#ef4444" : THEME.colors.grey2}
+            color={post.is_liked ? "#ef4444" : THEME.colors.grey2}
           />
-          <Text style={[styles.actionText, post.liked && { color: "#ef4444" }]}>
+          <Text
+            style={[styles.actionText, post.is_liked && { color: "#ef4444" }]}
+          >
             {post.likes_count}
           </Text>
         </TouchableOpacity>
@@ -99,11 +198,23 @@ export const PostCard = ({ post }: PostCardProps) => {
           <Text style={styles.actionText}>0</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity onPress={handleShare} style={styles.actionButton}>
           <Ionicons name="share-outline" size={20} color={THEME.colors.grey2} />
         </TouchableOpacity>
       </View>
-    </Pressable>
+      {isVisible && (
+        <Suspense fallback={<LoadingSpinner />}>
+          <ModalConfirm
+            isVisible={isVisible}
+            isDanger
+            isLoading={isLoading}
+            error={isError ? error.message : ""}
+            close={() => setIsVisible(false)}
+            onSubmit={handleDeletePost}
+          />
+        </Suspense>
+      )}
+    </Animated.View>
   );
 };
 const styles = StyleSheet.create({

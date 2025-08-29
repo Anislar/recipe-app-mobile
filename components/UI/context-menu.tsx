@@ -7,6 +7,7 @@ import {
   Modal,
   Pressable,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
@@ -17,11 +18,12 @@ interface MenuProps {
   menuWidth: number;
 }
 
-const ContextMenu: React.FC<MenuProps> = ({
+export const ContextMenu: React.FC<MenuProps> = ({
   onUpdate,
   onDelete,
   menuWidth = 120,
 }) => {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const buttonRef = useRef<any>(null);
@@ -82,7 +84,7 @@ const ContextMenu: React.FC<MenuProps> = ({
               color={THEME.colors.text}
               style={styles.icon}
             />
-            <Text style={styles.menuText}>Update</Text>
+            <Text style={styles.menuText}>{t("post.action.update")} </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -99,7 +101,7 @@ const ContextMenu: React.FC<MenuProps> = ({
               style={styles.icon}
             />
             <Text style={[styles.menuText, { color: THEME.colors.rose }]}>
-              Delete
+              {t("post.action.delete")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -143,5 +145,3 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
 });
-
-export default ContextMenu;

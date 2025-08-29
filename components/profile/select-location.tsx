@@ -49,7 +49,7 @@ export const SelectLocation = ({
       });
       const name =
         rev && rev.length
-          ? `${rev[0].region || ""}, ${rev[0].city || ""}`.trim()
+          ? `${rev[0].region || rev[0].city || ""}`.trim()
           : `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(
               4
             )}`;

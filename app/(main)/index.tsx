@@ -1,21 +1,24 @@
-import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+
+import Animated, { FadeInRight } from "react-native-reanimated";
 
 import {
+  Button,
   CategoryItem,
   LoadingSpinner,
+  NoPosts,
   PostCard,
   ScreenWrapper,
   Separator,
-  NoPosts,
 } from "@/components";
+import { DefaultFallback } from "@/components/with-suspense";
+import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { categories } from "@/helpers/post/utils";
-import { useTranslation } from "react-i18next";
-import { THEME } from "@/constants/theme";
 import { postService } from "@/services/api/post.service";
-import { DefaultFallback } from "@/components/with-suspense";
-import { useMemo, useState } from "react";
 import { CategoryIDs } from "@/type";
 
 const HomePage = () => {
@@ -24,6 +27,7 @@ const HomePage = () => {
   const {
     isError,
     isRefetching,
+    isFetching,
     data,
     fetchNextPage,
     hasNextPage,
@@ -52,29 +56,39 @@ const HomePage = () => {
       return undefined;
     },
   });
+
   const posts = useMemo(
     () => data?.pages.flatMap((page) => (page as any).data?.results) ?? [],
     [data?.pages]
   );
+
   return (
-    <ScreenWrapper bg="white">
+    <ScreenWrapper pt={1} bg="white">
       {/* Categories */}
       <View style={styles.categoriesContainer}>
         <Text style={styles.categoryLabel}>{t("post.category.label")} </Text>
-        <ScrollView
+        <FlatList
           horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesContent}
-        >
-          {categories.map((cat) => (
-            <CategoryItem
-              key={cat.id}
-              category={cat}
-              isSelected={category === cat.id}
-              onPress={() => setCategory(cat?.id)}
-            />
-          ))}
-        </ScrollView>
+          contentContainerStyle={{
+            gap: 5,
+            paddingVertical: wp(2),
+          }}
+          data={categories}
+          renderItem={({ item, index }) => (
+            <Animated.View
+              key={item.id}
+              entering={FadeInRight.delay(index * 100).duration(400)}
+            >
+              <CategoryItem
+                category={item}
+                isSelected={category === item.id}
+                onPress={() => setCategory(item?.id)}
+              />
+            </Animated.View>
+          )}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+        />
       </View>
 
       <Separator />
@@ -85,46 +99,49 @@ const HomePage = () => {
           <DefaultFallback isReady />
         </View>
       ) : error ? (
-        <View style={styles.center}>
+        <View style={[styles.center, { flexDirection: "column" }]}>
           <Text style={styles.errorText}>
             {"🚨 " + t("common.error") + ":" + error?.message}
           </Text>
+          <Button
+            title={t("common.refresh", "Refresh")}
+            onPress={() => refetch()}
+            icon="refresh"
+            buttonStyle={styles.refreshButton}
+          />
         </View>
       ) : (
-        <>
-          <FlatList
-            ListEmptyComponent={
-              <NoPosts
-                showRefreshButton={isError}
-                onRefresh={() => refetch()}
-              />
+        <FlatList
+          ListEmptyComponent={
+            <NoPosts showRefreshButton={isError} onRefresh={() => refetch()} />
+          }
+          refreshing={isRefetching && !isFetching}
+          onRefresh={() => refetch()}
+          data={posts}
+          renderItem={({ item, index }) => (
+            <PostCard post={item as any} index={index} />
+          )}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          onEndReached={() => {
+            if (hasNextPage && !isFetchingNextPage) {
+              fetchNextPage();
             }
-            refreshing={isRefetching}
-            onRefresh={() => refetch()}
-            data={posts}
-            renderItem={({ item }) => <PostCard post={item as any} />}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            onEndReached={() => {
-              if (hasNextPage && !isFetchingNextPage) {
-                fetchNextPage();
-              }
-            }}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={() =>
-              isFetchingNextPage ? (
-                <LoadingSpinner size="small" />
-              ) : (
-                posts.length > 0 && (
-                  <View>
-                    <Separator />
-                    <Text style={styles.noMorePost}> No more Post </Text>
-                  </View>
-                )
+          }}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={() =>
+            isFetchingNextPage ? (
+              <LoadingSpinner size="small" />
+            ) : (
+              posts.length > 0 && (
+                <View>
+                  <Separator />
+                  <Text style={styles.noMorePost}> No more Post </Text>
+                </View>
               )
-            }
-          />
-        </>
+            )
+          }
+        />
       )}
     </ScreenWrapper>
   );
@@ -159,6 +176,13 @@ const styles = StyleSheet.create({
     color: THEME.colors.rose,
     fontSize: hp(2.3),
     fontWeight: THEME.fonts.medium,
+  },
+  refreshButton: {
+    paddingHorizontal: wp(8),
+    paddingVertical: hp(1.5),
+    gap: 5,
+    marginTop: 5,
+    backgroundColor: THEME.colors.rose,
   },
 });
 export default HomePage;
