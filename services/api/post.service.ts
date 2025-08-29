@@ -51,15 +51,6 @@ class PostService {
   }
   async setLike(id: string, data: Record<string, string>) {
     try {
-      console.log(
-        `🚀 ~ usePostMutations ~ id, {
-        target_type: "POST",
-      }:`,
-        id,
-        {
-          target_type: "POST",
-        }
-      );
       const response = await api.patch(this.prefix + "/like/" + id, data);
       return response.data;
     } catch (error) {
