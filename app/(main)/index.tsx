@@ -101,7 +101,10 @@ const HomePage = () => {
       ) : error ? (
         <View style={[styles.center, { flexDirection: "column" }]}>
           <Text style={styles.errorText}>
-            {"🚨 " + t("common.error") + ":" + error?.message}
+            {"🚨 " +
+              t("common.error") +
+              ": - " +
+              (error?.message ?? "Server not reachable!")}
           </Text>
           <Button
             title={t("common.refresh", "Refresh")}
