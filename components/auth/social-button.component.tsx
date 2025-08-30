@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, FC, useRef, useEffect } from "react";
+import { Suspense, lazy, FC, useRef, useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View, Animated } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { THEME } from "@/constants/theme";

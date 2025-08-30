@@ -1,4 +1,5 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useCallback, memo } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 import { THEME } from "@/constants/theme";
@@ -11,29 +12,38 @@ interface CategoryItemProps {
   onPress: () => void;
 }
 
-export const CategoryItem = ({
-  category,
-  isSelected,
-  onPress,
-}: CategoryItemProps) => (
-  <TouchableOpacity
-    style={[
-      styles.categoryItem,
-      isSelected && {
-        backgroundColor: category.color + "20",
-        borderColor: category.color,
-      },
-    ]}
-    onPress={onPress}
-  >
-    <Ionicons name={category.icon} size={20} color={category.color} />
-    <Text
-      style={[styles.categoryItemText, isSelected && { color: category.color }]}
-    >
-      {category.name}
-    </Text>
-  </TouchableOpacity>
+export const CategoryItem = memo(
+  ({ category, isSelected, onPress }: CategoryItemProps) => {
+    const handlePress = useCallback(() => {
+      onPress();
+    }, [onPress]);
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.categoryItem,
+          isSelected && {
+            backgroundColor: category.color + "20",
+            borderColor: category.color,
+          },
+        ]}
+        onPress={handlePress}
+      >
+        <Ionicons name={category.icon} size={20} color={category.color} />
+        <Text
+          style={[
+            styles.categoryItemText,
+            isSelected && { color: category.color },
+          ]}
+        >
+          {category.name}
+        </Text>
+      </TouchableOpacity>
+    );
+  }
 );
+
+CategoryItem.displayName = "CategoryItem";
 
 const styles = StyleSheet.create({
   categoryItem: {

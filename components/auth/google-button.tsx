@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuthRequest } from "expo-auth-session";
 import BaseOAuthButton from "./base-oauth-button";
 import { useAuthStore } from "@/store";

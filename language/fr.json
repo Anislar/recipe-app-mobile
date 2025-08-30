@@ -145,6 +145,7 @@
     "notFoundMessage": "La publication que vous recherchez n'existe pas ou a été supprimée.",
     "empty": {
       "title": "Pas encore de publications",
+      "noMore": "Plus de publication!",
       "subtitle": "Soyez le premier à partager quelque chose d'extraordinaire !"
     },
     "content": {

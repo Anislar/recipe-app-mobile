@@ -1,4 +1,4 @@
-import React, { useCallback, forwardRef } from "react";
+import { useCallback, forwardRef, ReactNode } from "react";
 import { StyleSheet } from "react-native";
 import BottomSheet, {
   BottomSheetView,
@@ -9,7 +9,7 @@ import BottomSheet, {
 import { wp } from "@/helpers/common";
 
 interface BottomSheetComponentProps extends Partial<BottomSheetProps> {
-  children: React.ReactNode;
+  children: ReactNode;
   cb?: (index: number) => void;
   snapPoints: string[];
 }

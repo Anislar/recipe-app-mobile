@@ -1,7 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 import Animated, { FadeInRight } from "react-native-reanimated";
 
@@ -42,7 +42,7 @@ const HomePage = () => {
         page: pageParam,
         signal,
         filters: { category },
-        // filters: meta,
+        limit: 20,
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
@@ -55,11 +55,61 @@ const HomePage = () => {
       }
       return undefined;
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   const posts = useMemo(
     () => data?.pages.flatMap((page) => (page as any).data?.results) ?? [],
     [data?.pages]
+  );
+
+  // Memoize the renderItem function to prevent unnecessary re-renders
+  const renderPostItem = useCallback(
+    ({ item, index }: { item: any; index: number }) => (
+      <PostCard post={item} index={index} />
+    ),
+    []
+  );
+
+  // Memoize the keyExtractor function
+  const keyExtractor = useCallback((item: any) => item.id.toString(), []);
+
+  // Memoize the onEndReached function
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Memoize the onRefresh function
+  const handleRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  // Memoize the ListFooterComponent
+  const ListFooterComponent = useCallback(
+    () => (
+      <View style={styles.loadingMore}>
+        {hasNextPage || isFetchingNextPage ? (
+          <LoadingSpinner size="large" />
+        ) : (
+          posts.length > 0 && (
+            <View>
+              <Separator />
+              <Text style={styles.noMorePost}> {t("post.empty.noMore")} </Text>
+            </View>
+          )
+        )}
+      </View>
+    ),
+    [hasNextPage, isFetchingNextPage, posts.length, t]
+  );
+
+  // Memoize the ListEmptyComponent
+  const ListEmptyComponent = useCallback(
+    () => <NoPosts showRefreshButton={isError} onRefresh={() => refetch()} />,
+    [isError, refetch]
   );
 
   return (
@@ -115,35 +165,21 @@ const HomePage = () => {
         </View>
       ) : (
         <FlatList
-          ListEmptyComponent={
-            <NoPosts showRefreshButton={isError} onRefresh={() => refetch()} />
-          }
+          ListEmptyComponent={ListEmptyComponent}
           refreshing={isRefetching && !isFetching}
-          onRefresh={() => refetch()}
+          onRefresh={handleRefresh}
           data={posts}
-          renderItem={({ item, index }) => (
-            <PostCard post={item as any} index={index} />
-          )}
-          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderPostItem}
+          keyExtractor={keyExtractor}
           showsVerticalScrollIndicator={false}
-          onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage) {
-              fetchNextPage();
-            }
-          }}
+          onEndReached={handleEndReached}
           onEndReachedThreshold={0.5}
-          ListFooterComponent={() =>
-            isFetchingNextPage ? (
-              <LoadingSpinner size="small" />
-            ) : (
-              posts.length > 0 && (
-                <View>
-                  <Separator />
-                  <Text style={styles.noMorePost}> No more Post </Text>
-                </View>
-              )
-            )
-          }
+          ListFooterComponent={ListFooterComponent}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          initialNumToRender={10}
+          updateCellsBatchingPeriod={100}
         />
       )}
     </ScreenWrapper>
@@ -186,6 +222,9 @@ const styles = StyleSheet.create({
     gap: 5,
     marginTop: 5,
     backgroundColor: THEME.colors.rose,
+  },
+  loadingMore: {
+    marginBottom: hp(4),
   },
 });
 export default HomePage;

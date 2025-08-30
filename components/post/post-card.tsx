@@ -4,28 +4,35 @@ import { hp } from "@/helpers/common";
 import { Post } from "@/helpers/post";
 import { categories } from "@/helpers/post/utils";
 import { formatDate } from "@/helpers/utils";
+import { usePostMutations } from "@/hooks/post/useMutationPost";
 import { useAuthStore } from "@/store";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { Image } from "expo-image";
+import { router } from "expo-router";
+import {
+  lazy,
+  memo,
+  Suspense,
+  useCallback,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import {
   Alert,
   Platform,
-  Pressable,
   Share,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { Avatar } from "../avatar";
-import { PostContent } from "./post-content";
-import { router } from "expo-router";
-import { ContextMenu } from "../UI/context-menu";
-import { lazy, Suspense, useEffect, useState, useTransition } from "react";
-import { LoadingSpinner } from "../UI/loading";
-import { usePostMutations } from "@/hooks/post/useMutationPost";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { Avatar } from "../avatar";
+import { ContextMenu } from "../UI/context-menu";
+import { LoadingSpinner } from "../UI/loading";
+import { PostContent } from "./post-content";
 
 const ModalConfirm = lazy(() =>
   import("../UI/modal-confirm").then((module) => ({
@@ -38,7 +45,7 @@ interface PostCardProps {
   };
   index: number;
 }
-export const PostCard = ({ post, index }: PostCardProps) => {
+export const PostCard = memo(({ post, index }: PostCardProps) => {
   const userId = useAuthStore((s) => s.user?.id);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -48,33 +55,46 @@ export const PostCard = ({ post, index }: PostCardProps) => {
   } = usePostMutations();
   const [isPending, startTransition] = useTransition();
 
-  const handleClick = (action: "update" | "delete") => {
-    switch (action) {
-      case "update":
-        router.push({
-          pathname: "/add-post",
-          params: {
-            post: JSON.stringify(post),
-          },
-        });
+  // Memoize expensive operations
+  const categorie = useMemo(
+    () => categories.find((cat) => cat.id === post.category),
+    [post.category]
+  );
 
-        break;
-      case "delete":
-        setIsVisible(true);
-        break;
-      default:
-        break;
-    }
-  };
-  const categorie = categories.find((cat) => cat.id === post.category);
+  const formattedDate = useMemo(
+    () => formatDate(post.createdAt),
+    [post.createdAt]
+  );
+
+  const handleClick = useCallback(
+    (action: "update" | "delete") => {
+      switch (action) {
+        case "update":
+          router.push({
+            pathname: "/add-post",
+            params: {
+              post: JSON.stringify(post),
+            },
+          });
+          break;
+        case "delete":
+          setIsVisible(true);
+          break;
+        default:
+          break;
+      }
+    },
+    [post]
+  );
 
   // delete post
-  const handleDeletePost = async () => {
+  const handleDeletePost = useCallback(async () => {
     await deletePost(post?.id as string);
     setIsVisible(false);
-  };
+  }, [deletePost, post?.id]);
+
   // handle Like
-  const handleLike = async () => {
+  const handleLike = useCallback(async () => {
     startTransition(() => {
       if (post.is_liked) {
         post.is_liked = false;
@@ -85,9 +105,10 @@ export const PostCard = ({ post, index }: PostCardProps) => {
       }
       likePost(post?.id as string);
     });
-  };
+  }, [post.is_liked, post.likes_count, post.id, likePost]);
+
   // handle share
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     try {
       let message = "";
 
@@ -113,11 +134,18 @@ export const PostCard = ({ post, index }: PostCardProps) => {
     } catch (error: any) {
       Alert.alert("Error sharing post", error.message || "");
     }
-  };
+  }, [post.content, post.file]);
+
+  const shouldAnimate = index < 10;
+  const animationDelay = shouldAnimate ? index * 50 : 0;
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(index * 100).duration(400)}
+      entering={
+        shouldAnimate
+          ? FadeInDown.delay(animationDelay).duration(300)
+          : undefined
+      }
       style={styles.postCard}
     >
       <View style={styles.postHeader}>
@@ -136,7 +164,7 @@ export const PostCard = ({ post, index }: PostCardProps) => {
                 {post.location ?? "N/A"}
               </Text>
             </Text>
-            <Text style={styles.userHandle}>{formatDate(post.createdAt)}</Text>
+            <Text style={styles.userHandle}>{formattedDate}</Text>
           </View>
         </View>
         <View style={styles.categoryBadge}>
@@ -216,7 +244,10 @@ export const PostCard = ({ post, index }: PostCardProps) => {
       )}
     </Animated.View>
   );
-};
+});
+
+PostCard.displayName = "PostCard";
+
 const styles = StyleSheet.create({
   postCard: {
     backgroundColor: "#ffffff",

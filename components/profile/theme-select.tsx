@@ -1,5 +1,4 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React from "react";
 import { useThemeStore } from "@/store";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";

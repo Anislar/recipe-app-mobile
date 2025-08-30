@@ -1,30 +1,33 @@
 import { THEME } from "@/constants/theme";
-import React from "react";
+import { useMemo, memo } from "react";
 import { Text, StyleSheet } from "react-native";
 
 interface Props {
   content: string;
 }
 
-export const PostContent: React.FC<Props> = ({ content }) => {
-  // Split text into words and detect hashtags
-  const words = content.split(/(\s+|[.,:;!?]+)/g).filter(Boolean);
+export const PostContent = memo(({ content }: Props) => {
+  // Memoize the expensive text processing operation
+  const processedContent = useMemo(() => {
+    // Split text into words and detect hashtags
+    const words = content.split(/(\s+|[.,:;!?]+)/g).filter(Boolean);
 
-  return (
-    <Text style={styles.postContent}>
-      {words.map((word, index) => {
-        if (word.startsWith("#")) {
-          return (
-            <Text key={index} style={styles.hashtag}>
-              {word}
-            </Text>
-          );
-        }
-        return word;
-      })}
-    </Text>
-  );
-};
+    return words.map((word, index) => {
+      if (word.startsWith("#")) {
+        return (
+          <Text key={index} style={styles.hashtag}>
+            {word}
+          </Text>
+        );
+      }
+      return word;
+    });
+  }, [content]);
+
+  return <Text style={styles.postContent}>{processedContent}</Text>;
+});
+
+PostContent.displayName = "PostContent";
 
 const styles = StyleSheet.create({
   postContent: {

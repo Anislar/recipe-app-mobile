@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { THEME } from "@/constants/theme";

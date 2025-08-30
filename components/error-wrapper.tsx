@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode, Component } from "react";
 import { Text } from "react-native";
 
 interface ErrorBoundaryProps {
@@ -10,7 +10,7 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-export class ErrorBoundary extends React.Component<
+export class ErrorBoundary extends Component<
   ErrorBoundaryProps,
   ErrorBoundaryState
 > {
