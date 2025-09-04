@@ -148,7 +148,7 @@ export default function Account() {
             title={t("account.edit")}
             loading={false}
             onPress={() => {
-              router.push("/(modal)/update-person");
+              router.push("/(main)/account/update-person");
             }}
           />
         </View>

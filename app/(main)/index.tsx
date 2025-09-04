@@ -211,6 +211,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: THEME.fonts.medium,
   },
+  loadingMore: {
+    marginBottom: hp(4),
+  },
   errorText: {
     color: THEME.colors.rose,
     fontSize: hp(2.3),
@@ -222,9 +225,6 @@ const styles = StyleSheet.create({
     gap: 5,
     marginTop: 5,
     backgroundColor: THEME.colors.rose,
-  },
-  loadingMore: {
-    marginBottom: hp(4),
   },
 });
 export default HomePage;

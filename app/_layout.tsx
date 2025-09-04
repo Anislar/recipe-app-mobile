@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { I18nextProvider } from "react-i18next";

@@ -1,6 +1,20 @@
 {
   "search": {
-    "titleTab": "Search"
+    "titleTab": "Search",
+    "filter": {
+      "title": "Advanced Filters",
+      "subTitle": "Refine your search with more options",
+      "header_one": "You found {{count}} result",
+      "header2_one": "{{count}} result",
+      "header_other": "You found {{count}} results",
+      "header2_other": "{{count}} results",
+      "noResultSubTitle": "Try adjusting your filters or search terms",
+      "placeholder": "Search posts, hashtags...",
+      "subtitleInput": "Minimum 3 characters required",
+      "dateRange": "Date range",
+      "hashtag": "Popular Hashtags",
+      "clearFilter": "Clear All Filters"
+    }
   },
   "home": {
     "titleTab": "Home"

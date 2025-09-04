@@ -1,6 +1,6 @@
 import { THEME } from "@/constants/theme";
 import { User } from "@/helpers/auth";
-import { hp } from "@/helpers/common";
+import { hp, wp } from "@/helpers/common";
 import { Post } from "@/helpers/post";
 import { categories } from "@/helpers/post/utils";
 import { formatDate } from "@/helpers/utils";
@@ -22,6 +22,7 @@ import {
 import {
   Alert,
   Platform,
+  Pressable,
   Share,
   StyleSheet,
   Text,
@@ -44,207 +45,236 @@ interface PostCardProps {
     user: Partial<User>;
   };
   index: number;
+  showAction?: boolean;
 }
-export const PostCard = memo(({ post, index }: PostCardProps) => {
-  const userId = useAuthStore((s) => s.user?.id);
-  const [isVisible, setIsVisible] = useState(false);
+export const PostCard = memo(
+  ({ post, showAction = true, index }: PostCardProps) => {
+    const userId = useAuthStore((s) => s.user?.id);
+    const [isVisible, setIsVisible] = useState(false);
 
-  const {
-    remove: { mutateAsync: deletePost, isPending: isLoading, error, isError },
-    setLike: { mutateAsync: likePost },
-  } = usePostMutations();
-  const [isPending, startTransition] = useTransition();
+    const {
+      remove: { mutateAsync: deletePost, isPending: isLoading, error, isError },
+      setLike: { mutateAsync: likePost },
+    } = usePostMutations();
+    const [isPending, startTransition] = useTransition();
 
-  // Memoize expensive operations
-  const categorie = useMemo(
-    () => categories.find((cat) => cat.id === post.category),
-    [post.category]
-  );
+    // Memoize expensive operations
+    const categorie = useMemo(
+      () => categories.find((cat) => cat.id === post.category),
+      [post.category]
+    );
 
-  const formattedDate = useMemo(
-    () => formatDate(post.createdAt),
-    [post.createdAt]
-  );
+    const formattedDate = useMemo(
+      () => formatDate(post.createdAt),
+      [post.createdAt]
+    );
 
-  const handleClick = useCallback(
-    (action: "update" | "delete") => {
-      switch (action) {
-        case "update":
-          router.push({
-            pathname: "/add-post",
-            params: {
-              post: JSON.stringify(post),
-            },
-          });
-          break;
-        case "delete":
-          setIsVisible(true);
-          break;
-        default:
-          break;
-      }
-    },
-    [post]
-  );
-
-  // delete post
-  const handleDeletePost = useCallback(async () => {
-    await deletePost(post?.id as string);
-    setIsVisible(false);
-  }, [deletePost, post?.id]);
-
-  // handle Like
-  const handleLike = useCallback(async () => {
-    startTransition(() => {
-      if (post.is_liked) {
-        post.is_liked = false;
-        post.likes_count = (post.likes_count || 1) - 1;
-      } else {
-        post.is_liked = true;
-        post.likes_count = (post.likes_count || 0) + 1;
-      }
-      likePost(post?.id as string);
-    });
-  }, [post.is_liked, post.likes_count, post.id, likePost]);
-
-  // handle share
-  const handleShare = useCallback(async () => {
-    try {
-      let message = "";
-
-      if (post.content) {
-        message += `📝 ${post.content}\n\n`;
-      }
-
-      if (post.file) {
-        message += `📎 Check this out: ${post.file}\n\n`;
-      }
-
-      message += "🔗 Shared via link-up — discover more posts!";
-
-      await Share.share(
-        {
-          message,
-          url: Platform.OS === "ios" && post.file ? post.file : undefined,
-        },
-        {
-          dialogTitle: "Share this post",
-        }
-      );
-    } catch (error: any) {
-      Alert.alert("Error sharing post", error.message || "");
-    }
-  }, [post.content, post.file]);
-
-  const shouldAnimate = index < 10;
-  const animationDelay = shouldAnimate ? index * 50 : 0;
-
-  return (
-    <Animated.View
-      entering={
-        shouldAnimate
-          ? FadeInDown.delay(animationDelay).duration(300)
-          : undefined
-      }
-      style={styles.postCard}
-    >
-      <View style={styles.postHeader}>
-        <View style={styles.userInfo}>
-          <Avatar
-            uri={post.user?.avatar!}
-            size={hp(6)}
-            style={styles.avatar}
-            rounded={THEME.radius.xxl * 2}
-          />
-          <View style={styles.userDetails}>
-            <Text style={styles.userName}>
-              {post.user?.name + " "}
-              <Text style={styles.userHandle}>
-                •<MaterialCommunityIcons size={15} name="map-marker-outline" />
-                {post.location ?? "N/A"}
-              </Text>
-            </Text>
-            <Text style={styles.userHandle}>{formattedDate}</Text>
-          </View>
-        </View>
-        <View style={styles.categoryBadge}>
-          <Text
-            style={[
-              styles.categoryText,
-              {
-                color: categorie?.color,
+    const handleClick = useCallback(
+      (action: "update" | "delete") => {
+        switch (action) {
+          case "update":
+            router.push({
+              pathname: "/add-post",
+              params: {
+                post: JSON.stringify(post),
               },
-            ]}
-          >
-            {categorie?.name}
-          </Text>
-        </View>
-        {/* menu */}
-        {post?.user?.id === userId && (
-          <ContextMenu
-            onUpdate={() => handleClick("update")}
-            onDelete={() => handleClick("delete")}
-            menuWidth={120}
-          />
-        )}
-      </View>
-      <PostContent content={post.content!} />
+            });
+            break;
+          case "delete":
+            setIsVisible(true);
+            break;
+          default:
+            break;
+        }
+      },
+      [post]
+    );
 
-      {post.file && (
-        <Image
-          transition={100}
-          contentFit="cover"
-          source={{ uri: post.file }}
-          style={styles.postImage}
-        />
-      )}
+    // delete post
+    const handleDeletePost = useCallback(async () => {
+      await deletePost(post?.id as string);
+      setIsVisible(false);
+    }, [deletePost, post?.id]);
 
-      <View style={styles.postActions}>
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={handleLike}
-          disabled={isPending}
+    // handle Like
+    const handleLike = useCallback(async () => {
+      startTransition(() => {
+        if (post.is_liked) {
+          post.is_liked = false;
+          post.likes_count = (post.likes_count || 1) - 1;
+        } else {
+          post.is_liked = true;
+          post.likes_count = (post.likes_count || 0) + 1;
+        }
+        likePost(post?.id as string);
+      });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [post.is_liked, post.likes_count, post.id, likePost]);
+
+    // handle share
+    const handleShare = useCallback(async () => {
+      try {
+        let message = "";
+
+        if (post.content) {
+          message += `📝 ${post.content}\n\n`;
+        }
+
+        if (post.file) {
+          message += `📎 Check this out: ${post.file}\n\n`;
+        }
+
+        message += "🔗 Shared via link-up — discover more posts!";
+
+        await Share.share(
+          {
+            message,
+            url: Platform.OS === "ios" && post.file ? post.file : undefined,
+          },
+          {
+            dialogTitle: "Share this post",
+          }
+        );
+      } catch (error: any) {
+        Alert.alert("Error sharing post", error.message || "");
+      }
+    }, [post.content, post.file]);
+
+    const shouldAnimate = index < 10;
+    const animationDelay = shouldAnimate ? index * 50 : 0;
+
+    return (
+      <Animated.View
+        entering={
+          shouldAnimate
+            ? FadeInDown.delay(animationDelay).duration(300)
+            : undefined
+        }
+        style={styles.postCard}
+      >
+        <Pressable
+          onPress={() =>
+            router.push({
+              pathname: "/(modal)/detail-post",
+              params: { id: String(post?.id ?? "") },
+            })
+          }
         >
-          <Ionicons
-            name={post.is_liked ? "heart" : "heart-outline"}
-            size={20}
-            color={post.is_liked ? "#ef4444" : THEME.colors.grey2}
-          />
-          <Text
-            style={[styles.actionText, post.is_liked && { color: "#ef4444" }]}
-          >
-            {post.likes_count}
-          </Text>
-        </TouchableOpacity>
+          <View style={styles.postHeader}>
+            <View style={styles.userInfo}>
+              <Avatar
+                uri={post.user?.avatar!}
+                size={hp(6)}
+                style={styles.avatar}
+                rounded={THEME.radius.xxl * 2}
+              />
+              <View style={styles.userDetails}>
+                <Text style={styles.userName}>
+                  {post.user?.name + " "}
+                  <Text style={styles.userHandle}>
+                    •
+                    <MaterialCommunityIcons
+                      size={15}
+                      name="map-marker-outline"
+                    />
+                    {post.location ?? "N/A"}
+                  </Text>
+                </Text>
+                <Text style={styles.userHandle}>{formattedDate}</Text>
+              </View>
+            </View>
+            <View style={styles.categoryBadge}>
+              <Text
+                style={[
+                  styles.categoryText,
+                  {
+                    color: categorie?.color,
+                  },
+                ]}
+              >
+                {categorie?.name}
+              </Text>
+            </View>
+            {/* menu */}
+            {post?.user?.id === userId && showAction && (
+              <ContextMenu
+                onUpdate={() => handleClick("update")}
+                onDelete={() => handleClick("delete")}
+                menuWidth={120}
+              />
+            )}
+          </View>
+          <PostContent content={post.content!} />
 
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons
-            name="chatbubble-outline"
-            size={20}
-            color={THEME.colors.grey2}
-          />
-          <Text style={styles.actionText}>0</Text>
-        </TouchableOpacity>
+          {post.file && (
+            <Image
+              transition={100}
+              contentFit="cover"
+              source={{ uri: post.file }}
+              style={styles.postImage}
+            />
+          )}
 
-        <TouchableOpacity onPress={handleShare} style={styles.actionButton}>
-          <Ionicons name="share-outline" size={20} color={THEME.colors.grey2} />
-        </TouchableOpacity>
-      </View>
-      {isVisible && (
-        <Suspense fallback={<LoadingSpinner />}>
-          <ModalConfirm
-            isVisible={isVisible}
-            isDanger
-            isLoading={isLoading}
-            error={isError ? error.message : ""}
-            close={() => setIsVisible(false)}
-            onSubmit={handleDeletePost}
-          />
-        </Suspense>
-      )}
-    </Animated.View>
-  );
-});
+          {showAction && (
+            <View style={styles.postActions}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={handleLike}
+                disabled={isPending}
+              >
+                <Ionicons
+                  name={post.is_liked ? "heart" : "heart-outline"}
+                  size={20}
+                  color={post.is_liked ? "#ef4444" : THEME.colors.grey2}
+                />
+                <Text
+                  style={[
+                    styles.actionText,
+                    post.is_liked && { color: "#ef4444" },
+                  ]}
+                >
+                  {post.likes_count}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.actionButton}>
+                <Ionicons
+                  name="chatbubble-outline"
+                  size={20}
+                  color={THEME.colors.grey2}
+                />
+                <Text style={styles.actionText}>0</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleShare}
+                style={styles.actionButton}
+              >
+                <Ionicons
+                  name="share-outline"
+                  size={20}
+                  color={THEME.colors.grey2}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+          {isVisible && (
+            <Suspense fallback={<LoadingSpinner />}>
+              <ModalConfirm
+                isVisible={isVisible}
+                isDanger
+                isLoading={isLoading}
+                error={isError ? error.message : ""}
+                close={() => setIsVisible(false)}
+                onSubmit={handleDeletePost}
+              />
+            </Suspense>
+          )}
+        </Pressable>
+      </Animated.View>
+    );
+  }
+);
 
 PostCard.displayName = "PostCard";
 
@@ -252,8 +282,13 @@ const styles = StyleSheet.create({
   postCard: {
     backgroundColor: "#ffffff",
     marginBottom: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: wp(6),
     paddingVertical: 16,
+    // shadowColor: "#000",
+    // shadowOffset: { width: 0, height: 1 },
+    // shadowOpacity: 0.05,
+    // shadowRadius: 4,
+    // elevation: 2,
   },
   postHeader: {
     flexDirection: "row",

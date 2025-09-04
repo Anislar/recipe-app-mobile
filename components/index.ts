@@ -27,10 +27,13 @@ export { ThemeSelect } from "./profile/theme-select";
 // Location component
 export { LocationSelector } from "./profile/location-selector";
 export { SelectLocation } from "./profile/select-location";
-// Post component
 
+// Post component
 export { PostCard } from "./post/post-card";
 export { CategoryItem } from "./post/post-category";
 export { PostContent } from "./post/post-content";
 export { NoPosts } from "./post/empty-post";
 export { PlusButton } from "./post/plus-button";
+
+// Search component
+export { FilterComponent } from "./search/filter";

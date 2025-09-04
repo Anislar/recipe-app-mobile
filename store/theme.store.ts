@@ -65,7 +65,6 @@ export const useThemeStore = create<ThemeState>()(
   )
 );
 
-// 🔁 Custom hook to get full theme colors
 export const useSelectedColors = () => {
   const selected = useThemeStore((s) => s.selected);
   return colorPicker[selected];

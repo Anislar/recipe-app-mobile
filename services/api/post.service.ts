@@ -1,4 +1,4 @@
-import { ApiQueryParams, ApiSuccess } from "@/type";
+import { ApiQueryParams, ApiSuccess, SearchResult } from "@/type";
 import { api } from "../axios-instance";
 import { handleApiError } from "@/helpers/utils";
 import { PostType } from "@/helpers/post";
@@ -52,6 +52,29 @@ class PostService {
   async setLike(id: string, data: Record<string, string>) {
     try {
       const response = await api.patch(this.prefix + "/like/" + id, data);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error);
+    }
+  }
+  async search(
+    data: Record<string, string>,
+    signal: AbortSignal
+  ): Promise<ApiSuccess<SearchResult>> {
+    try {
+      let url = this.prefix + "/search";
+      const params = new URLSearchParams();
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          params.append(key, String(value).trim());
+        }
+      });
+
+      if ([...params].length > 0) {
+        url += "?" + params.toString();
+      }
+
+      const response = await api.get(url, { signal });
       return response.data;
     } catch (error) {
       return handleApiError(error);

@@ -1,6 +1,20 @@
 {
   "search": {
-    "titleTab": "Rechercher"
+    "titleTab": "Rechercher",
+    "filter": {
+      "title": "Filtres avancés",
+      "subTitle": "Affinez votre recherche avec plus d'options",
+      "header_one": "Vous avez trouvé {{count}} résultat",
+      "header2_one": "{{count}} résultat",
+      "header_other": "Vous avez trouvé {{count}} résultats",
+      "header2_other": "{{count}} résultats",
+      "noResultSubTitle": "Essayez d'ajuster vos filtres ou vos termes de recherche.",
+      "placeholder": "Chercher publication, hashtags...",
+      "subtitleInput": "Un minimum de 3 caractères est requis",
+      "dateRange": "Plage de dates",
+      "hashtag": "Hashtags populaires",
+      "clearFilter": "Effacer tous les filtres"
+    }
   },
   "home": {
     "titleTab": "Accueil"

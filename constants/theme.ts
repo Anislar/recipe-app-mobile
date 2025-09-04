@@ -17,6 +17,7 @@ export const COLORS = {
 export const THEME = {
   colors: COLORS,
   fonts: {
+    normal: "400",
     medium: "500",
     semibold: "600",
     bold: "700",

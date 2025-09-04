@@ -1,13 +1,13 @@
-import { useState } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Tabs } from "expo-router";
-import { useTranslation } from "react-i18next";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Tabs, usePathname } from "expo-router";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { HeaderTab, PlusButton } from "@/components";
+import { wp } from "@/helpers/common";
 import { useSelectedColors } from "@/store";
 import { THEME } from "@/constants/theme";
-import { wp } from "@/helpers/common";
 
 const MainLayout = () => {
   const { t } = useTranslation();
@@ -58,6 +58,7 @@ const MainLayout = () => {
           name="index"
           options={{
             title: t("home.titleTab"),
+
             tabBarIcon: ({ color, size, focused }) => (
               <MaterialCommunityIcons
                 size={size}

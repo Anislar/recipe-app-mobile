@@ -7,11 +7,13 @@ import { Button } from "../UI/button";
 interface NoPostsProps {
   onRefresh?: () => void;
   showRefreshButton?: boolean;
+  subtitle?: string;
 }
 
 export const NoPosts: React.FC<NoPostsProps> = ({
   onRefresh,
-  showRefreshButton = true,
+  showRefreshButton,
+  subtitle,
 }) => {
   const { t } = useTranslation();
 
@@ -23,7 +25,9 @@ export const NoPosts: React.FC<NoPostsProps> = ({
 
       <Text style={styles.title}>{t("post.empty.title")}</Text>
 
-      <Text style={styles.subtitle}>{t("post.empty.subtitle")}</Text>
+      <Text style={styles.subtitle}>
+        {subtitle || t("post.empty.subtitle")}
+      </Text>
 
       {showRefreshButton && (
         <Button
@@ -66,6 +70,7 @@ const styles = StyleSheet.create({
     lineHeight: hp(2.8),
     marginBottom: hp(4),
   },
+
   refreshButton: {
     paddingHorizontal: wp(8),
     paddingVertical: hp(1.5),

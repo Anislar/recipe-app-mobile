@@ -9,6 +9,7 @@ const AccountLayout = () => {
     "app-info": t("appInfo.app"),
     "help-support": t("account.helpSupport"),
     "edit-password": t("account.editPassword"),
+    "update-person": t("modal.editProfile"),
   };
   return (
     <Stack
@@ -28,6 +29,7 @@ const AccountLayout = () => {
       <Stack.Screen name="app-info" />
       <Stack.Screen name="help-support" />
       <Stack.Screen name="edit-password" />
+      <Stack.Screen name="update-person" />
     </Stack>
   );
 };

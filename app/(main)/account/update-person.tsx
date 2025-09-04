@@ -1,34 +1,28 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
-import { router } from "expo-router";
-import { lazy, Suspense, useRef } from "react";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { router } from "expo-router";
+import { lazy, Suspense, useRef } from "react";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 import { IDropdownRef } from "react-native-element-dropdown";
 
 import {
-  Button,
-  ScreenWrapper,
   Avatar,
-  FormWrapper,
-  TextInputComponent,
-  LoadingSpinner,
-  Separator,
+  Button,
   DropdownComponent,
+  FormWrapper,
+  LoadingSpinner,
   LocationSelector,
+  ScreenWrapper,
+  Separator,
+  TextInputComponent,
 } from "@/components";
-import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
+import { hp, wp } from "@/helpers/common";
+import { showToast } from "@/helpers/toastService";
+import { updateUserSchema, UpdateUserType } from "@/helpers/user";
+import useUpload from "@/hooks/useUpload";
 import { useAuthStore } from "@/store";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { updateUserSchema, UpdateUserType } from "@/helpers/user";
-import { showToast } from "@/helpers/toastService";
-import useUpload from "@/hooks/useUpload";
 import { useTranslation } from "react-i18next";
 
 const BottomSheetComponent = lazy(() =>

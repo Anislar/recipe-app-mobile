@@ -1,29 +1,7 @@
-import { Stack } from "expo-router";
-import { HeaderTab } from "@/components";
-import { useTranslation } from "react-i18next";
+import { Slot } from "expo-router";
 
 const SearchLayout = () => {
-  const { t } = useTranslation();
-
-  const titleMap: Record<string, string> = {
-    index: t("search.titleTab"),
-  };
-
-  return (
-    <Stack
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        headerTitle: () => (
-          <HeaderTab
-            showBackButton
-            title={titleMap[route.name] || route.name}
-          />
-        ),
-      })}
-    >
-      <Stack.Screen name="index" />
-    </Stack>
-  );
+  return <Slot />;
 };
 
 export default SearchLayout;
