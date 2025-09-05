@@ -196,6 +196,9 @@
     "action": {
       "update": "modifier",
       "delete": "supprimer",
+      "share": "partager",
+      "download": "télécharger",
+
       "createSuccess": "Publication créée avec succès!",
       "updateSuccess": "Publication modifiée avec succès!",
       "deleteSuccess": "Publication supprimée avec succès!"

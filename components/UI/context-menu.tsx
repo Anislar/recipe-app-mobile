@@ -1,29 +1,37 @@
-import { useState, useRef } from "react";
-import {
-  View,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  Modal,
-  Pressable,
-} from "react-native";
-import { useTranslation } from "react-i18next";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useRef, useState } from "react";
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-interface MenuProps {
-  onUpdate?: () => void;
-  onDelete?: () => void;
+export interface MenuItem<T extends string = string> {
+  type: T;
+  name: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap; // icon name
+}
+interface MenuProps<T extends string = string> {
+  items: MenuItem<T>[];
+
+  onAction: (type: T) => void;
   menuWidth: number;
+  left: number;
+  top: number;
 }
 
-export const ContextMenu: React.FC<MenuProps> = ({
-  onUpdate,
-  onDelete,
+export const ContextMenu = <T extends string>({
+  items,
+  onAction,
   menuWidth = 120,
-}) => {
-  const { t } = useTranslation();
+  left = 0,
+  top = 20,
+}: MenuProps<T>) => {
   const [visible, setVisible] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const buttonRef = useRef<any>(null);
@@ -39,7 +47,7 @@ export const ContextMenu: React.FC<MenuProps> = ({
           _px: number,
           py: number
         ) => {
-          setPosition({ x: wp(65), y: py });
+          setPosition({ x: wp(60 - left), y: py - top });
           setVisible(true);
         }
       );
@@ -71,39 +79,38 @@ export const ContextMenu: React.FC<MenuProps> = ({
             { top: position.y, left: position.x, width: menuWidth },
           ]}
         >
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => {
-              onUpdate?.();
-              closeMenu();
-            }}
-          >
-            <MaterialCommunityIcons
-              name="pencil-outline"
-              size={20}
-              color={THEME.colors.text}
-              style={styles.icon}
-            />
-            <Text style={styles.menuText}>{t("post.action.update")} </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => {
-              onDelete?.();
-              closeMenu();
-            }}
-          >
-            <MaterialCommunityIcons
-              name="trash-can-outline"
-              size={20}
-              color={THEME.colors.rose}
-              style={styles.icon}
-            />
-            <Text style={[styles.menuText, { color: THEME.colors.rose }]}>
-              {t("post.action.delete")}
-            </Text>
-          </TouchableOpacity>
+          {items.map((item) => (
+            <TouchableOpacity
+              key={item.type}
+              style={styles.menuItem}
+              onPress={() => {
+                onAction(item.type);
+                closeMenu();
+              }}
+            >
+              <MaterialCommunityIcons
+                name={item.icon}
+                size={20}
+                color={
+                  item.type === "delete" ? THEME.colors.rose : THEME.colors.text
+                }
+                style={styles.icon}
+              />
+              <Text
+                style={[
+                  styles.menuText,
+                  {
+                    color:
+                      item.type === "delete"
+                        ? THEME.colors.rose
+                        : THEME.colors.text,
+                  },
+                ]}
+              >
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </Modal>
     </>

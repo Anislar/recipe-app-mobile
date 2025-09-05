@@ -196,6 +196,8 @@
     "action": {
       "update": "update",
       "delete": "delete",
+      "share": "share",
+      "download": "download",
       "createSuccess": "Post Created successfully!",
       "updateSuccess": "Post Updated successfully!",
       "deleteSuccess": "Post Deleted successfully!"
