@@ -104,6 +104,7 @@
       "gender": "Genre",
       "male": "Homme",
       "female": "Femme",
+      "role": "Rôle",
       "location": "Localisation",
       "locationPlaceholder": "Localisation...",
       "phoneNumber": "Numéro de téléphone",

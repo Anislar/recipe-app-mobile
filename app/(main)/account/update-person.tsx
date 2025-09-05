@@ -1,7 +1,7 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
-import { lazy, Suspense, useRef } from "react";
+import { lazy, Suspense, useMemo, useRef } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { IDropdownRef } from "react-native-element-dropdown";
 
@@ -13,7 +13,6 @@ import {
   LoadingSpinner,
   LocationSelector,
   ScreenWrapper,
-  Separator,
   TextInputComponent,
 } from "@/components";
 import { THEME } from "@/constants/theme";
@@ -35,7 +34,7 @@ const UpdatePerson = () => {
   const { t } = useTranslation();
   const { isLoading, user, updateProfile } = useAuthStore();
   const bottomSheetRef = useRef<any>(null);
-
+  const isUser = useMemo(() => user?.role === "user", [user?.role]);
   const data = [
     { label: t("account.updatePerson.male"), value: "male", icon: "male" },
     {
@@ -114,29 +113,37 @@ const UpdatePerson = () => {
               </View>
             )}
             <Text style={styles.name}>{user?.name} </Text>
-            <View style={styles.statusContainer}>
+            <View style={styles.roleContainer}>
               <Text
                 style={{
                   color: THEME.colors.text,
                 }}
               >
-                Status:
+                {t("account.updatePerson.role")}:
               </Text>
-              <View
-                style={[
-                  styles.status,
-                  {
-                    backgroundColor: user?.isActive ? "green" : "red",
-                  },
-                ]}
-              />
+              <View style={styles.roleContainer}>
+                <Text
+                  style={[
+                    styles.role,
+                    {
+                      color: isUser ? THEME.colors.text : "#20c997",
+                    },
+                  ]}
+                >
+                  {user?.role}
+                </Text>
+                <MaterialCommunityIcons
+                  size={20}
+                  color={isUser ? THEME.colors.text : "#20c997"}
+                  name={isUser ? "account" : "shield-account"}
+                />
+              </View>
             </View>
           </View>
 
           {(status === "error" || errors["avatar"]?.message) && (
             <Text style={styles.errorText}>🚨 {t("common.errorImage")}</Text>
           )}
-          <Separator my={hp(2)} />
           <View style={styles.formSection}>
             {/* Name */}
             <Controller
@@ -159,6 +166,37 @@ const UpdatePerson = () => {
                       error && { borderColor: THEME.colors.rose }
                     }
                     onSubmitEditing={() => inputRefs[0].current?.focus()}
+                  />
+                  {error && (
+                    <Text style={styles.errorText}>{error.message}</Text>
+                  )}
+                </>
+              )}
+            />
+            {/* Phone */}
+            <Controller
+              control={control}
+              name="phone"
+              render={({
+                field: { onChange, onBlur, value },
+                fieldState: { error },
+              }) => (
+                <>
+                  <TextInputComponent
+                    ref={inputRefs[1]}
+                    label={t("account.updatePerson.phoneNumber")}
+                    value={value}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    placeholder={t(
+                      "account.updatePerson.phoneNumberPlaceholder"
+                    )}
+                    keyboardType="phone-pad"
+                    returnKeyType="next"
+                    containerStyles={
+                      error && { borderColor: THEME.colors.rose }
+                    }
+                    onSubmitEditing={() => inputRefs[2].current?.focus()}
                   />
                   {error && (
                     <Text style={styles.errorText}>{error.message}</Text>
@@ -231,38 +269,6 @@ const UpdatePerson = () => {
               />
             </View>
 
-            {/* Phone */}
-            <Controller
-              control={control}
-              name="phone"
-              render={({
-                field: { onChange, onBlur, value },
-                fieldState: { error },
-              }) => (
-                <>
-                  <TextInputComponent
-                    ref={inputRefs[1]}
-                    label={t("account.updatePerson.phoneNumber")}
-                    value={value}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    placeholder={t(
-                      "account.updatePerson.phoneNumberPlaceholder"
-                    )}
-                    keyboardType="phone-pad"
-                    returnKeyType="next"
-                    containerStyles={
-                      error && { borderColor: THEME.colors.rose }
-                    }
-                    onSubmitEditing={() => inputRefs[2].current?.focus()}
-                  />
-                  {error && (
-                    <Text style={styles.errorText}>{error.message}</Text>
-                  )}
-                </>
-              )}
-            />
-
             {/* Bio */}
             <Controller
               control={control}
@@ -294,18 +300,16 @@ const UpdatePerson = () => {
               )}
             />
           </View>
-          <View style={{ marginTop: 20 }}>
-            <Button
-              title={t("account.updatePerson.save")}
-              loading={isLoading}
-              hasShadow
-              buttonStyle={{
-                height: hp(6),
-                borderRadius: THEME.radius.xl,
-              }}
-              onPress={handleSubmit(onSubmit)}
-            />
-          </View>
+          <Button
+            title={t("account.updatePerson.save")}
+            loading={isLoading}
+            hasShadow
+            buttonStyle={{
+              height: hp(6),
+              borderRadius: THEME.radius.xl,
+            }}
+            onPress={handleSubmit(onSubmit)}
+          />
         </View>
       </FormWrapper>
       <Suspense fallback={<LoadingSpinner />}>
@@ -379,12 +383,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   profileSection: { alignItems: "center" },
-  name: { fontSize: 18, fontWeight: "bold", marginTop: 10 },
-  statusContainer: {
+  name: { fontSize: hp(2.3), fontWeight: THEME.fonts.bold, marginTop: 10 },
+  role: {
+    fontSize: hp(1.8),
+    fontWeight: THEME.fonts.bold,
+  },
+  roleContainer: {
     alignItems: "center",
     flexDirection: "row",
     gap: 5,
-    marginBottom: 10,
   },
   status: {
     height: hp(1.5),

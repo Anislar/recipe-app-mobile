@@ -1,8 +1,8 @@
-import { Pressable, StyleSheet, TouchableOpacity } from "react-native";
-import { router } from "expo-router";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { hp } from "@/helpers/common";
+import { router } from "expo-router";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { THEME } from "@/constants/theme";
+import { hp } from "@/helpers/common";
 
 interface BackButtonProps {
   size?: number;

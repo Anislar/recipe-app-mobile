@@ -104,6 +104,7 @@
       "gender": "Gender",
       "male": "Male",
       "female": "female",
+      "role": "Role",
       "fullNamePlaceholder": "Enter your full name",
       "location": "Location",
       "locationPlaceholder": "Location...",
