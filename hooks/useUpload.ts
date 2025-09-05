@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { fileService } from "@/services/api/file.service";
@@ -23,6 +23,11 @@ const useUpload = ({ source }: uploadFileInterface) => {
   );
   const [file, setFile] = useState<any>(null);
   const { t } = useTranslation();
+  // handle file
+  const handleImage = useCallback((f: any) => {
+    setFile(f);
+  }, []);
+
   // Pick image
   const pickImage = async () => {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -92,7 +97,7 @@ const useUpload = ({ source }: uploadFileInterface) => {
       const res = await fileService.uploadFile(formData, setProgress);
       showToast("File uploaded successfully!");
       const data = { ...res.data, url: addHttps(res.data.url) };
-      setFile(data);
+      handleImage(data);
       setStatus(STATUS.SUCCESS);
       return data;
     } catch (error) {
@@ -111,7 +116,7 @@ const useUpload = ({ source }: uploadFileInterface) => {
       formData.append("source", source);
       await fileService.deleteFile(formData);
       showToast("File Removed successfully!");
-      setFile(null);
+      handleImage(null);
       setStatus(STATUS.SUCCESS);
     } catch (error) {
       setStatus(STATUS.ERROR);
@@ -128,7 +133,7 @@ const useUpload = ({ source }: uploadFileInterface) => {
     status,
     file,
     deleteFile,
-    setFile,
+    handleImage,
   };
 };
 

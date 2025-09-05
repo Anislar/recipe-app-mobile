@@ -1,10 +1,11 @@
-import { View, Text, SafeAreaView } from "react-native";
+import { ScreenWrapper } from "@/components";
+import { Text } from "react-native";
 
 const DetailPost = () => {
   return (
-    <SafeAreaView>
+    <ScreenWrapper bg="white">
       <Text>DetailPost</Text>
-    </SafeAreaView>
+    </ScreenWrapper>
   );
 };
 

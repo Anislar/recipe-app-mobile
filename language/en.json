@@ -151,6 +151,7 @@
   },
   "modal": {
     "addPost": "Add post",
+    "updatePost": "Update post",
     "editProfile": "Edit Profile",
     "detailPost": "Detail Post"
   },

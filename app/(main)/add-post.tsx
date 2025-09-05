@@ -14,6 +14,7 @@ import {
   Avatar,
   Button,
   CategoryItem,
+  HeaderTab,
   LoadingSpinner,
   ScreenWrapper,
   Separator,
@@ -22,10 +23,10 @@ import {
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { categories } from "@/helpers/post/utils";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useAuthStore } from "@/store";
-import { useNavigation } from "expo-router";
 import { useSetPost } from "@/hooks/post/useSetPost";
+import { useAuthStore } from "@/store";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useNavigation } from "expo-router";
 
 const BottomSheetComponent = lazy(() =>
   import("@/components").then((el) => ({ default: el.BottomSheetComponent }))
@@ -45,6 +46,7 @@ const AddPost = () => {
     control,
     handleSubmit,
     errors,
+    isUpdate,
     // query
     isLoading,
     errorApi,
@@ -62,6 +64,15 @@ const AddPost = () => {
   // add right icon
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTitle: () => (
+        <HeaderTab
+          titleStyle={{
+            marginLeft: -wp(5),
+          }}
+          showBackButton
+          title={t(isUpdate ? "modal.updatePost" : "modal.addPost")}
+        />
+      ),
       headerRight: () => (
         <Button
           hasShadow
@@ -74,7 +85,7 @@ const AddPost = () => {
       ),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contentLength, isLoading]);
+  }, [contentLength, isUpdate, isLoading]);
   return (
     <ScreenWrapper bg="white">
       <ScrollView style={styles.content} showsVerticalScrollIndicator>
@@ -239,7 +250,7 @@ const AddPost = () => {
           <View style={styles.imagePreview}>
             <Image
               source={{
-                uri: file?.url as string,
+                uri: file.url as string,
               }}
               transition={100}
               contentFit="cover"
@@ -371,11 +382,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: hp(25),
     borderRadius: THEME.radius.xl,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
     borderWidth: 1,
     borderColor: THEME.colors.gray,
   },

@@ -150,7 +150,9 @@
     "email": "Assistance par e-mail"
   },
   "modal": {
-    "addPost": "Ajouter un post",
+    "addPost": "Ajouter une publication",
+    "updatePost": "Modifier une publication",
+
     "editProfile": "Modifier le profil",
     "detailPost": "Détail du post"
   },

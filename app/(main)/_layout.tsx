@@ -1,13 +1,12 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Tabs, usePathname } from "expo-router";
+import { Tabs } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { HeaderTab, PlusButton } from "@/components";
-import { wp } from "@/helpers/common";
-import { useSelectedColors } from "@/store";
 import { THEME } from "@/constants/theme";
+import { useSelectedColors } from "@/store";
 
 const MainLayout = () => {
   const { t } = useTranslation();
@@ -28,10 +27,6 @@ const MainLayout = () => {
     search: { title: t("search.titleTab"), suffixIcon: null },
     chat: { title: t("chat.titleTab"), suffixIcon: null },
     account: { title: t("account.titleTab"), suffixIcon: null },
-    "add-post": {
-      title: t("modal.addPost"),
-      suffixIcon: null,
-    },
   };
 
   return (
@@ -43,13 +38,11 @@ const MainLayout = () => {
           headerTitle: () => (
             <HeaderTab
               titleStyle={{
-                marginLeft: route.name === "add-post" ? -wp(5) : undefined,
-
                 textAlign: route.name === "index" ? "auto" : "center",
               }}
               showBackButton={route.name !== "index"}
-              title={titleMap[route.name].title || route.name}
-              suffixIcon={titleMap[route.name].suffixIcon}
+              title={titleMap[route.name]?.title || route.name}
+              suffixIcon={titleMap[route.name]?.suffixIcon}
             />
           ),
         })}

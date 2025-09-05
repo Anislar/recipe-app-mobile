@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import { router, useLocalSearchParams } from "expo-router";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { addPostSchema, PostType } from "@/helpers/post";
 import { showToast } from "@/helpers/toastService";
 import { ApiSuccess } from "@/type";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback, useMemo } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import useUpload from "../useUpload";
 import { usePostMutations } from "./useMutationPost";
-import { useTranslation } from "react-i18next";
 
 export const useSetPost = () => {
   const { t } = useTranslation();
@@ -17,7 +17,7 @@ export const useSetPost = () => {
     | (PostType & {
         id: string;
       })
-    | null = post ? JSON.parse(post) : null;
+    | null = useMemo(() => (post ? JSON.parse(post) : null), [post]);
 
   // use form
   const {
@@ -28,27 +28,41 @@ export const useSetPost = () => {
     reset,
   } = useForm<PostType>({
     resolver: zodResolver(addPostSchema),
-    defaultValues: {
-      content: editingPost?.content || undefined,
-      category: editingPost?.category || undefined,
-      location: editingPost?.location || undefined,
-      file: editingPost?.file || undefined,
-    },
   });
 
   // file
-  const { pickImage, takePhoto, file, progress, status, deleteFile, setFile } =
-    useUpload({
-      source: "post",
-    });
+  const {
+    pickImage,
+    takePhoto,
+    file,
+    progress,
+    status,
+    deleteFile,
+    handleImage,
+  } = useUpload({
+    source: "post",
+  });
   // handle file
-  useEffect(() => {
-    if (editingPost?.file)
-      setFile({
-        url: editingPost?.file,
+
+  useFocusEffect(
+    useCallback(() => {
+      reset({
+        content: editingPost?.content || undefined,
+        category: editingPost?.category || undefined,
+        location: editingPost?.location || undefined,
+        file: editingPost?.file || undefined,
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editingPost?.file]);
+
+      handleImage(!editingPost?.file ? null : { url: editingPost.file });
+    }, [
+      reset,
+      editingPost?.content,
+      editingPost?.category,
+      editingPost?.location,
+      editingPost?.file,
+      handleImage,
+    ])
+  );
 
   // mutation post
   const {
@@ -61,12 +75,15 @@ export const useSetPost = () => {
   } = usePostMutations();
 
   const handlePost: SubmitHandler<PostType> = async (data: PostType) => {
-    if (file || editingPost?.file) {
+    if (file ?? editingPost?.file) {
       data = {
         ...data,
         file: file?.url ?? editingPost?.file ?? "",
       };
     }
+    console.log("🚀 ~ handlePost ~ data:", data);
+    return;
+
     const res: ApiSuccess<any> = await mutateAsync({
       id: editingPost?.id,
       data,
@@ -75,7 +92,7 @@ export const useSetPost = () => {
       resetPost();
       reset();
       router.back();
-      setFile(null);
+      handleImage(null);
       showToast(
         t(
           editingPost
@@ -87,11 +104,14 @@ export const useSetPost = () => {
   };
 
   // handle Image
-  const handleDeleteImage = () => {
-    if (editingPost) {
-      setFile(null);
-    } else deleteFile(file?.url as string);
-  };
+  const handleDeleteImage = useCallback(() => {
+    if (editingPost?.file === file?.url) {
+      handleImage(null);
+    } else {
+      deleteFile(file?.url as string);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingPost?.file, file?.url]);
   // set navigation right icon
   const contentLength = watch("content")?.trim()?.length ?? 0;
   return {
@@ -111,5 +131,6 @@ export const useSetPost = () => {
     handleDeleteImage,
     handlePost,
     contentLength,
+    isUpdate: !!editingPost?.id,
   };
 };
