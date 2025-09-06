@@ -1,15 +1,14 @@
-import { THEME } from "@/constants/theme";
 import { useMemo, memo } from "react";
 import { Text, StyleSheet } from "react-native";
+
+import { THEME } from "@/constants/theme";
 
 interface Props {
   content: string;
 }
 
 export const PostContent = memo(({ content }: Props) => {
-  // Memoize the expensive text processing operation
   const processedContent = useMemo(() => {
-    // Split text into words and detect hashtags
     const words = content.split(/(\s+|[.,:;!?]+)/g).filter(Boolean);
 
     return words.map((word, index) => {

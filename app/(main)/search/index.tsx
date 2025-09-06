@@ -43,6 +43,7 @@ const SearchScreen: React.FC = () => {
   const renderPost: ListRenderItem<any> = useCallback(
     ({ item, index }) => (
       <PostCard
+        enableNavigation
         showAction={false}
         post={
           {

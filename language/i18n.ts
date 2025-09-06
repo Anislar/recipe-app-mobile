@@ -1,10 +1,10 @@
 /* eslint-disable import/no-named-as-default-member */
 import i18n from "i18next";
-import { I18nManager } from "react-native";
+//import { I18nManager } from "react-native";
 
 import { initReactI18next } from "react-i18next";
 import * as Localization from "expo-localization";
-import { getItemAsync, setItemAsync } from "expo-secure-store";
+import { getItemAsync, setItem } from "expo-secure-store";
 
 export const Lang = [
   { value: "fr", label: "Français" },
@@ -39,9 +39,9 @@ export const loadLanguageAsync = async (lng: string) => {
   }
 
   i18n.changeLanguage(lng);
-  await setItemAsync(LANGUAGE_KEY, lng);
-  const isRTL = lng === "ar";
-  I18nManager.forceRTL(isRTL);
+  setItem(LANGUAGE_KEY, lng);
+  // const isRTL = lng === "ar";
+  // I18nManager.forceRTL(isRTL);
 };
 
 export const loadStoredLanguage = async () => {

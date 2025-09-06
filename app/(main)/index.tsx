@@ -55,8 +55,6 @@ const HomePage = () => {
       }
       return undefined;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   const posts = useMemo(
@@ -67,7 +65,7 @@ const HomePage = () => {
   // Memoize the renderItem function to prevent unnecessary re-renders
   const renderPostItem = useCallback(
     ({ item, index }: { item: any; index: number }) => (
-      <PostCard post={item} index={index} />
+      <PostCard post={item} index={index} enableNavigation />
     ),
     []
   );

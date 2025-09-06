@@ -32,7 +32,6 @@ export { SelectLocation } from "./profile/select-location";
 // Post component
 export { PostCard } from "./post/post-card";
 export { CategoryItem } from "./post/post-category";
-export { PostContent } from "./post/post-content";
 export { NoPosts } from "./post/empty-post";
 export { PlusButton } from "./post/plus-button";
 

@@ -6,7 +6,13 @@ import { hp } from "@/helpers/common";
 import { LoadingSpinner } from "./UI/loading";
 import { useSelectedColors } from "@/store";
 
-export const DefaultFallback = ({ isReady }: { isReady?: boolean }) => {
+export const DefaultFallback = ({
+  isReady,
+  error,
+}: {
+  isReady?: boolean;
+  error?: string | null;
+}) => {
   const selected = useSelectedColors();
   const { t } = useTranslation();
 
@@ -32,7 +38,7 @@ export const DefaultFallback = ({ isReady }: { isReady?: boolean }) => {
           fontSize: hp(2),
         }}
       >
-        {!isReady ? "Loading" : t("common.loading")} ...
+        {error || (!isReady ? "Loading" : t("common.loading") + " ...")}
       </Text>
     </View>
   );
