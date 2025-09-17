@@ -38,8 +38,8 @@ export function FullscreenImage({
 
       {/* Fullscreen modal */}
       <Modal visible={visible} transparent animationType="fade">
-        <View style={styles.container}>
-          <View style={[styles.context, { left: hp(2) }]}>
+        <Pressable onPress={() => setVisible(false)} style={styles.container}>
+          <View style={[styles.action, { left: hp(2) }]}>
             <MaterialCommunityIcons
               onPress={() => setVisible(false)}
               name="close"
@@ -47,7 +47,7 @@ export function FullscreenImage({
               color={THEME.colors.gray}
             />
           </View>
-          <View style={styles.context}>
+          <View style={styles.action}>
             <ContextMenu<"share" | "download">
               items={[
                 {
@@ -67,14 +67,18 @@ export function FullscreenImage({
               top={0}
             />
           </View>
-
-          <Image
-            source={source}
-            style={styles.fullscreen}
-            transition={100}
-            contentFit="contain"
-          />
-        </View>
+          <Pressable
+            style={[styles.fullscreen, { height: "60%" }]}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <Image
+              source={source}
+              style={styles.fullscreen}
+              transition={150}
+              contentFit="contain"
+            />
+          </Pressable>
+        </Pressable>
       </Modal>
     </View>
   );
@@ -95,12 +99,14 @@ const styles = StyleSheet.create({
     padding: 16,
     position: "relative",
   },
-  context: {
+  action: {
     position: "absolute",
     top: hp(2),
     right: hp(2),
   },
   fullscreen: {
+    alignItems: "center",
+    justifyContent: "center",
     width: "100%",
     height: "80%",
   },
