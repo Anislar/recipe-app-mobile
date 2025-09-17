@@ -1,4 +1,4 @@
-import { Post } from "@/helpers/post";
+import { Post } from "@/schema/post";
 
 interface ActiveFilters {
   category: string | null;

@@ -22,6 +22,7 @@ interface ButtonProps {
   hasShadow?: boolean;
   icon?: keyof typeof MaterialCommunityIcons.glyphMap;
   type?: "primary" | "text";
+  isDanger?: boolean;
 }
 
 export const Button = ({
@@ -34,6 +35,7 @@ export const Button = ({
   hasShadow,
   icon,
   type = "primary",
+  isDanger,
 }: ButtonProps) => {
   const selected = useSelectedColors();
   const shadowStyle = {
@@ -49,7 +51,7 @@ export const Button = ({
   if (loading) {
     return (
       <View style={[styles.button, buttonStyle, { backgroundColor: "white" }]}>
-        <LoadingSpinner />
+        <LoadingSpinner color={isDanger ? THEME.colors.rose : undefined} />
       </View>
     );
   }

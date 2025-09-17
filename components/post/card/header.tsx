@@ -8,9 +8,9 @@ import { THEME } from "@/constants/theme";
 import { ContextMenu } from "@/components/UI/context-menu";
 
 import { hp } from "@/helpers/common";
-import { Post } from "@/helpers/post";
+import { Post } from "@/schema/post";
 import { categories } from "@/helpers/post/utils";
-import { formatDate } from "@/helpers/utils";
+import { formatDate, formatTimeAgo } from "@/helpers/utils";
 import { useAuthStore } from "@/store";
 
 interface Props {
@@ -29,7 +29,7 @@ export const PostHeader: FC<Props> = memo(
       [post.category]
     );
     const formattedDate = useMemo(
-      () => formatDate(post.createdAt),
+      () => formatTimeAgo(post.createdAt!),
       [post.createdAt]
     );
     const userId = useAuthStore((s) => s.user?.id);
@@ -38,6 +38,7 @@ export const PostHeader: FC<Props> = memo(
       <View style={styles.postHeader}>
         <View style={styles.userInfo}>
           <Avatar
+            name={post.user?.name}
             uri={post.user?.avatar!}
             size={hp(6)}
             style={styles.avatar}
@@ -75,7 +76,7 @@ export const PostHeader: FC<Props> = memo(
               },
               {
                 type: "delete",
-                name: t("post.action.delete"),
+                name: t("common.delete"),
                 icon: "trash-can-outline",
               },
             ]}

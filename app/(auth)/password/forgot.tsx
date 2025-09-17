@@ -14,7 +14,7 @@ import {
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
 import { useAuthStore } from "@/store";
-import { SendCodeType, sendCodeSchema } from "@/helpers/auth";
+import { SendCodeType, sendCodeSchema } from "@/schema/auth";
 import { showToast } from "@/helpers/toastService";
 
 const ForgotPasswordScreen = () => {

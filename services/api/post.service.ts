@@ -1,7 +1,7 @@
 import { ApiQueryParams, ApiSuccess, SearchResult } from "@/type";
 import { api } from "../axios-instance";
 import { handleApiError } from "@/helpers/utils";
-import { PostType } from "@/helpers/post";
+import { PostType } from "@/schema/post";
 
 class PostService {
   private prefix: string;

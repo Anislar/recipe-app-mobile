@@ -23,6 +23,6 @@ export const Separator = ({
 const style = StyleSheet.create({
   separator: {
     height: 1,
-    backgroundColor: THEME.colors.gray,
+    backgroundColor: THEME.colors.rose,
   },
 });

@@ -130,6 +130,7 @@ export default function Account() {
       <View style={styles.container}>
         <View style={styles.profileSection}>
           <Avatar
+            name={user?.name}
             uri={user?.avatar!}
             size={130}
             rounded={THEME.radius.xxl * 3}

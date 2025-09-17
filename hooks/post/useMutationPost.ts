@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postService } from "@/services/api/post.service";
-import { PostType } from "@/helpers/post";
+import { PostType } from "@/schema/post";
 import { useAuthStore } from "@/store";
 import { LikeTargetType } from "@/type";
 

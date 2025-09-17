@@ -23,7 +23,7 @@ import {
 import { DefaultFallback } from "@/components/with-suspense";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
-import { Post } from "@/helpers/post";
+import { Post } from "@/schema/post";
 import { useSearch } from "@/hooks/search/useSearch";
 import Animated, { FadeInRight, FadeOutRight } from "react-native-reanimated";
 

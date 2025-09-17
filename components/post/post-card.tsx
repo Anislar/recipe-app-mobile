@@ -11,9 +11,9 @@ import {
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
-import { User } from "@/helpers/auth";
+import { User } from "@/schema/auth";
 import { wp } from "@/helpers/common";
-import { Post } from "@/helpers/post";
+import { Post } from "@/schema/post";
 import { showToast } from "@/helpers/toastService";
 import { usePostMutations } from "@/hooks/post/useMutationPost";
 
@@ -36,14 +36,20 @@ export const PostCard = memo(
     const [isVisible, setIsVisible] = useState(false);
 
     const {
-      remove: { mutateAsync: deletePost, isPending: isLoading, error, isError },
+      remove: {
+        mutateAsync: deletePost,
+        isPending: isLoading,
+        error,
+        isError,
+        isSuccess,
+      },
     } = usePostMutations();
 
     /** handleDeletePost */
     const handleDeletePost = useCallback(async () => {
       await deletePost(post.id!);
-      setIsVisible(false);
-    }, [deletePost, post.id]);
+      if (isSuccess) setIsVisible(false);
+    }, [deletePost, post.id, isSuccess]);
 
     const handleShare = useCallback(
       async (noMessage = false) => {

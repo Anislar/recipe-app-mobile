@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 import { HeaderTab, PlusButton } from "@/components";
@@ -15,6 +15,7 @@ const MainLayout = () => {
       title: t("home.titleTab"),
       suffixIcon: (
         <MaterialCommunityIcons
+          onPress={() => router.push("/notification")}
           size={32}
           name="bell-outline"
           color={THEME.colors.text}
@@ -22,7 +23,7 @@ const MainLayout = () => {
       ),
     },
     search: { title: t("search.titleTab"), suffixIcon: null },
-    chat: { title: t("chat.titleTab"), suffixIcon: null },
+    notification: { title: t("notification.titleTab"), suffixIcon: null },
     account: { title: t("account.titleTab"), suffixIcon: null },
   };
 
@@ -82,13 +83,13 @@ const MainLayout = () => {
         })}
       />
       <Tabs.Screen
-        name="chat"
+        name="notification"
         options={{
-          title: t("chat.titleTab"),
+          title: t("notification.titleTab"),
           tabBarIcon: ({ color, size, focused }) => (
             <MaterialCommunityIcons
               size={size}
-              name={focused ? "chat" : "chat-outline"}
+              name={focused ? "bell" : "bell-outline"}
               color={color}
             />
           ),

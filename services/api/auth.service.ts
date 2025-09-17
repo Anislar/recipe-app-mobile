@@ -7,7 +7,7 @@ import {
   SignInType,
   SignUpType,
   VerifyCodeType,
-} from "@/helpers/auth";
+} from "@/schema/auth";
 import { handleApiError } from "@/helpers/utils";
 
 class AuthService {

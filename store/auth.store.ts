@@ -10,10 +10,10 @@ import {
   SignUpType,
   User,
   VerifyCodeType,
-} from "@/helpers/auth";
+} from "@/schema/auth";
 import { ApiError } from "@/type";
 import { userService } from "@/services/api/user.service";
-import { UpdateUserType } from "@/helpers/user";
+import { UpdateUserType } from "@/schema/user";
 
 export interface AuthState {
   isLoading: boolean;

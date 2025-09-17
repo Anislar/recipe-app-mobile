@@ -7,7 +7,7 @@ import { Separator } from "@/components/UI/separator";
 
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
-import { Post } from "@/helpers/post";
+import { Post } from "@/schema/post";
 import { usePostMutations } from "@/hooks/post/useMutationPost";
 
 interface Props {
@@ -75,7 +75,7 @@ export const PostAction: FC<Props> = memo(({ post, handleShare }) => {
         {/* comment */}
         {renderActionButton({
           icon: "chatbubble-outline",
-          label: 0,
+          label: post.comment_count,
           onPress: () =>
             router.push({
               pathname: "/(modal)/detail-post",

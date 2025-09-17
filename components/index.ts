@@ -20,6 +20,7 @@ export { Separator } from "./UI/separator";
 export { ContextMenu } from "./UI/context-menu";
 export { ModalConfirm } from "./UI/modal-confirm";
 export { FullscreenImage } from "./UI/image";
+export { ListFooterComponent } from "./UI/footer";
 
 // Profile component
 export { SettingsItem } from "./profile/setting-item";

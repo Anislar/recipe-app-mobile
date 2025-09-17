@@ -12,7 +12,7 @@ import { hp, wp } from "@/helpers/common";
 import { useRef, useState } from "react";
 import { useAuthStore } from "@/store";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { resetPasswordSchema, ResetPasswordType } from "@/helpers/auth";
+import { resetPasswordSchema, ResetPasswordType } from "@/schema/auth";
 import { useLocalSearchParams, router } from "expo-router";
 import { showToast } from "@/helpers/toastService";
 import { useTranslation } from "react-i18next";

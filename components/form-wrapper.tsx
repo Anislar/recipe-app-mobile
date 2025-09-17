@@ -18,11 +18,9 @@ const FormWrapper = ({ children, style, mb = 64 }: IFormWrapper) => {
       bottomOffset={mb}
       contentContainerStyle={styles.container}
     >
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={[styles.inner, style, { marginBottom: mb }]}>
-          {children}
-        </View>
-      </ScrollView>
+      <View style={[styles.inner, style, { marginBottom: mb }]}>
+        {children}
+      </View>
     </KeyboardAwareScrollView>
   );
 };

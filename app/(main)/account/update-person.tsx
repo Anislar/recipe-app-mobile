@@ -18,7 +18,7 @@ import {
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { showToast } from "@/helpers/toastService";
-import { updateUserSchema, UpdateUserType } from "@/helpers/user";
+import { updateUserSchema, UpdateUserType } from "@/schema/user";
 import useUpload from "@/hooks/useUpload";
 import { useAuthStore } from "@/store";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
@@ -98,6 +98,7 @@ const UpdatePerson = () => {
             ) : (
               <View>
                 <Avatar
+                  name={user?.name}
                   uri={file?.url || user?.avatar!}
                   size={hp(13)}
                   rounded={THEME.radius.xxl * 3}
@@ -301,7 +302,7 @@ const UpdatePerson = () => {
             />
           </View>
           <Button
-            title={t("account.updatePerson.save")}
+            title={t("common.save")}
             loading={isLoading}
             hasShadow
             buttonStyle={{

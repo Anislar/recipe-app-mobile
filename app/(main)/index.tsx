@@ -8,11 +8,11 @@ import Animated, { FadeInRight } from "react-native-reanimated";
 import {
   Button,
   CategoryItem,
-  LoadingSpinner,
   NoPosts,
   PostCard,
   ScreenWrapper,
   Separator,
+  ListFooterComponent,
 } from "@/components";
 import { DefaultFallback } from "@/components/with-suspense";
 import { THEME } from "@/constants/theme";
@@ -85,25 +85,6 @@ const HomePage = () => {
     refetch();
   }, [refetch]);
 
-  // Memoize the ListFooterComponent
-  const ListFooterComponent = useCallback(
-    () => (
-      <View style={styles.loadingMore}>
-        {hasNextPage || isFetchingNextPage ? (
-          <LoadingSpinner size="large" />
-        ) : (
-          posts.length > 0 && (
-            <View>
-              <Separator />
-              <Text style={styles.noMorePost}> {t("post.empty.noMore")} </Text>
-            </View>
-          )
-        )}
-      </View>
-    ),
-    [hasNextPage, isFetchingNextPage, posts.length, t]
-  );
-
   // Memoize the ListEmptyComponent
   const ListEmptyComponent = useCallback(
     () => <NoPosts showRefreshButton={isError} onRefresh={() => refetch()} />,
@@ -172,7 +153,14 @@ const HomePage = () => {
           showsVerticalScrollIndicator={false}
           onEndReached={handleEndReached}
           onEndReachedThreshold={0.5}
-          ListFooterComponent={ListFooterComponent}
+          ListFooterComponent={
+            <ListFooterComponent
+              text={t("post.empty.noMore")}
+              size={posts.length}
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+            />
+          }
           removeClippedSubviews={true}
           maxToRenderPerBatch={5}
           windowSize={5}

@@ -7,6 +7,7 @@ export interface Post {
   file?: string;
   location?: string;
   likes_count: number;
+  comment_count: number;
   userId?: string;
   createdAt?: string;
   is_liked: boolean;
@@ -55,4 +56,5 @@ const addPostSchema = z.object({
 });
 
 type PostType = z.infer<typeof addPostSchema>;
-export { addPostSchema, PostType };
+
+export { addPostSchema, type PostType };

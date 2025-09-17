@@ -13,7 +13,7 @@ import {
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
 import { useAuthStore, useSelectedColors } from "@/store";
-import { VerifyCodeType, verifyCodeSchema } from "@/helpers/auth";
+import { VerifyCodeType, verifyCodeSchema } from "@/schema/auth";
 import { Fragment, useRef, useState } from "react";
 import { showToast } from "@/helpers/toastService";
 import { useTranslation } from "react-i18next";

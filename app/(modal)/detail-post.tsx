@@ -1,6 +1,6 @@
 import { PostCard, ScreenWrapper } from "@/components";
 import { CommentsSection } from "@/components/post/comment/list";
-import { Post } from "@/helpers/post";
+import { Post } from "@/schema/post";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 
 const DetailPost = () => {

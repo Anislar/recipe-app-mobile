@@ -1,45 +1,45 @@
+import { Avatar } from "@/components/avatar";
+import { Button } from "@/components/UI/button";
+import { ContextMenu } from "@/components/UI/context-menu";
+import { LoadingSpinner } from "@/components/UI/loading";
+import { ModalConfirm } from "@/components/UI/modal-confirm";
+import { THEME } from "@/constants/theme";
+import { hp, wp } from "@/helpers/common";
+import { formatDate, formatTimeAgo } from "@/helpers/utils";
 import { Comment } from "@/type/coment.type";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useCallback } from "react";
+import React, { Suspense, useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  Alert,
-  View,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
   FadeIn,
   FadeOut,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 
-export const formatTimeAgo = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  const intervals = [
-    { label: "year", seconds: 31536000 },
-    { label: "month", seconds: 2592000 },
-    { label: "week", seconds: 604800 },
-    { label: "day", seconds: 86400 },
-    { label: "hour", seconds: 3600 },
-    { label: "minute", seconds: 60 },
-  ];
-
-  for (const interval of intervals) {
-    const count = Math.floor(diffInSeconds / interval.seconds);
-    if (count >= 1) {
-      return `${count}${interval.label.charAt(0)} ago`;
-    }
-  }
-
-  return "just now";
-};
+interface CommentItemProps {
+  comment: Comment;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+  onLike: (id: string, isLiked: boolean) => void;
+  isEditing: boolean;
+  isUpdating: boolean;
+  onCancelEdit: () => void;
+  onSaveEdit: () => void;
+  editContent: string;
+  onEditContentChange: (text: string) => void;
+  isCurrentUser: boolean;
+  isDeleting: boolean;
+  deleteError: Error | null;
+}
 // Individual Comment Component
 export const CommentItem = React.memo(
   ({
@@ -48,25 +48,18 @@ export const CommentItem = React.memo(
     onDelete,
     onLike,
     isEditing,
+    isUpdating,
     onCancelEdit,
     onSaveEdit,
     editContent,
     onEditContentChange,
     isCurrentUser,
-  }: {
-    comment: Comment;
-    onEdit: (id: string) => void;
-    onDelete: (id: string) => void;
-    onLike: (id: string, isLiked: boolean) => void;
-    isEditing: boolean;
-    onCancelEdit: () => void;
-    onSaveEdit: () => void;
-    editContent: string;
-    onEditContentChange: (text: string) => void;
-    isCurrentUser: boolean;
-  }) => {
+    isDeleting,
+    deleteError,
+  }: CommentItemProps) => {
+    const [isModalDeleteOpen, setModalDeleteOpen] = useState<boolean>(false);
     const scaleValue = useSharedValue(1);
-
+    const { t } = useTranslation();
     const animatedStyle = useAnimatedStyle(() => ({
       transform: [{ scale: scaleValue.value }],
     }));
@@ -75,44 +68,68 @@ export const CommentItem = React.memo(
       scaleValue.value = withSpring(0.95, {}, () => {
         scaleValue.value = withSpring(1);
       });
-      onLike(comment.id, comment.isLiked || false);
-    }, [comment.id, comment.isLiked, onLike, scaleValue]);
+      onLike(comment?.id, comment.is_liked || false);
+    }, [comment?.id, comment.is_liked, onLike, scaleValue]);
 
     const handleDeletePress = useCallback(() => {
-      Alert.alert(
-        "Delete Comment",
-        "Are you sure you want to delete this comment?",
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: () => onDelete(comment.id),
-          },
-        ]
-      );
-    }, [comment.id, onDelete]);
-
+      setModalDeleteOpen((p) => !p);
+    }, []);
+    const formattedDate = useMemo(
+      () => formatTimeAgo(comment.createdAt!),
+      [comment.createdAt] // ,
+    );
+    const handleDeleteSubmit = useCallback(async () => {
+      await onDelete(comment?.id);
+      !deleteError && setModalDeleteOpen(false);
+    }, [comment?.id, deleteError, onDelete]);
     return (
       <Animated.View
         entering={FadeIn.delay(100)}
         exiting={FadeOut}
         style={[styles.commentItem]}
       >
-        {/* Avatar & Author */}
+        {/* Avatar */}
         <View style={styles.commentHeader}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {comment.author.name.charAt(0).toUpperCase()}
-            </Text>
-          </View>
+          <Avatar
+            name={comment.user.name}
+            uri={comment.user.avatar!}
+            size={wp(9)}
+            rounded={wp(9)}
+          />
+
           <View style={styles.commentMeta}>
-            <Text style={styles.authorName}>{comment.author.name}</Text>
+            <Text style={styles.authorName}>{comment.user.name}</Text>
             <Text style={styles.commentTime}>
-              {formatTimeAgo(comment.createdAt)}
-              {comment.isEdited && " • edited"}
+              {formattedDate}
+              {comment.is_edited && " • " + t("post.comment.edited")}
             </Text>
           </View>
+          {isCurrentUser && (
+            <ContextMenu<"update" | "delete">
+              items={[
+                {
+                  type: "update",
+                  name: t("post.action.update"),
+                  icon: "pencil-outline",
+                },
+                {
+                  type: "delete",
+                  name: t("common.delete"),
+                  icon: "trash-can-outline",
+                },
+              ]}
+              onAction={(action) => {
+                if (action === "update") {
+                  onEdit(comment?.id);
+                } else {
+                  handleDeletePress();
+                }
+              }}
+              menuWidth={120}
+              left={2}
+              top={20}
+            />
+          )}
         </View>
 
         {/* Comment Content */}
@@ -127,18 +144,27 @@ export const CommentItem = React.memo(
               autoFocus
             />
             <View style={styles.editActions}>
-              <TouchableOpacity
-                style={[styles.editButton, styles.cancelButton]}
+              <Button
+                title={t("common.cancel")}
+                buttonStyle={[
+                  styles.editButton,
+                  {
+                    backgroundColor: "#f5f5f5",
+                  },
+                ]}
+                textStyle={{
+                  color: THEME.colors.darkGray,
+                }}
                 onPress={onCancelEdit}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.editButton, styles.saveButton]}
+              />
+
+              <Button
+                buttonStyle={styles.editButton}
                 onPress={onSaveEdit}
-              >
-                <Text style={styles.saveButtonText}>Save</Text>
-              </TouchableOpacity>
+                title={t("common.save")}
+                loading={isUpdating}
+                disabled={isUpdating}
+              />
             </View>
           </View>
         ) : (
@@ -149,112 +175,65 @@ export const CommentItem = React.memo(
         <View style={styles.commentActions}>
           <Animated.View style={animatedStyle}>
             <TouchableOpacity
-              style={[styles.actionButton, styles.likeButton]}
+              style={styles.actionButton}
               onPress={handleLikePress}
               activeOpacity={0.7}
             >
               <Ionicons
-                name={comment.isLiked ? "heart" : "heart-outline"}
+                name={comment.is_liked ? "heart" : "heart-outline"}
                 size={16}
-                color={comment.isLiked ? "#ff6b6b" : "#666"}
+                color={comment.is_liked ? "#ff6b6b" : "#666"}
               />
               <Text
-                style={[styles.actionText, comment.isLiked && styles.likedText]}
+                style={[
+                  styles.actionText,
+                  comment.is_liked && styles.likedText,
+                ]}
               >
-                {comment._count.likes}
+                {comment?.likes_count ?? 0}
               </Text>
             </TouchableOpacity>
           </Animated.View>
 
           <TouchableOpacity style={styles.actionButton}>
             <Ionicons name="chatbubble-outline" size={16} color="#666" />
-            <Text style={styles.actionText}>Reply</Text>
+            <Text style={styles.actionText}>{t("post.comment.reply")} </Text>
           </TouchableOpacity>
-
-          {true && (
-            <View style={styles.ownerActions}>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => onEdit(comment.id)}
-              >
-                <Ionicons name="create-outline" size={16} color="#666" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={handleDeletePress}
-              >
-                <Ionicons name="trash-outline" size={16} color="#ff6b6b" />
-              </TouchableOpacity>
-            </View>
-          )}
         </View>
+        {isModalDeleteOpen && (
+          <Suspense fallback={<LoadingSpinner />}>
+            <ModalConfirm
+              isVisible={isModalDeleteOpen}
+              isDanger
+              isLoading={isDeleting}
+              error={deleteError ? deleteError?.message : ""}
+              close={() => setModalDeleteOpen(false)}
+              onSubmit={handleDeleteSubmit}
+            />
+          </Suspense>
+        )}
       </Animated.View>
     );
   }
 );
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  containerWeb: {
-    maxWidth: 800,
-    alignSelf: "center" as const,
-    width: "100%",
-  },
-  header: {
-    flexDirection: "row" as const,
-    justifyContent: "space-between" as const,
-    alignItems: "center" as const,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600" as const,
-    color: "#333",
-  },
-  expandButton: {
-    padding: 8,
-  },
-  listContent: {
-    paddingVertical: 8,
-  },
   commentItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
     backgroundColor: "#fff",
   },
-  commentItemWeb: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
   commentHeader: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
+    gap: 5,
   },
-  avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#007AFF",
-    justifyContent: "center" as const,
-    alignItems: "center" as const,
-    marginRight: 12,
-  },
-  avatarText: {
-    color: "#fff",
-    fontWeight: "600" as const,
-    fontSize: 16,
-  },
+
   commentMeta: {
     flex: 1,
   },
   authorName: {
-    fontWeight: "600" as const,
+    fontWeight: "600",
     fontSize: 14,
     color: "#333",
   },
@@ -279,50 +258,31 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 15,
     minHeight: 80,
-    textAlignVertical: "top" as const,
-  },
-  editInputWeb: {
-    outlineStyle: "none" as any,
+    textAlignVertical: "top",
   },
   editActions: {
-    flexDirection: "row" as const,
-    justifyContent: "flex-end" as const,
+    flexDirection: "row",
+    justifyContent: "flex-end",
     marginTop: 8,
     gap: 8,
   },
   editButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
+    paddingHorizontal: wp(4),
+    height: hp(5.5),
+    borderRadius: THEME.radius.sm,
   },
-  cancelButton: {
-    backgroundColor: "#f5f5f5",
-  },
-  saveButton: {
-    backgroundColor: "#007AFF",
-  },
-  cancelButtonText: {
-    color: "#666",
-    fontWeight: "500" as const,
-  },
-  saveButtonText: {
-    color: "#fff",
-    fontWeight: "500" as const,
-  },
+
   commentActions: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    justifyContent: "space-between" as const,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   actionButton: {
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 8,
     paddingVertical: 4,
     gap: 4,
-  },
-  likeButton: {
-    // Special styling for like button
   },
   actionText: {
     fontSize: 13,
@@ -330,92 +290,6 @@ const styles = StyleSheet.create({
   },
   likedText: {
     color: "#ff6b6b",
-  },
-  ownerActions: {
-    flexDirection: "row" as const,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: "#f5f5f5",
-    marginHorizontal: 16,
-  },
-  loadMoreButton: {
-    paddingVertical: 16,
-    alignItems: "center" as const,
-  },
-  loadMoreText: {
-    color: "#007AFF",
-    fontWeight: "500" as const,
-  },
-  inputContainer: {
-    borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-  },
-  inputWrapper: {
-    flexDirection: "row" as const,
-    alignItems: "flex-end" as const,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    fontSize: 15,
-    maxHeight: 100,
-    backgroundColor: "#f8f8f8",
-  },
-
-  sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#007AFF",
-    justifyContent: "center" as const,
-    alignItems: "center" as const,
-    marginBottom: 2,
-  },
-  sendButtonDisabled: {
-    backgroundColor: "#ccc",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center" as const,
-    alignItems: "center" as const,
-    paddingVertical: 40,
-  },
-  loadingText: {
-    marginTop: 12,
-    color: "#666",
-    fontSize: 14,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center" as const,
-    alignItems: "center" as const,
-    paddingVertical: 40,
-    paddingHorizontal: 20,
-  },
-  errorText: {
-    color: "#ff6b6b",
-    fontSize: 14,
-    textAlign: "center" as const,
-    marginBottom: 16,
-  },
-  retryButton: {
-    backgroundColor: "#007AFF",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  retryButtonText: {
-    color: "#fff",
-    fontWeight: "500" as const,
   },
 });
 CommentItem.displayName = "CommentItem";

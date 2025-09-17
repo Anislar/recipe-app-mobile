@@ -76,8 +76,9 @@ export const ModalConfirm = ({
 
           {/* Confirm */}
           <Button
+            isDanger={isDanger}
             buttonStyle={styles.actionBtn}
-            title={isDanger ? t("post.action.delete") : t("common.submit")}
+            title={isDanger ? t("common.delete") : t("common.submit")}
             textStyle={[
               {
                 color: isDanger ? THEME.colors.rose : selected?.primary + "90",

@@ -1,5 +1,7 @@
 import { commentService } from "@/services/api/comment.service";
 import { postService } from "@/services/api/post.service";
+import { useAuthStore } from "@/store";
+import { LikeTargetType } from "@/type";
 import { Comment } from "@/type/coment.type";
 import {
   useInfiniteQuery,
@@ -20,7 +22,7 @@ interface CommentMutationOptions {
 
 export const useComment = ({ postId, enabled }: UseCommentOptions) => {
   const queryClient = useQueryClient();
-
+  const user = useAuthStore((state) => state.user);
   const queryKey = useMemo(() => ["comments", postId] as const, [postId]);
 
   const {
@@ -32,6 +34,7 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
     hasNextPage,
     isFetchingNextPage,
     isRefetching,
+    isFetching,
     refetch,
   } = useInfiniteQuery({
     queryKey,
@@ -57,45 +60,42 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
   });
 
   const comments = useMemo(() => {
-    return infiniteData?.pages.flatMap((page) => page.data) ?? [];
+    return infiniteData?.pages.flatMap((page) => page.data.results) ?? [];
+  }, [infiniteData]);
+
+  const size = useMemo(() => {
+    return infiniteData?.pages?.[0]?.data?.pagination?.totalItems ?? 0;
   }, [infiniteData]);
 
   const addCommentMutation = useMutation({
-    mutationFn: (content: string) => commentService.addComment(postId, content),
-    onMutate: async (content: string) => {
-      await queryClient.cancelQueries({ queryKey });
-
-      const previousData = queryClient.getQueryData(queryKey);
-
-      const optimisticComment: Comment = {
-        id: `temp-${Date.now()}`,
+    mutationFn: async (content: string) => {
+      const res = await commentService.addComment(postId, {
         content,
-        postId,
-        authorId: "current-user", // Get from auth context
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        author: {
-          id: "current-user",
-          name: "You",
-          avatar: null,
-        },
-        _count: {
-          likes: 0,
-          replies: 0,
-        },
+      });
+      return res.data;
+    },
+    onSuccess: async (data, content) => {
+      const previousData = queryClient.getQueryData(queryKey);
+      const newComment = {
+        ...data,
+        user: user!,
       };
-
       queryClient.setQueryData(queryKey, (old: any) => {
         if (!old) return old;
-
         return {
           ...old,
           pages: old.pages.map((page: any, index: number) => {
             if (index === 0) {
               return {
                 ...page,
-                data: [optimisticComment, ...page.data],
-                total: page.total + 1,
+                data: {
+                  ...page.data,
+                  results: [newComment, ...(page.data?.results || [])],
+                  pagination: {
+                    ...page.data.pagination,
+                    totalItems: Number(page.data.pagination.totalItems) + 1,
+                  },
+                },
               };
             }
             return page;
@@ -105,15 +105,7 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
 
       return { previousData };
     },
-    onError: (error, variables, context) => {
-      // Rollback on error
-      if (context?.previousData) {
-        queryClient.setQueryData(queryKey, context.previousData);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKey });
-    },
+    onError: (_, __, context) => {},
   });
 
   const updateCommentMutation = useMutation({
@@ -123,9 +115,8 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
     }: {
       commentId: string;
       content: string;
-    }) => commentService.updateComment(commentId, content),
-    onMutate: async ({ commentId, content }) => {
-      await queryClient.cancelQueries({ queryKey });
+    }) => commentService.updateComment(commentId, { content }),
+    onSuccess: (_, { commentId, content }) => {
       const previousData = queryClient.getQueryData(queryKey);
 
       queryClient.setQueryData(queryKey, (old: any) => {
@@ -135,36 +126,34 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
           ...old,
           pages: old.pages.map((page: any) => ({
             ...page,
-            data: page.data.map((comment: Comment) =>
-              comment.id === commentId
-                ? {
-                    ...comment,
-                    content,
-                    updatedAt: new Date().toISOString(),
-                    isEdited: true,
-                  }
-                : comment
-            ),
+            data: {
+              ...page.data,
+              results: page.data.results.map((comment: Comment) =>
+                comment?.id === commentId
+                  ? {
+                      ...comment,
+                      content,
+                      is_edited: true,
+                      updatedAt: new Date().toISOString(),
+                    }
+                  : comment
+              ),
+            },
           })),
         };
       });
 
       return { previousData };
     },
-    onError: (error, variables, context) => {
-      if (context?.previousData) {
-        queryClient.setQueryData(queryKey, context.previousData);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKey });
-    },
+    onError: (error, variables, context) => {},
   });
 
   const deleteCommentMutation = useMutation({
-    mutationFn: (commentId: string) => commentService.deleteComment(commentId),
-    onMutate: async (commentId: string) => {
-      await queryClient.cancelQueries({ queryKey });
+    mutationFn: async (commentId: string) => {
+      await commentService.deleteComment(commentId);
+      return commentId;
+    },
+    onSuccess: (commentId: string) => {
       const previousData = queryClient.getQueryData(queryKey);
 
       queryClient.setQueryData(queryKey, (old: any) => {
@@ -174,24 +163,23 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
           ...old,
           pages: old.pages.map((page: any) => ({
             ...page,
-            data: page.data.filter(
-              (comment: Comment) => comment.id !== commentId
-            ),
-            total: Math.max(0, page.total - 1),
+            data: {
+              ...page.data,
+              pagination: {
+                ...page.data.pagination,
+                totalItems: page.data.pagination.totalItems - 1,
+              },
+              results: page.data.results.filter(
+                (comment: Comment) => comment?.id !== commentId
+              ),
+            },
           })),
         };
       });
 
       return { previousData };
     },
-    onError: (error, variables, context) => {
-      if (context?.previousData) {
-        queryClient.setQueryData(queryKey, context.previousData);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: queryKey });
-    },
+    onError: (error, variables, context) => {},
   });
 
   const toggleLikeMutation = useMutation({
@@ -201,32 +189,33 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
     }: {
       commentId: string;
       isLiked: boolean;
-    }) => postService.setLike(commentId, {}),
-    onMutate: async ({ commentId, isLiked }) => {
-      await queryClient.cancelQueries({ queryKey });
+    }) =>
+      commentService.setLike(commentId, {
+        target_type: LikeTargetType.COMMENT,
+      }),
+    onSuccess: async ({ commentId, isLiked }) => {
       const previousData = queryClient.getQueryData(queryKey);
 
       queryClient.setQueryData(queryKey, (old: any) => {
         if (!old) return old;
-
         return {
           ...old,
           pages: old.pages.map((page: any) => ({
             ...page,
-            data: page.data.map((comment: Comment) =>
-              comment.id === commentId
-                ? {
-                    ...comment,
-                    isLiked: !isLiked,
-                    _count: {
-                      ...comment._count,
-                      likes: isLiked
-                        ? Math.max(0, comment._count.likes - 1)
-                        : comment._count.likes + 1,
-                    },
-                  }
-                : comment
-            ),
+            data: {
+              ...page.data,
+              results: page.data.results.map((comment: Comment) =>
+                comment?.id === commentId
+                  ? {
+                      ...comment,
+                      is_liked: !isLiked,
+                      likes_count: isLiked
+                        ? Math.max(0, (comment.likes_count ?? 0) - 1)
+                        : (comment.likes_count ?? 0) + 1,
+                    }
+                  : comment
+              ),
+            },
           })),
         };
       });
@@ -234,9 +223,9 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
       return { previousData };
     },
     onError: (error, variables, context) => {
-      if (context?.previousData) {
-        queryClient.setQueryData(queryKey, context.previousData);
-      }
+      // if (context?.previousData) {
+      //   queryClient.setQueryData(queryKey, context.previousData);
+      // }
     },
   });
 
@@ -303,12 +292,13 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
   return {
     // Data
     comments,
-
+    size,
     // Loading states
     isLoading: isLoading && enabled,
     isError,
     error,
     isRefetching,
+    isFetching,
 
     // Pagination
     hasNextPage,

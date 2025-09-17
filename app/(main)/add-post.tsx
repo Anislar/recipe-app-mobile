@@ -92,6 +92,7 @@ const AddPost = () => {
         {/* User Info */}
         <View style={styles.userInfo}>
           <Avatar
+            name={user?.name}
             uri={user?.avatar!}
             size={hp(6)}
             rounded={THEME.radius.xxl * 2}

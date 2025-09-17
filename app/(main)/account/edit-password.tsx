@@ -13,7 +13,7 @@ import {
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { useAuthStore } from "@/store";
-import { resetPasswordSchema, ResetPasswordType } from "@/helpers/auth";
+import { resetPasswordSchema, ResetPasswordType } from "@/schema/auth";
 import { showToast } from "@/helpers/toastService";
 import { router } from "expo-router";
 

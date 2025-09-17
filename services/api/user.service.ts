@@ -1,7 +1,7 @@
 import { ApiSuccess } from "@/type";
 import { api } from "../axios-instance";
 import { handleApiError } from "@/helpers/utils";
-import { UpdateUserType } from "@/helpers/user";
+import { UpdateUserType } from "@/schema/user";
 
 class UserService {
   private prefix: string;
@@ -14,7 +14,6 @@ class UserService {
       const response = await api.get(this.prefix + "/me");
       return response.data;
     } catch (error) {
-      console.log("🚀 ~ UserService ~ getCurrentUser ~ error:", error);
       return handleApiError(error);
     }
   }

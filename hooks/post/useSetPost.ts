@@ -1,4 +1,4 @@
-import { addPostSchema, PostType } from "@/helpers/post";
+import { addPostSchema, PostType } from "@/schema/post";
 import { showToast } from "@/helpers/toastService";
 import { ApiSuccess } from "@/type";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -81,8 +81,6 @@ export const useSetPost = () => {
         file: file?.url ?? editingPost?.file ?? "",
       };
     }
-    console.log("🚀 ~ handlePost ~ data:", data);
-    return;
 
     const res: ApiSuccess<any> = await mutateAsync({
       id: editingPost?.id,

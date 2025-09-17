@@ -1,11 +1,12 @@
 import { ApiQueryParams, ApiSuccess } from "@/type";
 import { api } from "../axios-instance";
 import { handleApiError } from "@/helpers/utils";
+import { CommentType } from "@/schema/comment";
 
 class CommentService {
   private prefix: string;
   constructor() {
-    this.prefix = "post/comment";
+    this.prefix = "post";
   }
 
   async getComments(
@@ -14,7 +15,7 @@ class CommentService {
     }
   ): Promise<ApiSuccess<any>> {
     try {
-      const response = await api.get(this.prefix + "/", {
+      const response = await api.get(`${this.prefix}/${data.postId}/comments`, {
         params: {
           page: data.page ?? 1,
           limit: data.limit ?? 15,
@@ -28,9 +29,12 @@ class CommentService {
       return handleApiError(error);
     }
   }
-  async addComment(postId: string, content: string): Promise<ApiSuccess<any>> {
+  async addComment(
+    postId: string,
+    data: CommentType
+  ): Promise<ApiSuccess<any>> {
     try {
-      const response = await api.get(this.prefix + "/me");
+      const response = await api.post(`${this.prefix}/${postId}/comment`, data);
       return response.data;
     } catch (error) {
       return handleApiError(error);
@@ -39,10 +43,13 @@ class CommentService {
 
   async updateComment(
     commentId: string,
-    content: string
+    data: CommentType
   ): Promise<ApiSuccess<any>> {
     try {
-      const response = await api.get(this.prefix + "/me");
+      const response = await api.put(
+        `${this.prefix}/comment/${commentId}`,
+        data
+      );
       return response.data;
     } catch (error) {
       return handleApiError(error);
@@ -50,7 +57,15 @@ class CommentService {
   }
   async deleteComment(commentId: string): Promise<ApiSuccess<any>> {
     try {
-      const response = await api.get(this.prefix + "/me");
+      const response = await api.delete(`${this.prefix}/comment/${commentId}`);
+      return response.data;
+    } catch (error) {
+      return handleApiError(error);
+    }
+  }
+  async setLike(id: string, data: Record<string, string>) {
+    try {
+      const response = await api.patch(this.prefix + "/like/" + id, data);
       return response.data;
     } catch (error) {
       return handleApiError(error);

@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-// Sign up DTO
+// uploadFileSchema DTO
 const uploadFileSchema = z.object({
   file: z.string(),
   source: z.enum(["user", "post"]),

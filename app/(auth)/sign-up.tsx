@@ -15,7 +15,7 @@ import {
   TextInputComponent,
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
-import { signUpSchema, type SignUpType } from "@/helpers/auth";
+import { signUpSchema, type SignUpType } from "@/schema/auth";
 import { showToast } from "@/helpers/toastService";
 import { useClear } from "@/hooks/useClearError";
 import { useTranslation } from "react-i18next";

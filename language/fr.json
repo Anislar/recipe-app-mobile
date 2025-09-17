@@ -19,8 +19,8 @@
   "home": {
     "titleTab": "Accueil"
   },
-  "chat": {
-    "titleTab": "Discussion"
+  "notification": {
+    "titleTab": "Notification"
   },
   "welcome": {
     "title": "LinkUp!",
@@ -133,6 +133,9 @@
     "updateFailed": "Échec de la mise à jour"
   },
   "common": {
+    "refresh": "Actualiser",
+    "save": "Enregistrer",
+
     "error": "Erreur",
     "errorOccurred": "Une erreur s'est produite",
     "select": "Sélectionner",
@@ -143,7 +146,16 @@
     "submit": "Valider",
     "cancel": "Annuler",
     "confirmation": "Confirmation requise",
-    "areYouSure": "Êtes-vous sûr de vouloir effectuer cette action ?"
+    "areYouSure": "Êtes-vous sûr de vouloir effectuer cette action ?",
+    "timeAgo": {
+      "year": "il y a {{count}}a",
+      "month": "il y a {{count}}mois",
+      "week": "il y a {{count}}sem",
+      "day": "il y a {{count}}j",
+      "hour": "il y a {{count}}h",
+      "minute": "il y a {{count}}min",
+      "now": "à l'instant"
+    }
   },
   "support": {
     "help": "Besoin de plus d'aide ?",
@@ -202,6 +214,16 @@
       "createSuccess": "Publication créée avec succès!",
       "updateSuccess": "Publication modifiée avec succès!",
       "deleteSuccess": "Publication supprimée avec succès!"
+    },
+    "comment": {
+      "comment": "Commentaire",
+      "placeholder": "Écrivez un commentaire...",
+      "noComment": "Pas encore de commentaires",
+      "noCommentMessage": "Soyez le premier à partager vos pensées !",
+      "deleteTitle": "Supprimer le commentaire",
+      "deleteContent": "Êtes-vous sûr de vouloir supprimer ce commentaire ?",
+      "reply": "Repondre",
+      "edited": "Modifié"
     }
   },
 

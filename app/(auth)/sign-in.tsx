@@ -14,7 +14,7 @@ import {
 } from "@/components";
 import { hp, wp } from "@/helpers/common";
 import { THEME } from "@/constants/theme";
-import { SignInSchema, type SignInType } from "@/helpers/auth";
+import { SignInSchema, type SignInType } from "@/schema/auth";
 import { showToast } from "@/helpers/toastService";
 import { t } from "i18next";
 
