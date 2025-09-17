@@ -5,10 +5,16 @@ import { LoadingSpinner } from "@/components/UI/loading";
 import { ModalConfirm } from "@/components/UI/modal-confirm";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
-import { formatDate, formatTimeAgo } from "@/helpers/utils";
+import { formatTimeAgo } from "@/helpers/utils";
 import { Comment } from "@/type/coment.type";
 import { Ionicons } from "@expo/vector-icons";
-import React, { Suspense, useCallback, useMemo, useState } from "react";
+import React, {
+  Suspense,
+  useCallback,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   StyleSheet,
@@ -17,13 +23,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Animated, {
-  FadeIn,
-  FadeOut,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 interface CommentItemProps {
   comment: Comment;
@@ -58,18 +58,17 @@ export const CommentItem = React.memo(
     deleteError,
   }: CommentItemProps) => {
     const [isModalDeleteOpen, setModalDeleteOpen] = useState<boolean>(false);
-    const scaleValue = useSharedValue(1);
     const { t } = useTranslation();
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ scale: scaleValue.value }],
-    }));
+    const [isPending, startTransition] = useTransition();
 
     const handleLikePress = useCallback(() => {
-      scaleValue.value = withSpring(0.95, {}, () => {
-        scaleValue.value = withSpring(1);
+      startTransition(() => {
+        comment.is_liked = !comment.is_liked;
+        comment.likes_count =
+          (comment.likes_count || 0) + (comment.is_liked ? 1 : -1);
+        onLike(comment?.id, comment.is_liked || false);
       });
-      onLike(comment?.id, comment.is_liked || false);
-    }, [comment?.id, comment.is_liked, onLike, scaleValue]);
+    }, [comment, onLike]);
 
     const handleDeletePress = useCallback(() => {
       setModalDeleteOpen((p) => !p);
@@ -173,27 +172,23 @@ export const CommentItem = React.memo(
 
         {/* Actions */}
         <View style={styles.commentActions}>
-          <Animated.View style={animatedStyle}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={handleLikePress}
-              activeOpacity={0.7}
+          <TouchableOpacity
+            disabled={isPending}
+            style={styles.actionButton}
+            onPress={handleLikePress}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={comment.is_liked ? "heart" : "heart-outline"}
+              size={16}
+              color={comment.is_liked ? "#ff6b6b" : "#666"}
+            />
+            <Text
+              style={[styles.actionText, comment.is_liked && styles.likedText]}
             >
-              <Ionicons
-                name={comment.is_liked ? "heart" : "heart-outline"}
-                size={16}
-                color={comment.is_liked ? "#ff6b6b" : "#666"}
-              />
-              <Text
-                style={[
-                  styles.actionText,
-                  comment.is_liked && styles.likedText,
-                ]}
-              >
-                {comment?.likes_count ?? 0}
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
+              {comment?.likes_count ?? 0}
+            </Text>
+          </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionButton}>
             <Ionicons name="chatbubble-outline" size={16} color="#666" />

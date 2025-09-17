@@ -183,17 +183,17 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
   });
 
   const toggleLikeMutation = useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       commentId,
       isLiked,
     }: {
       commentId: string;
       isLiked: boolean;
     }) =>
-      commentService.setLike(commentId, {
+      await commentService.setLike(commentId, {
         target_type: LikeTargetType.COMMENT,
       }),
-    onSuccess: async ({ commentId, isLiked }) => {
+    onSuccess: async (response) => {
       const previousData = queryClient.getQueryData(queryKey);
 
       queryClient.setQueryData(queryKey, (old: any) => {
@@ -205,13 +205,11 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
             data: {
               ...page.data,
               results: page.data.results.map((comment: Comment) =>
-                comment?.id === commentId
+                comment?.id === response.data.id
                   ? {
                       ...comment,
-                      is_liked: !isLiked,
-                      likes_count: isLiked
-                        ? Math.max(0, (comment.likes_count ?? 0) - 1)
-                        : (comment.likes_count ?? 0) + 1,
+                      is_liked: response.data.is_liked,
+                      likes_count: response.data.likes_count,
                     }
                   : comment
               ),
