@@ -10,7 +10,7 @@ import { ContextMenu } from "@/components/UI/context-menu";
 import { hp } from "@/helpers/common";
 import { Post } from "@/schema/post";
 import { categories } from "@/helpers/post/utils";
-import { formatDate, formatTimeAgo } from "@/helpers/utils";
+import { formatTimeAgo } from "@/helpers/utils";
 import { useAuthStore } from "@/store";
 
 interface Props {

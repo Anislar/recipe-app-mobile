@@ -120,7 +120,7 @@ export const PostCard = memo(
             onPress: () =>
               router.push({
                 pathname: "/(modal)/detail-post",
-                params: { post: JSON.stringify(post) },
+                params: { postId: String(post.id) },
               }),
           })}
         >

@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  StyleProp,
-  ViewStyle,
-} from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 interface IFormWrapper {
@@ -26,11 +20,10 @@ const FormWrapper = ({ children, style, mb = 64 }: IFormWrapper) => {
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
   },
 
   inner: {
-    flex: 1,
     padding: 5,
     justifyContent: "center",
   },

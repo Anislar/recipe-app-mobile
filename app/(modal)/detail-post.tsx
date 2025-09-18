@@ -1,16 +1,42 @@
 import { PostCard, ScreenWrapper } from "@/components";
-import { CommentsSection } from "@/components/post/comment/list";
+import { CommentSection } from "@/components/post/comment/list";
+import { ExpandableCard } from "@/components/UI/expandable-card";
 import { Post } from "@/schema/post";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router/build/hooks";
 
+interface IData extends Post {
+  user: any;
+}
 const DetailPost = () => {
-  const { post } = useLocalSearchParams<{ post?: string }>();
-  const parsePost: Post & { user: any } = post ? JSON.parse(post) : null;
+  const { postId } = useLocalSearchParams<{ postId: string }>();
+  const queryClient = useQueryClient();
+
+  const cachedData = queryClient.getQueryData<any>(["posts", "general"]);
+
+  const initialPost: IData = (
+    cachedData?.pages?.flatMap((page: any) => page.data.results) || []
+  )?.find((p: IData) => String(p.id) === postId);
+
+  const { data: post } = useQuery({
+    queryKey: ["posts", "general", postId],
+    queryFn: () => Promise.resolve(initialPost),
+    initialData: initialPost,
+    enabled: !!initialPost,
+  });
 
   return (
-    <ScreenWrapper bg="white">
-      <PostCard post={parsePost} index={0} />
-      <CommentsSection postId={parsePost?.id} />
+    <ScreenWrapper pt={0} bg="white">
+      <ExpandableCard
+        TopView={<PostCard post={post as IData} index={0} />}
+        BottomView={({ expanded, toggleExpand }) => (
+          <CommentSection
+            expanded={expanded}
+            toggleExpand={toggleExpand}
+            postId={postId}
+          />
+        )}
+      />
     </ScreenWrapper>
   );
 };

@@ -87,8 +87,9 @@ export const CommentItem = React.memo(
         exiting={FadeOut}
         style={[styles.commentItem]}
       >
-        {/* Avatar */}
+        {/* Header */}
         <View style={styles.commentHeader}>
+          {/* Avatar */}
           <Avatar
             name={comment.user.name}
             uri={comment.user.avatar!}
@@ -139,7 +140,7 @@ export const CommentItem = React.memo(
               value={editContent}
               onChangeText={onEditContentChange}
               multiline
-              placeholder="Edit your comment..."
+              placeholder={t("post.comment.editPlaceholder")}
               autoFocus
             />
             <View style={styles.editActions}>
@@ -213,7 +214,7 @@ export const CommentItem = React.memo(
 );
 const styles = StyleSheet.create({
   commentItem: {
-    paddingHorizontal: 16,
+    paddingHorizontal: wp(5),
     paddingVertical: 12,
     backgroundColor: "#fff",
   },
@@ -221,16 +222,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 8,
-    gap: 5,
+    gap: wp(3),
   },
 
   commentMeta: {
     flex: 1,
   },
   authorName: {
-    fontWeight: "600",
+    fontWeight: THEME.fonts.semibold,
     fontSize: 14,
-    color: "#333",
+    color: THEME.colors.text,
   },
   commentTime: {
     fontSize: 12,
@@ -238,13 +239,15 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   commentContent: {
-    fontSize: 15,
-    color: "#333",
+    fontSize: hp(1.8),
+    color: THEME.colors.text,
     lineHeight: 20,
     marginBottom: 12,
+    marginLeft: wp(12),
   },
   editContainer: {
     marginBottom: 12,
+    gap: 5,
   },
   editInput: {
     borderWidth: 1,
@@ -258,8 +261,7 @@ const styles = StyleSheet.create({
   editActions: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    marginTop: 8,
-    gap: 8,
+    gap: 5,
   },
   editButton: {
     paddingHorizontal: wp(4),
@@ -271,17 +273,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginLeft: wp(2),
+    paddingHorizontal: wp(1),
   },
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
     gap: 4,
   },
+
   actionText: {
-    fontSize: 13,
-    color: "#666",
+    fontSize: hp(1.4),
+    color: THEME.colors.grey2,
   },
   likedText: {
     color: "#ff6b6b",

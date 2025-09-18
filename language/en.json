@@ -144,7 +144,7 @@
     "submit": "submit",
     "cancel": "Cancel",
     "delete": "delete",
-
+    "errorApi": "An unexpected error occurred. Please try again later.",
     "confirmation": "Confirmation Required",
     "areYouSure": "Are you sure you want to proceed with this action?",
     "timeAgo": {
@@ -217,6 +217,7 @@
     "comment": {
       "comment": "Comment",
       "placeholder": "Write a comment...",
+      "editPlaceholder": "Edit your comment...",
       "noComment": "No comments yet",
       "noCommentMessage": "Be the first to share your thoughts!",
       "deleteTitle": "Delete Comment",

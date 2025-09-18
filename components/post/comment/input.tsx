@@ -1,62 +1,69 @@
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  StyleSheet,
-} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { t } from "i18next";
+import { memo, useCallback, useState } from "react";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface CommentInputProps {
-  value: string;
-  onChangeText: (text: string) => void;
-  onSubmit: () => void;
+  onSubmit: (content: string) => Promise<boolean>;
   isLoading: boolean;
 }
 
-export const CommentInput: React.FC<CommentInputProps> = ({
-  value,
-  onChangeText,
-  onSubmit,
-  isLoading,
-}) => (
-  <View style={styles.container}>
-    <View style={styles.wrapper}>
-      <TextInput
-        style={styles.input}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={t("post.comment.placeholder")}
-        placeholderTextColor="#999"
-        multiline
-        maxLength={500}
-        editable={!isLoading}
-      />
-      <TouchableOpacity
-        style={[
-          styles.sendButton,
-          (!value.trim() || isLoading) && styles.sendButtonDisabled,
-        ]}
-        onPress={onSubmit}
-        disabled={!value.trim() || isLoading}
-        activeOpacity={0.7}
-      >
-        {isLoading ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
-          <Ionicons name="send" size={20} color="#fff" />
-        )}
-      </TouchableOpacity>
-    </View>
-  </View>
+export const CommentInput: React.FC<CommentInputProps> = memo(
+  ({ onSubmit, isLoading }) => {
+    const [newComment, setNewComment] = useState("");
+    // Handle changeText
+    const onChangeText = useCallback(async (text: string) => {
+      setNewComment(text);
+    }, []);
+    // Handle submit
+    const handleSubmit = useCallback(async () => {
+      const res = await onSubmit(newComment);
+      if (res) setNewComment("");
+    }, [onSubmit, newComment]);
+    return (
+      <View style={styles.container}>
+        <View style={styles.wrapper}>
+          <TextInput
+            style={styles.input}
+            value={newComment}
+            onChangeText={onChangeText}
+            placeholder={t("post.comment.placeholder")}
+            placeholderTextColor="#999"
+            multiline
+            maxLength={500}
+            editable={!isLoading}
+          />
+          <TouchableOpacity
+            style={[
+              styles.sendButton,
+              (!newComment.trim() || isLoading) && styles.sendButtonDisabled,
+            ]}
+            onPress={handleSubmit}
+            disabled={!newComment.trim() || isLoading}
+            activeOpacity={0.7}
+          >
+            {isLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Ionicons name="send" size={20} color="#fff" />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 );
-
+CommentInput.displayName = "CommentInput";
 const styles = StyleSheet.create({
   container: {
     borderTopWidth: 1,
     borderTopColor: "#f0f0f0",
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
   },
   wrapper: {
     flexDirection: "row",

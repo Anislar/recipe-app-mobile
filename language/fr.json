@@ -147,6 +147,7 @@
     "cancel": "Annuler",
     "confirmation": "Confirmation requise",
     "areYouSure": "Êtes-vous sûr de vouloir effectuer cette action ?",
+    "errorApi": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
     "timeAgo": {
       "year": "il y a {{count}}a",
       "month": "il y a {{count}}mois",
@@ -217,7 +218,8 @@
     },
     "comment": {
       "comment": "Commentaire",
-      "placeholder": "Écrivez un commentaire...",
+      "placeholder": "Écrire un commentaire...",
+      "editPlaceholder": "Modifier votre commentaire...",
       "noComment": "Pas encore de commentaires",
       "noCommentMessage": "Soyez le premier à partager vos pensées !",
       "deleteTitle": "Supprimer le commentaire",

@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { postService } from "@/services/api/post.service";
-import { PostType } from "@/schema/post";
+import { Post, PostType } from "@/schema/post";
 import { useAuthStore } from "@/store";
 import { LikeTargetType } from "@/type";
+import { patchQuery } from "@/helpers/patchQuery";
 
 export function usePostMutations() {
   const queryClient = useQueryClient();
@@ -26,37 +27,12 @@ export function usePostMutations() {
               avatar: user?.avatar!,
             },
           };
-
-      queryClient.setQueryData(["posts", "general"], (old: any) => {
-        if (!old) return old;
-
-        return {
-          ...old,
-          pages: old.pages.map((page: any, index: number) => {
-            if (variables.id) {
-              return {
-                ...page,
-                data: {
-                  ...page.data,
-                  results: page.data?.results.map((p: any) =>
-                    p.id === variables.id ? { ...p, ...newPost } : p
-                  ),
-                },
-              };
-            }
-            if (index === 0) {
-              return {
-                ...page,
-                data: {
-                  ...page.data,
-                  results: [newPost, ...(page.data?.results || [])],
-                },
-              };
-            }
-
-            return page;
-          }),
-        };
+      patchQuery<Post>({
+        queryClient,
+        key: ["posts", "general"],
+        type: variables.id ? "update" : "add",
+        newItem: newPost,
+        matchId: variables.id!,
       });
     },
     onError: (err) => {
@@ -68,18 +44,11 @@ export function usePostMutations() {
     mutationFn: async (id: string) => await postService.deletePost(id),
     onSuccess: (res, id) => {
       if (!res?.success) return;
-      queryClient.setQueryData(["posts", "general"], (old: any) => {
-        if (!old) return old;
-        return {
-          ...old,
-          pages: old.pages.map((page: any) => ({
-            ...page,
-            data: {
-              ...page.data,
-              results: page.data?.results.filter((p: any) => p.id !== id),
-            },
-          })),
-        };
+      patchQuery<Post>({
+        queryClient,
+        key: ["posts", "general"],
+        type: "delete",
+        matchId: id!,
       });
     },
   });
@@ -93,29 +62,12 @@ export function usePostMutations() {
     onSuccess: (res) => {
       if (!res.success) return;
 
-      queryClient.setQueryData(["posts", "general"], (old: any) => {
-        if (!old) return old;
-
-        return {
-          ...old,
-          pages: old.pages.map((page: any) => {
-            return {
-              ...page,
-              data: {
-                ...page.data,
-                results: page.data?.results.map((p: any) =>
-                  p.id === res.data.id
-                    ? {
-                        ...p,
-                        is_liked: res.data.is_liked,
-                        likes_count: res.data.likes_count,
-                      }
-                    : p
-                ),
-              },
-            };
-          }),
-        };
+      patchQuery<Post>({
+        queryClient,
+        key: ["posts", "general"],
+        type: "update",
+        newItem: res.data,
+        matchId: res.data.id,
       });
     },
     onError: (err) => {

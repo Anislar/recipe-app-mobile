@@ -1,3 +1,6 @@
+import { showToast } from "@/helpers/toastService";
+import { patchQuery } from "@/helpers/patchQuery";
+import { Post } from "@/schema/post";
 import { commentService } from "@/services/api/comment.service";
 import { postService } from "@/services/api/post.service";
 import { useAuthStore } from "@/store";
@@ -8,6 +11,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import { t } from "i18next";
 import { useCallback, useMemo } from "react";
 
 interface UseCommentOptions {
@@ -24,7 +28,11 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
   const queryKey = useMemo(() => ["comments", postId] as const, [postId]);
-
+  const queryPostUniqueKey = useMemo(
+    () => ["posts", "general", postId] as const,
+    [postId]
+  );
+  const queryPostKey = useMemo(() => ["posts", "general"] as const, []);
   const {
     data: infiniteData,
     isLoading,
@@ -74,38 +82,43 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
       });
       return res.data;
     },
-    onSuccess: async (data, content) => {
+    onSuccess: async (data) => {
       const previousData = queryClient.getQueryData(queryKey);
       const newComment = {
         ...data,
         user: user!,
       };
-      queryClient.setQueryData(queryKey, (old: any) => {
-        if (!old) return old;
-        return {
-          ...old,
-          pages: old.pages.map((page: any, index: number) => {
-            if (index === 0) {
-              return {
-                ...page,
-                data: {
-                  ...page.data,
-                  results: [newComment, ...(page.data?.results || [])],
-                  pagination: {
-                    ...page.data.pagination,
-                    totalItems: Number(page.data.pagination.totalItems) + 1,
-                  },
-                },
-              };
-            }
-            return page;
-          }),
-        };
+      patchQuery<Comment>({
+        queryClient,
+        key: queryKey as any,
+        type: "add",
+        newItem: newComment,
       });
-
+      patchQuery<Post>({
+        queryClient,
+        key: queryPostUniqueKey as any,
+        type: "update_unique",
+        matchId: data.postId,
+        newItem: (item) => ({
+          ...item,
+          comment_count: item.comment_count + 1,
+        }),
+      });
+      patchQuery<Post>({
+        queryClient,
+        key: queryPostKey as any,
+        type: "update",
+        matchId: data.postId,
+        newItem: (item) => ({
+          ...item,
+          comment_count: item.comment_count + 1,
+        }),
+      });
       return { previousData };
     },
-    onError: (_, __, context) => {},
+    onError: (_, __, context) => {
+      showToast(t("common.errorApi"));
+    },
   });
 
   const updateCommentMutation = useMutation({
@@ -116,70 +129,54 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
       commentId: string;
       content: string;
     }) => commentService.updateComment(commentId, { content }),
-    onSuccess: (_, { commentId, content }) => {
-      const previousData = queryClient.getQueryData(queryKey);
-
-      queryClient.setQueryData(queryKey, (old: any) => {
-        if (!old) return old;
-
-        return {
-          ...old,
-          pages: old.pages.map((page: any) => ({
-            ...page,
-            data: {
-              ...page.data,
-              results: page.data.results.map((comment: Comment) =>
-                comment?.id === commentId
-                  ? {
-                      ...comment,
-                      content,
-                      is_edited: true,
-                      updatedAt: new Date().toISOString(),
-                    }
-                  : comment
-              ),
-            },
-          })),
-        };
+    onSuccess: (response, { commentId }) => {
+      patchQuery<Comment>({
+        queryClient,
+        key: queryKey as any,
+        type: "update",
+        newItem: response.data,
+        matchId: commentId,
       });
-
-      return { previousData };
     },
-    onError: (error, variables, context) => {},
+    onError: (_) => {
+      showToast(t("common.errorApi"));
+    },
   });
 
   const deleteCommentMutation = useMutation({
-    mutationFn: async (commentId: string) => {
-      await commentService.deleteComment(commentId);
-      return commentId;
-    },
-    onSuccess: (commentId: string) => {
-      const previousData = queryClient.getQueryData(queryKey);
-
-      queryClient.setQueryData(queryKey, (old: any) => {
-        if (!old) return old;
-
-        return {
-          ...old,
-          pages: old.pages.map((page: any) => ({
-            ...page,
-            data: {
-              ...page.data,
-              pagination: {
-                ...page.data.pagination,
-                totalItems: page.data.pagination.totalItems - 1,
-              },
-              results: page.data.results.filter(
-                (comment: Comment) => comment?.id !== commentId
-              ),
-            },
-          })),
-        };
+    mutationFn: async (commentId: string) =>
+      await commentService.deleteComment(commentId),
+    onSuccess: (response) => {
+      patchQuery<Comment>({
+        queryClient,
+        key: queryKey as any,
+        type: "delete",
+        matchId: response.data.comment_id,
       });
-
-      return { previousData };
+      patchQuery<Post>({
+        queryClient,
+        key: queryPostKey as any,
+        type: "update",
+        matchId: response.data.post_id,
+        newItem: (item) => ({
+          ...item,
+          comment_count: item.comment_count - 1,
+        }),
+      });
+      patchQuery<Post>({
+        queryClient,
+        key: queryPostUniqueKey as any,
+        type: "update_unique",
+        matchId: response.data.post_id,
+        newItem: (item) => ({
+          ...item,
+          comment_count: item.comment_count - 1,
+        }),
+      });
     },
-    onError: (error, variables, context) => {},
+    onError: (_) => {
+      showToast(t("common.errorApi"));
+    },
   });
 
   const toggleLikeMutation = useMutation({
@@ -194,36 +191,16 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
         target_type: LikeTargetType.COMMENT,
       }),
     onSuccess: async (response) => {
-      const previousData = queryClient.getQueryData(queryKey);
-
-      queryClient.setQueryData(queryKey, (old: any) => {
-        if (!old) return old;
-        return {
-          ...old,
-          pages: old.pages.map((page: any) => ({
-            ...page,
-            data: {
-              ...page.data,
-              results: page.data.results.map((comment: Comment) =>
-                comment?.id === response.data.id
-                  ? {
-                      ...comment,
-                      is_liked: response.data.is_liked,
-                      likes_count: response.data.likes_count,
-                    }
-                  : comment
-              ),
-            },
-          })),
-        };
+      patchQuery<Comment>({
+        queryClient,
+        key: queryKey as any,
+        type: "update",
+        newItem: response.data,
+        matchId: response.data.id,
       });
-
-      return { previousData };
     },
-    onError: (error, variables, context) => {
-      // if (context?.previousData) {
-      //   queryClient.setQueryData(queryKey, context.previousData);
-      // }
+    onError: (_) => {
+      showToast(t("common.errorApi"));
     },
   });
 
