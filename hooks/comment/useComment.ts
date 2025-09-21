@@ -1,8 +1,7 @@
-import { showToast } from "@/helpers/toastService";
 import { patchQuery } from "@/helpers/patchQuery";
+import { showToast } from "@/helpers/toastService";
 import { Post } from "@/schema/post";
 import { commentService } from "@/services/api/comment.service";
-import { postService } from "@/services/api/post.service";
 import { useAuthStore } from "@/store";
 import { LikeTargetType } from "@/type";
 import { Comment } from "@/type/coment.type";
@@ -76,44 +75,68 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
   }, [infiniteData]);
 
   const addCommentMutation = useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async ({
+      content,
+      parent_id,
+    }: {
+      content: string;
+      parent_id?: string;
+    }) => {
       const res = await commentService.addComment(postId, {
         content,
+        parent_id,
       });
       return res.data;
     },
-    onSuccess: async (data) => {
+    onMutate: () => {},
+    onSuccess: async (data, variables) => {
       const previousData = queryClient.getQueryData(queryKey);
-      const newComment = {
-        ...data,
-        user: user!,
-      };
-      patchQuery<Comment>({
-        queryClient,
-        key: queryKey as any,
-        type: "add",
-        newItem: newComment,
-      });
-      patchQuery<Post>({
-        queryClient,
-        key: queryPostUniqueKey as any,
-        type: "update_unique",
-        matchId: data.postId,
-        newItem: (item) => ({
-          ...item,
-          comment_count: item.comment_count + 1,
-        }),
-      });
-      patchQuery<Post>({
-        queryClient,
-        key: queryPostKey as any,
-        type: "update",
-        matchId: data.postId,
-        newItem: (item) => ({
-          ...item,
-          comment_count: item.comment_count + 1,
-        }),
-      });
+      // in case new Comment
+      if (!variables?.parent_id) {
+        const newComment = {
+          ...data,
+          user: user!,
+        };
+        patchQuery<Comment>({
+          queryClient,
+          key: queryKey as any,
+          type: "add",
+          newItem: newComment,
+        });
+        patchQuery<Post>({
+          queryClient,
+          key: queryPostUniqueKey as any,
+          type: "update_unique",
+          matchId: data.postId,
+          newItem: (item) => ({
+            ...item,
+            comment_count: item.comment_count + 1,
+          }),
+        });
+        patchQuery<Post>({
+          queryClient,
+          key: queryPostKey as any,
+          type: "update",
+          matchId: data.postId,
+          newItem: (item) => ({
+            ...item,
+            comment_count: item.comment_count + 1,
+          }),
+        });
+      } else {
+        // new reply
+        patchQuery<Comment>({
+          queryClient,
+          key: queryKey as any,
+          type: "update",
+          matchId: data.parent_id,
+          newItem: (item) => ({
+            ...item,
+            replies_count: parseInt(String(item.replies_count), 10) + 1,
+            replies: [data, ...(item.replies ?? [])],
+          }),
+        });
+      }
       return { previousData };
     },
     onError: (_, __, context) => {
@@ -205,9 +228,13 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
   });
 
   const addComment = useCallback(
-    async (content: string, options?: CommentMutationOptions) => {
+    async (
+      content: string,
+      parent_id?: string,
+      options?: CommentMutationOptions
+    ) => {
       try {
-        await addCommentMutation.mutateAsync(content);
+        await addCommentMutation.mutateAsync({ content, parent_id }, options);
         options?.onSuccess?.();
       } catch (error) {
         options?.onError?.(error as Error);

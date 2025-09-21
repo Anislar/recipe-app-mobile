@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef, useState } from "react";
+import { memo, useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FlatList,
@@ -16,7 +16,6 @@ import {
 } from "@/components";
 import { useComment } from "@/hooks/comment/useComment";
 import { useCommentActions } from "@/hooks/comment/useCommentActions";
-import { useAuthStore } from "@/store";
 import { Comment } from "@/type/coment.type";
 import { EmptyCommentsState } from "./empty";
 import { ErrorState } from "./error";
@@ -35,7 +34,6 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
     const flatListRef = useRef<FlatList>(null);
 
     const { t } = useTranslation();
-    const userId = useAuthStore((state) => state.user?.id);
 
     const {
       comments,
@@ -65,32 +63,11 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
       }
     }, [hasNextPage, isFetchingNextPage, loadMore]);
 
-    const {
-      editingId,
-      editContent,
-      setEditContent,
-      handleEditStart,
-      handleEditSave,
-      handleEditCancel,
-      handleLike,
-      isCurrentUser,
-    } = useCommentActions({
-      comments,
-      updateComment,
-      toggleLike,
-      userId,
-    });
-
-    // Handle refresh
-    const onRefresh = useCallback(async () => {
-      await refetch();
-    }, [refetch]);
-
     // Handle add comment with smooth scroll
     const handleAddComment = useCallback(
-      async (text: string): Promise<boolean> => {
+      async (text: string, parent_id?: string): Promise<boolean> => {
         try {
-          await addComment(text.trim());
+          await addComment(text.trim(), parent_id);
 
           // Smooth scroll to top after adding comment
           setTimeout(() => {
@@ -107,6 +84,28 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
       },
       [addComment]
     );
+    const {
+      // action
+      activeAction,
+      actionContent,
+      handleActionSave,
+      handleActionCancel,
+      updateActionContent,
+      handleActionStart,
+      // other
+      handleLike,
+      isCurrentUser,
+    } = useCommentActions({
+      comments,
+      updateComment,
+      toggleLike,
+      addReply: handleAddComment,
+    });
+
+    // Handle refresh
+    const onRefresh = useCallback(async () => {
+      await refetch();
+    }, [refetch]);
 
     // Render comment item with optimizations
     const renderComment = useCallback(
@@ -114,13 +113,14 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
         <CommentItem
           comment={comment as any}
           onLike={handleLike}
-          onEdit={handleEditStart}
-          editContent={editContent}
-          isEditing={editingId === comment?.id}
+          actionContent={actionContent}
+          activeAction={activeAction}
+          onEdit={handleActionStart}
           isUpdating={isUpdating}
-          onEditContentChange={setEditContent}
-          onCancelEdit={handleEditCancel}
-          onSaveEdit={handleEditSave}
+          isAdding={isAdding}
+          updateActionContent={updateActionContent}
+          handleActionCancel={handleActionCancel}
+          handleActionSave={handleActionSave}
           isCurrentUser={isCurrentUser(comment)}
           isDeleting={isDeleting}
           deleteError={deleteError}
@@ -129,14 +129,9 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
       ),
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [
-        editingId,
+        actionContent,
+        activeAction,
         isUpdating,
-        editContent,
-        handleEditStart,
-        deleteComment,
-        handleLike,
-        handleEditCancel,
-        handleEditSave,
         isCurrentUser,
         isDeleting,
         deleteError,
@@ -149,7 +144,7 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
     }
     //
     return (
-      <FormWrapper mb={64}>
+      <FormWrapper>
         {/* Header */}
         <CommentsHeader
           expanded={expanded}

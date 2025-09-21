@@ -220,6 +220,8 @@
       "comment": "Commentaire",
       "placeholder": "Écrire un commentaire...",
       "editPlaceholder": "Modifier votre commentaire...",
+      "replyPlaceholder": "Écrire une réponse...",
+      "replySaveBtn": "Répondre",
       "noComment": "Pas encore de commentaires",
       "noCommentMessage": "Soyez le premier à partager vos pensées !",
       "deleteTitle": "Supprimer le commentaire",

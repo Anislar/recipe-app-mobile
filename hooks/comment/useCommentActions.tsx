@@ -1,43 +1,68 @@
-import { Comment } from "@/type/coment.type";
+import { useAuthStore } from "@/store";
+import { ActionType, ActiveAction, Comment } from "@/type/coment.type";
 import { useCallback, useState } from "react";
 
 interface UseCommentActionsProps {
   comments: Comment[];
   updateComment: (id: string, content: string) => Promise<void>;
   toggleLike: (id: string, isLiked: boolean) => Promise<void>;
-  userId: string | undefined;
+  addReply: (content: string, parent_id?: string) => Promise<boolean>;
 }
-
 export const useCommentActions = ({
   comments,
   updateComment,
   toggleLike,
-  userId,
+  addReply,
 }: UseCommentActionsProps) => {
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState("");
-  const handleEditStart = useCallback(
-    (commentId: string) => {
-      const comment = comments.find((c) => c.id === commentId);
-      if (comment) {
-        setEditingId(commentId);
-        setEditContent(comment.content || "");
+  const userId = useAuthStore((state) => state.user?.id);
+
+  const [activeAction, setActiveAction] = useState<ActiveAction | null>(null);
+
+  const handleActionStart = useCallback(
+    (commentId: string, type: ActionType) => {
+      if (type === "edit") {
+        const comment = comments.find((c) => c.id === commentId);
+        if (comment) {
+          setActiveAction({
+            id: commentId,
+            type,
+            content: comment.content || "",
+          });
+        }
+      }
+      if (type === "reply") {
+        setActiveAction({
+          id: commentId,
+          type,
+          content: "",
+        });
       }
     },
     [comments]
   );
 
-  const handleEditSave = useCallback(async () => {
-    if (!editingId || !editContent.trim()) return;
+  const handleActionSave = useCallback(async () => {
+    if (!activeAction || !activeAction.content.trim()) return;
 
-    await updateComment(editingId, editContent.trim());
-    setEditingId(null);
-    setEditContent("");
-  }, [editingId, editContent, updateComment]);
+    try {
+      if (activeAction.type === "edit") {
+        await updateComment(activeAction.id, activeAction.content.trim());
+      }
+      if (activeAction.type === "reply") {
+        await addReply(activeAction.content.trim(), String(activeAction.id));
+      }
+      setActiveAction(null);
+    } catch (error) {
+      console.error(`Failed to ${activeAction.type} comment:`, error);
+    }
+  }, [activeAction, updateComment, addReply]);
 
-  const handleEditCancel = useCallback(() => {
-    setEditingId(null);
-    setEditContent("");
+  const handleActionCancel = useCallback(() => {
+    setActiveAction(null);
+  }, []);
+
+  const updateActionContent = useCallback((content: string) => {
+    setActiveAction((prev) => (prev ? { ...prev, content } : null));
   }, []);
 
   const handleLike = useCallback(
@@ -49,18 +74,31 @@ export const useCommentActions = ({
 
   const isCurrentUser = useCallback(
     (comment: Comment) => {
-      return comment?.user.id === userId;
+      return comment?.user?.id === userId;
     },
     [userId]
   );
 
+  const isActiveAction = useCallback(
+    (commentId: string, type?: ActionType) => {
+      if (!activeAction || activeAction.id !== commentId) return false;
+      return type ? activeAction.type === type : true;
+    },
+    [activeAction]
+  );
+
   return {
-    editingId,
-    editContent,
-    setEditContent,
-    handleEditStart,
-    handleEditSave,
-    handleEditCancel,
+    // Active action state
+    activeAction,
+    actionContent: activeAction?.content || "",
+
+    // Generic action handlers
+    handleActionStart,
+    handleActionSave,
+    handleActionCancel,
+    updateActionContent,
+    isActiveAction,
+    // Other handlers
     handleLike,
     isCurrentUser,
   };

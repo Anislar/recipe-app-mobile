@@ -1,4 +1,3 @@
-import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import { FC, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet, View } from "react-native";
@@ -32,12 +31,12 @@ export const ExpandableCard: FC<ExpandableCardProps> = ({
   // Interpolate heights
   const topHeight = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [hp(45), hp(0)],
+    outputRange: [hp(48), hp(0)],
   });
 
   const bottomHeight = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [hp(55), hp(100)],
+    outputRange: [hp(52), hp(100)],
   });
 
   const topOpacity = animation.interpolate({

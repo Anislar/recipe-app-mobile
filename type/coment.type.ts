@@ -12,8 +12,17 @@ export interface Comment {
   is_edited?: boolean;
   is_liked?: boolean;
   likes_count: number;
+  replies_count: number;
   replies?: Comment[];
-  parentId?: string | null;
+  parent_id: string | null;
+}
+
+export type ActionType = "edit" | "reply";
+
+export interface ActiveAction {
+  id: string;
+  type: ActionType;
+  content: string;
 }
 export interface CommentFilters {
   page?: number;

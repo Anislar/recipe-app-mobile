@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "owner": "anis_larguet",
     "orientation": "portrait",
-    "icon": "./assets/images/ic_launcher.webp",
+    "icon": "./assets/images/ic_launcher.png",
     "userInterfaceStyle": "automatic",
     "scheme": "linkUp",
     "newArchEnabled": true,
@@ -23,7 +23,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/ic_launcher.webp",
+        "foregroundImage": "./assets/images/ic_launcher.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,

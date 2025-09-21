@@ -6,7 +6,7 @@ import { ModalConfirm } from "@/components/UI/modal-confirm";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { formatTimeAgo } from "@/helpers/utils";
-import { Comment } from "@/type/coment.type";
+import { ActionType, ActiveAction, Comment } from "@/type/coment.type";
 import { Ionicons } from "@expo/vector-icons";
 import React, {
   Suspense,
@@ -27,15 +27,17 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 interface CommentItemProps {
   comment: Comment;
-  onEdit: (id: string) => void;
+  onEdit: (id: string, type: ActionType) => void;
   onDelete: (id: string) => void;
   onLike: (id: string, isLiked: boolean) => void;
-  isEditing: boolean;
+  activeAction: ActiveAction | null;
   isUpdating: boolean;
-  onCancelEdit: () => void;
-  onSaveEdit: () => void;
-  editContent: string;
-  onEditContentChange: (text: string) => void;
+  isAdding: boolean;
+
+  handleActionCancel: () => void;
+  handleActionSave: () => void;
+  actionContent: string;
+  updateActionContent: (text: string) => void;
   isCurrentUser: boolean;
   isDeleting: boolean;
   deleteError: Error | null;
@@ -47,12 +49,13 @@ export const CommentItem = React.memo(
     onEdit,
     onDelete,
     onLike,
-    isEditing,
+    activeAction,
     isUpdating,
-    onCancelEdit,
-    onSaveEdit,
-    editContent,
-    onEditContentChange,
+    isAdding,
+    handleActionCancel,
+    handleActionSave,
+    actionContent,
+    updateActionContent,
     isCurrentUser,
     isDeleting,
     deleteError,
@@ -81,6 +84,58 @@ export const CommentItem = React.memo(
       await onDelete(comment?.id);
       !deleteError && setModalDeleteOpen(false);
     }, [comment?.id, deleteError, onDelete]);
+    const renderInput = useCallback(
+      (type: ActionType) => (
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.actionIput}
+            value={actionContent}
+            onChangeText={updateActionContent}
+            multiline
+            placeholder={t(`post.comment.${type}Placeholder`)}
+            autoFocus
+          />
+          <View style={styles.buttonAction}>
+            <Button
+              title={t("common.cancel")}
+              buttonStyle={[
+                styles.actionButtons,
+                {
+                  backgroundColor: "#f5f5f5",
+                },
+              ]}
+              textStyle={{
+                color: THEME.colors.darkGray,
+              }}
+              onPress={handleActionCancel}
+            />
+
+            <Button
+              buttonStyle={styles.actionButtons}
+              onPress={handleActionSave}
+              title={t(
+                type === "reply" ? "post.comment.replySaveBtn" : "common.save"
+              )}
+              loading={type === "reply" ? isAdding : isUpdating}
+              disabled={
+                (type === "reply" ? isAdding : isUpdating) ||
+                !actionContent.trim().length
+              }
+            />
+          </View>
+        </View>
+      ),
+
+      [
+        actionContent,
+        handleActionCancel,
+        handleActionSave,
+        isAdding,
+        isUpdating,
+        t,
+        updateActionContent,
+      ]
+    );
     return (
       <Animated.View
         entering={FadeIn.delay(100)}
@@ -120,7 +175,7 @@ export const CommentItem = React.memo(
               ]}
               onAction={(action) => {
                 if (action === "update") {
-                  onEdit(comment?.id);
+                  onEdit(comment?.id, "edit");
                 } else {
                   handleDeletePress();
                 }
@@ -133,40 +188,8 @@ export const CommentItem = React.memo(
         </View>
 
         {/* Comment Content */}
-        {isEditing ? (
-          <View style={styles.editContainer}>
-            <TextInput
-              style={[styles.editInput]}
-              value={editContent}
-              onChangeText={onEditContentChange}
-              multiline
-              placeholder={t("post.comment.editPlaceholder")}
-              autoFocus
-            />
-            <View style={styles.editActions}>
-              <Button
-                title={t("common.cancel")}
-                buttonStyle={[
-                  styles.editButton,
-                  {
-                    backgroundColor: "#f5f5f5",
-                  },
-                ]}
-                textStyle={{
-                  color: THEME.colors.darkGray,
-                }}
-                onPress={onCancelEdit}
-              />
-
-              <Button
-                buttonStyle={styles.editButton}
-                onPress={onSaveEdit}
-                title={t("common.save")}
-                loading={isUpdating}
-                disabled={isUpdating}
-              />
-            </View>
-          </View>
+        {activeAction?.id === comment?.id && activeAction?.type === "edit" ? (
+          renderInput("edit")
         ) : (
           <Text style={styles.commentContent}>{comment.content}</Text>
         )}
@@ -191,11 +214,17 @@ export const CommentItem = React.memo(
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity
+            onPress={() => onEdit(comment?.id, "reply")}
+            style={styles.actionButton}
+          >
             <Ionicons name="chatbubble-outline" size={16} color="#666" />
-            <Text style={styles.actionText}>{t("post.comment.reply")} </Text>
+            <Text style={styles.actionText}>{comment?.replies_count ?? 0}</Text>
           </TouchableOpacity>
         </View>
+        {activeAction?.id === comment?.id &&
+          activeAction?.type === "reply" &&
+          renderInput("reply")}
         {isModalDeleteOpen && (
           <Suspense fallback={<LoadingSpinner />}>
             <ModalConfirm
@@ -214,9 +243,7 @@ export const CommentItem = React.memo(
 );
 const styles = StyleSheet.create({
   commentItem: {
-    paddingHorizontal: wp(5),
     paddingVertical: 12,
-    backgroundColor: "#fff",
   },
   commentHeader: {
     flexDirection: "row",
@@ -245,11 +272,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginLeft: wp(12),
   },
-  editContainer: {
+  inputContainer: {
     marginBottom: 12,
     gap: 5,
   },
-  editInput: {
+  actionIput: {
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 8,
@@ -258,14 +285,14 @@ const styles = StyleSheet.create({
     minHeight: 80,
     textAlignVertical: "top",
   },
-  editActions: {
+  buttonAction: {
     flexDirection: "row",
     justifyContent: "flex-end",
     gap: 5,
   },
-  editButton: {
+  actionButtons: {
     paddingHorizontal: wp(4),
-    height: hp(5.5),
+    height: hp(4.5),
     borderRadius: THEME.radius.sm,
   },
 
@@ -275,6 +302,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginLeft: wp(2),
     paddingHorizontal: wp(1),
+    marginBottom: hp(1),
   },
   actionButton: {
     flexDirection: "row",

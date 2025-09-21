@@ -218,6 +218,8 @@
       "comment": "Comment",
       "placeholder": "Write a comment...",
       "editPlaceholder": "Edit your comment...",
+      "replyPlaceholder": "Write a reply...",
+      "replySaveBtn": "Reply",
       "noComment": "No comments yet",
       "noCommentMessage": "Be the first to share your thoughts!",
       "deleteTitle": "Delete Comment",

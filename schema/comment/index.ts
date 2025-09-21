@@ -5,7 +5,7 @@ const commentSchema = z.object({
     .string()
     .min(3, "At least 3 caracters")
     .max(255, "Max is 255 caracters"),
-  parentId: z.string().optional(),
+  parent_id: z.string().optional(),
 });
 type CommentType = z.infer<typeof commentSchema>;
 export { commentSchema, type CommentType };
