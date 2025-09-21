@@ -31,12 +31,12 @@ export const ExpandableCard: FC<ExpandableCardProps> = ({
   // Interpolate heights
   const topHeight = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [hp(48), hp(0)],
+    outputRange: [hp(55), hp(0)],
   });
 
   const bottomHeight = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [hp(52), hp(100)],
+    outputRange: [hp(45), hp(100)],
   });
 
   const topOpacity = animation.interpolate({
@@ -59,7 +59,14 @@ export const ExpandableCard: FC<ExpandableCardProps> = ({
         {TopView}
       </Animated.View>
 
-      <Animated.View style={[styles.content, { height: bottomHeight }]}>
+      <Animated.View
+        style={[
+          styles.content,
+          {
+            height: bottomHeight,
+          },
+        ]}
+      >
         {BottomView({ expanded, toggleExpand })}
       </Animated.View>
     </View>

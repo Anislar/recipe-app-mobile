@@ -11,11 +11,12 @@ import {
 
 interface CommentInputProps {
   onSubmit: (content: string) => Promise<boolean>;
+  toggleExpand: () => void;
   isLoading: boolean;
 }
 
 export const CommentInput: React.FC<CommentInputProps> = memo(
-  ({ onSubmit, isLoading }) => {
+  ({ onSubmit, isLoading, toggleExpand }) => {
     const [newComment, setNewComment] = useState("");
     // Handle changeText
     const onChangeText = useCallback(async (text: string) => {
@@ -24,12 +25,14 @@ export const CommentInput: React.FC<CommentInputProps> = memo(
     // Handle submit
     const handleSubmit = useCallback(async () => {
       const res = await onSubmit(newComment);
-      if (res) setNewComment("");
-    }, [onSubmit, newComment]);
+      if (res) onChangeText("");
+    }, [onSubmit, newComment, onChangeText]);
     return (
       <View style={styles.container}>
         <View style={styles.wrapper}>
           <TextInput
+            // onFocus={toggleExpand}
+            // onBlur={toggleExpand}
             style={styles.input}
             value={newComment}
             onChangeText={onChangeText}

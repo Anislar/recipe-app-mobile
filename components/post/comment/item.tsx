@@ -63,6 +63,7 @@ export const CommentItem = React.memo(
     const [isModalDeleteOpen, setModalDeleteOpen] = useState<boolean>(false);
     const { t } = useTranslation();
     const [isPending, startTransition] = useTransition();
+    const isOptimistic = String(comment?.id)?.startsWith("temp-");
 
     const handleLikePress = useCallback(() => {
       startTransition(() => {
@@ -93,6 +94,7 @@ export const CommentItem = React.memo(
             onChangeText={updateActionContent}
             multiline
             placeholder={t(`post.comment.${type}Placeholder`)}
+            placeholderTextColor={"#999"}
             autoFocus
           />
           <View style={styles.buttonAction}>
@@ -142,6 +144,7 @@ export const CommentItem = React.memo(
         exiting={FadeOut}
         style={[styles.commentItem]}
       >
+        {isOptimistic && <Animated.View style={[styles.backdrop]} />}
         {/* Header */}
         <View style={styles.commentHeader}>
           {/* Avatar */}
@@ -244,6 +247,12 @@ export const CommentItem = React.memo(
 const styles = StyleSheet.create({
   commentItem: {
     paddingVertical: 12,
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.05)",
+    zIndex: 1,
+    borderRadius: 5,
   },
   commentHeader: {
     flexDirection: "row",

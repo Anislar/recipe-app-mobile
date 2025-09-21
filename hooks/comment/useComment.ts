@@ -88,43 +88,107 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
       });
       return res.data;
     },
-    onMutate: () => {},
-    onSuccess: async (data, variables) => {
-      const previousData = queryClient.getQueryData(queryKey);
-      // in case new Comment
-      if (!variables?.parent_id) {
-        const newComment = {
-          ...data,
-          user: user!,
-        };
+    onMutate: async ({ content, parent_id }) => {
+      const tempId = `temp-${Math.random()}`;
+      const date = new Date().toISOString();
+
+      const previousDataComment = queryClient.getQueryData(queryKey);
+      const previousDataUniquePost =
+        queryClient.getQueryData(queryPostUniqueKey);
+      const previousDataPost = queryClient.getQueryData(queryPostKey);
+      const optimisticComment: Comment = {
+        id: tempId,
+        content,
+        parent_id: null,
+        user: user!,
+        replies: [],
+        replies_count: 0,
+        likes_count: 0,
+        is_edited: false,
+        createdAt: date,
+        updatedAt: date,
+        postId,
+        is_liked: false,
+      };
+
+      if (!parent_id) {
         patchQuery<Comment>({
           queryClient,
           key: queryKey as any,
           type: "add",
-          newItem: newComment,
+          newItem: optimisticComment,
         });
+
         patchQuery<Post>({
           queryClient,
           key: queryPostUniqueKey as any,
           type: "update_unique",
-          matchId: data.postId,
+          matchId: postId,
           newItem: (item) => ({
             ...item,
             comment_count: item.comment_count + 1,
           }),
         });
+
         patchQuery<Post>({
           queryClient,
           key: queryPostKey as any,
           type: "update",
-          matchId: data.postId,
+          matchId: postId,
           newItem: (item) => ({
             ...item,
             comment_count: item.comment_count + 1,
           }),
         });
       } else {
-        // new reply
+        patchQuery<Comment>({
+          queryClient,
+          key: queryKey as any,
+          type: "update",
+          matchId: parent_id,
+          newItem: (item) => ({
+            ...item,
+            replies_count: (item.replies_count || 0) + 1,
+            replies: [
+              {
+                ...optimisticComment,
+                parent_id,
+              },
+              ...(item.replies ?? []),
+            ],
+          }),
+        });
+      }
+
+      return {
+        previousDataComment,
+        previousDataUniquePost,
+        previousDataPost,
+        tempId,
+      };
+    },
+    onError: (_, __, context) => {
+      showToast(t("common.errorApi"));
+      if (context?.previousDataComment) {
+        queryClient.setQueryData(queryKey, context.previousDataComment);
+        queryClient.setQueryData(
+          queryPostUniqueKey,
+          context.previousDataUniquePost
+        );
+        queryClient.setQueryData(queryPostUniqueKey, context.previousDataPost);
+      }
+    },
+    onSuccess: (data, variables, context) => {
+      console.log(variables, data, context?.tempId);
+      if (!variables.parent_id) {
+        patchQuery<Comment>({
+          queryClient,
+          key: queryKey as any,
+          type: "update",
+          matchId: context?.tempId,
+          newItem: data,
+        });
+      } else {
         patchQuery<Comment>({
           queryClient,
           key: queryKey as any,
@@ -132,15 +196,13 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
           matchId: data.parent_id,
           newItem: (item) => ({
             ...item,
-            replies_count: parseInt(String(item.replies_count), 10) + 1,
-            replies: [data, ...(item.replies ?? [])],
+            replies: item.replies?.map((r) =>
+              context?.tempId === r.id ? data : r
+            ),
+            replies_count: data.replies_count,
           }),
         });
       }
-      return { previousData };
-    },
-    onError: (_, __, context) => {
-      showToast(t("common.errorApi"));
     },
   });
 

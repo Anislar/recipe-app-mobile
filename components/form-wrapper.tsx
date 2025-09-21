@@ -1,6 +1,6 @@
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle, LogBox } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
-
+LogBox.ignoreLogs([/DEBUG  maybeScroll - onChangeText/]);
 interface IFormWrapper {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;

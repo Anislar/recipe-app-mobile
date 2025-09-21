@@ -1,4 +1,4 @@
-import { PostCard, ScreenWrapper } from "@/components";
+import { FormWrapper, PostCard, ScreenWrapper } from "@/components";
 import { CommentSection } from "@/components/post/comment/list";
 import { ExpandableCard } from "@/components/UI/expandable-card";
 import { Post } from "@/schema/post";
@@ -27,16 +27,18 @@ const DetailPost = () => {
 
   return (
     <ScreenWrapper pt={0} bg="white">
-      <ExpandableCard
-        TopView={<PostCard post={post as IData} index={0} />}
-        BottomView={({ expanded, toggleExpand }) => (
-          <CommentSection
-            expanded={expanded}
-            toggleExpand={toggleExpand}
-            postId={postId}
-          />
-        )}
-      />
+      <FormWrapper mb={10}>
+        <ExpandableCard
+          TopView={<PostCard post={post as IData} index={0} />}
+          BottomView={({ expanded, toggleExpand }) => (
+            <CommentSection
+              expanded={expanded}
+              toggleExpand={toggleExpand}
+              postId={postId}
+            />
+          )}
+        />
+      </FormWrapper>
     </ScreenWrapper>
   );
 };

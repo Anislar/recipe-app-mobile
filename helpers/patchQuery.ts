@@ -19,7 +19,10 @@ export function patchQuery<T extends { id: string | number }>({
   matchId,
   newItem,
 }: PatchQueryyParams<T>) {
-  matchId = parseInt(matchId as string, 10);
+  let parseMatchId: string | number = parseInt(matchId as string, 10);
+  if (isNaN(parseMatchId) && matchId) {
+    parseMatchId = matchId;
+  }
   const cachedData = queryClient.getQueryData<any>(key);
   if (!cachedData) return [];
   queryClient.setQueryData(key, (old: any) => {
@@ -40,7 +43,7 @@ export function patchQuery<T extends { id: string | number }>({
         switch (type) {
           case "update":
             updatedResults = results.map((item) => {
-              if (item.id !== matchId) return item;
+              if (item.id !== parseMatchId) return item;
 
               if (typeof newItem === "function") {
                 return (newItem as (i: T) => T)(item);
@@ -57,7 +60,7 @@ export function patchQuery<T extends { id: string | number }>({
             break;
 
           case "delete":
-            updatedResults = results.filter((item) => item.id !== matchId);
+            updatedResults = results.filter((item) => item.id !== parseMatchId);
             total -= 1;
             break;
 

@@ -8,12 +8,8 @@ import {
   View,
 } from "react-native";
 
-import {
-  FormWrapper,
-  ListFooterComponent,
-  LoadingSpinner,
-  Separator,
-} from "@/components";
+import { ListFooterComponent, LoadingSpinner, Separator } from "@/components";
+import { hp } from "@/helpers/common";
 import { useComment } from "@/hooks/comment/useComment";
 import { useCommentActions } from "@/hooks/comment/useCommentActions";
 import { Comment } from "@/type/coment.type";
@@ -144,7 +140,7 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
     }
     //
     return (
-      <FormWrapper>
+      <View>
         {/* Header */}
         <CommentsHeader
           expanded={expanded}
@@ -180,6 +176,7 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
               }
               contentContainerStyle={[
                 styles.listContent,
+                !expanded && { height: hp(25) },
                 comments?.length === 0 && styles.listContentEmpty,
               ]}
               onEndReached={handleEndReached}
@@ -193,7 +190,7 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
               initialNumToRender={6}
               updateCellsBatchingPeriod={50}
               keyboardShouldPersistTaps="handled"
-              scrollEnabled={expanded}
+              scrollEnabled={false}
               maintainVisibleContentPosition={{
                 minIndexForVisible: 0,
                 autoscrollToTopThreshold: 10,
@@ -203,10 +200,11 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
         </View>
 
         <CommentInput
+          toggleExpand={toggleExpand}
           onSubmit={(content: string) => handleAddComment(content)}
           isLoading={isAdding}
         />
-      </FormWrapper>
+      </View>
     );
   }
 );
