@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 
-type MutationType = "update" | "update_unique" | "add" | "delete";
+type MutationType = "update" | "update_unique" | "add" | "delete" | "get";
 
 type Updater<T> = Partial<T> | ((item: T) => T);
 
@@ -25,6 +25,14 @@ export function patchQuery<T extends { id: string | number }>({
   }
   const cachedData = queryClient.getQueryData<any>(key);
   if (!cachedData) return [];
+
+  if (type === "get") {
+    return (
+      cachedData.pages[0].data.results.find(
+        (item: T) => item.id === parseMatchId
+      ) || null
+    );
+  }
   queryClient.setQueryData(key, (old: any) => {
     if (!old) return old;
     if (type === "update_unique" && typeof newItem === "function") {
@@ -33,6 +41,7 @@ export function patchQuery<T extends { id: string | number }>({
         ...(newItem as (i: T) => T)(old),
       };
     }
+
     return {
       ...old,
       pages: old.pages.map((page: any, index: number) => {

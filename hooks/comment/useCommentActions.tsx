@@ -1,32 +1,39 @@
+import { patchQuery } from "@/helpers/patchQuery";
 import { useAuthStore } from "@/store";
 import { ActionType, ActiveAction, Comment } from "@/type/coment.type";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 
 interface UseCommentActionsProps {
-  comments: Comment[];
   updateComment: (id: string, content: string) => Promise<void>;
   toggleLike: (id: string, isLiked: boolean) => Promise<void>;
   addReply: (content: string, parent_id?: string) => Promise<boolean>;
+  postId: string;
 }
 export const useCommentActions = ({
-  comments,
   updateComment,
   toggleLike,
   addReply,
+  postId,
 }: UseCommentActionsProps) => {
   const userId = useAuthStore((state) => state.user?.id);
-
   const [activeAction, setActiveAction] = useState<ActiveAction | null>(null);
+  const queryClient = useQueryClient();
 
   const handleActionStart = useCallback(
-    (commentId: string, type: ActionType) => {
+    async (commentId: string, type: ActionType) => {
       if (type === "edit") {
-        const comment = comments.find((c) => c.id === commentId);
+        const comment: any = patchQuery({
+          queryClient,
+          key: ["comments", postId],
+          type: "get",
+          matchId: commentId,
+        });
         if (comment) {
           setActiveAction({
             id: commentId,
             type,
-            content: comment.content || "",
+            content: comment?.content || "",
           });
         }
       }
@@ -38,7 +45,7 @@ export const useCommentActions = ({
         });
       }
     },
-    [comments]
+    [queryClient, postId]
   );
 
   const handleActionSave = useCallback(async () => {

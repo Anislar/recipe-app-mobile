@@ -27,18 +27,16 @@ const DetailPost = () => {
 
   return (
     <ScreenWrapper pt={0} bg="white">
-      <FormWrapper mb={10}>
-        <ExpandableCard
-          TopView={<PostCard post={post as IData} index={0} />}
-          BottomView={({ expanded, toggleExpand }) => (
-            <CommentSection
-              expanded={expanded}
-              toggleExpand={toggleExpand}
-              postId={postId}
-            />
-          )}
-        />
-      </FormWrapper>
+      <ExpandableCard
+        TopView={<PostCard post={post as IData} index={0} />}
+        BottomView={({ expanded, toggleExpand }) => (
+          <CommentSection
+            expanded={expanded}
+            toggleExpand={toggleExpand}
+            postId={postId}
+          />
+        )}
+      />
     </ScreenWrapper>
   );
 };

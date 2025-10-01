@@ -9,7 +9,6 @@ import {
 } from "react-native";
 
 import { ListFooterComponent, LoadingSpinner, Separator } from "@/components";
-import { hp } from "@/helpers/common";
 import { useComment } from "@/hooks/comment/useComment";
 import { useCommentActions } from "@/hooks/comment/useCommentActions";
 import { Comment } from "@/type/coment.type";
@@ -92,10 +91,10 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
       handleLike,
       isCurrentUser,
     } = useCommentActions({
-      comments,
       updateComment,
       toggleLike,
       addReply: handleAddComment,
+      postId,
     });
 
     // Handle refresh
@@ -140,71 +139,67 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
     }
     //
     return (
-      <View>
+      <>
         {/* Header */}
         <CommentsHeader
           expanded={expanded}
           toggleExpand={toggleExpand}
           commentsCount={size || 0}
         />
-        {/* Comments List */}
-        <View style={styles.listContainer}>
-          {isLoading ? (
-            <View style={styles.loading}>
-              <LoadingSpinner size="large" />
-            </View>
-          ) : (
-            <FlatList
-              ref={flatListRef}
-              data={comments}
-              keyExtractor={(item) => item.id?.toString()}
-              renderItem={renderComment}
-              ListFooterComponent={
-                <ListFooterComponent
-                  text={t("post.Footer.noMore")}
-                  hasNextPage={hasNextPage}
-                  isFetchingNextPage={isFetchingNextPage}
-                  size={size}
-                />
-              }
-              ListEmptyComponent={<EmptyCommentsState />}
-              refreshControl={
-                <RefreshControl
-                  refreshing={isRefetching && !isFetching}
-                  onRefresh={onRefresh}
-                />
-              }
-              contentContainerStyle={[
-                styles.listContent,
-                !expanded && { height: hp(25) },
-                comments?.length === 0 && styles.listContentEmpty,
-              ]}
-              onEndReached={handleEndReached}
-              onEndReachedThreshold={0.3}
-              ItemSeparatorComponent={() => <Separator my={0} bg="#f5f5f5" />}
-              showsVerticalScrollIndicator={true}
-              bounces={true}
-              removeClippedSubviews={Platform.OS === "android"}
-              maxToRenderPerBatch={8}
-              windowSize={5}
-              initialNumToRender={6}
-              updateCellsBatchingPeriod={50}
-              keyboardShouldPersistTaps="handled"
-              scrollEnabled={false}
-              maintainVisibleContentPosition={{
-                minIndexForVisible: 0,
-                autoscrollToTopThreshold: 10,
-              }}
-            />
-          )}
-        </View>
-
         <CommentInput
           toggleExpand={toggleExpand}
           onSubmit={(content: string) => handleAddComment(content)}
           isLoading={isAdding}
         />
-      </View>
+        {/* Comments List */}
+        {isLoading ? (
+          <View style={styles.loading}>
+            <LoadingSpinner size="large" />
+          </View>
+        ) : (
+          <FlatList
+            ref={flatListRef}
+            data={comments}
+            keyExtractor={(item) => item.id?.toString()}
+            renderItem={renderComment}
+            ListFooterComponent={
+              <ListFooterComponent
+                text={t("post.Footer.noMore")}
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                size={size}
+              />
+            }
+            ListEmptyComponent={<EmptyCommentsState />}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefetching && !isFetching}
+                onRefresh={onRefresh}
+              />
+            }
+            contentContainerStyle={[
+              styles.listContent,
+              comments?.length === 0 && styles.listContentEmpty,
+            ]}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.3}
+            ItemSeparatorComponent={() => <Separator my={0} bg="#f5f5f5" />}
+            showsVerticalScrollIndicator={true}
+            bounces={true}
+            removeClippedSubviews={Platform.OS === "android"}
+            maxToRenderPerBatch={8}
+            windowSize={5}
+            initialNumToRender={6}
+            updateCellsBatchingPeriod={50}
+            keyboardShouldPersistTaps="handled"
+            //scrollEnabled={false}
+            maintainVisibleContentPosition={{
+              minIndexForVisible: 0,
+              autoscrollToTopThreshold: 10,
+            }}
+          />
+        )}
+      </>
     );
   }
 );
@@ -214,9 +209,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  listContainer: {
-    backgroundColor: "#fff",
-  },
+
   loading: {
     alignItems: "center",
     justifyContent: "center",
