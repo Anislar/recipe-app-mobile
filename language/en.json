@@ -232,5 +232,9 @@
   "file": {
     "permissionDeniedTitle": "Permission required",
     "permissionDeniedDescription": "Please grant gallery permission to select images."
+  },
+  "replies": {
+    "viewReplies": "View {{count}} replies",
+    "hideReplies": "Hide replies"
   }
 }

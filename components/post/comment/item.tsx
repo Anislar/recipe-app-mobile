@@ -6,9 +6,10 @@ import { ModalConfirm } from "@/components/UI/modal-confirm";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { formatTimeAgo } from "@/helpers/utils";
-import { ActionType, ActiveAction, Comment } from "@/type/coment.type";
+import { ActionType, ActiveAction, Comment } from "@/type/comment.type";
 import { Ionicons } from "@expo/vector-icons";
 import React, {
+  lazy,
   Suspense,
   useCallback,
   useMemo,
@@ -24,23 +25,26 @@ import {
   View,
 } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { useCommentReplies } from "@/hooks/comment/useCommentReplies";
 
+const RepliesList = lazy(() =>
+  import("./reply-list").then((module) => ({ default: module.RepliesList }))
+);
 interface CommentItemProps {
   comment: Comment;
-  onEdit: (id: string, type: ActionType) => void;
-  onDelete: (id: string) => void;
-  onLike: (id: string, isLiked: boolean) => void;
-  activeAction: ActiveAction | null;
-  isUpdating: boolean;
-  isAdding: boolean;
-
-  handleActionCancel: () => void;
-  handleActionSave: () => void;
-  actionContent: string;
-  updateActionContent: (text: string) => void;
-  isCurrentUser: boolean;
-  isDeleting: boolean;
-  deleteError: Error | null;
+  onEdit?: (id: string, type: ActionType) => void;
+  onDelete?: (id: string) => void;
+  onLike?: (id: string, isLiked: boolean) => void;
+  activeAction?: ActiveAction | null;
+  isUpdating?: boolean;
+  isAdding?: boolean;
+  handleActionCancel?: () => void;
+  handleActionSave?: () => void;
+  actionContent?: string;
+  updateActionContent?: (text: string) => void;
+  isCurrentUser?: boolean;
+  isDeleting?: boolean;
+  deleteError?: Error | null;
 }
 // Individual Comment Component
 export const CommentItem = React.memo(
@@ -60,31 +64,44 @@ export const CommentItem = React.memo(
     isDeleting,
     deleteError,
   }: CommentItemProps) => {
+    // State to manage delete modal visibility
     const [isModalDeleteOpen, setModalDeleteOpen] = useState<boolean>(false);
+    // State to manage showing replies
+    const [showReplies, setShowReplies] = useState(false);
+
     const { t } = useTranslation();
     const [isPending, startTransition] = useTransition();
     const isOptimistic = String(comment?.id)?.startsWith("temp-");
 
+    // handle likes
     const handleLikePress = useCallback(() => {
       startTransition(() => {
         comment.is_liked = !comment.is_liked;
         comment.likes_count =
           (comment.likes_count || 0) + (comment.is_liked ? 1 : -1);
-        onLike(comment?.id, comment.is_liked || false);
+        onLike?.(comment?.id, comment.is_liked || false);
       });
     }, [comment, onLike]);
-
+    // handle Delete
     const handleDeletePress = useCallback(() => {
       setModalDeleteOpen((p) => !p);
     }, []);
-    const formattedDate = useMemo(
-      () => formatTimeAgo(comment.createdAt!),
-      [comment.createdAt] // ,
-    );
+
+    // handle delete submit
     const handleDeleteSubmit = useCallback(async () => {
-      await onDelete(comment?.id);
+      await onDelete?.(comment?.id);
       !deleteError && setModalDeleteOpen(false);
     }, [comment?.id, deleteError, onDelete]);
+
+    const {
+      isLoading: isRepliesLoading,
+      isFetched,
+      isFetching,
+    } = useCommentReplies(comment.id, showReplies);
+    const handleToggleReplies = () => {
+      setShowReplies((prev) => !prev);
+    };
+    // render input for edit and reply
     const renderInput = useCallback(
       (type: ActionType) => (
         <View style={styles.inputContainer}>
@@ -121,7 +138,7 @@ export const CommentItem = React.memo(
               loading={type === "reply" ? isAdding : isUpdating}
               disabled={
                 (type === "reply" ? isAdding : isUpdating) ||
-                !actionContent.trim().length
+                !actionContent?.trim().length
               }
             />
           </View>
@@ -138,11 +155,17 @@ export const CommentItem = React.memo(
         updateActionContent,
       ]
     );
+    // Format date
+    const formattedDate = useMemo(
+      () => formatTimeAgo(comment.createdAt!),
+      [comment.createdAt]
+    );
+
     return (
       <Animated.View
         entering={FadeIn.delay(100)}
         exiting={FadeOut}
-        style={[styles.commentItem]}
+        style={styles.commentItem}
       >
         {isOptimistic && <Animated.View style={[styles.backdrop]} />}
         {/* Header */}
@@ -178,7 +201,7 @@ export const CommentItem = React.memo(
               ]}
               onAction={(action) => {
                 if (action === "update") {
-                  onEdit(comment?.id, "edit");
+                  onEdit?.(comment?.id, "edit");
                 } else {
                   handleDeletePress();
                 }
@@ -198,6 +221,7 @@ export const CommentItem = React.memo(
         )}
 
         {/* Actions */}
+
         <View style={styles.commentActions}>
           <TouchableOpacity
             disabled={isPending}
@@ -218,22 +242,45 @@ export const CommentItem = React.memo(
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => onEdit(comment?.id, "reply")}
+            onPress={() => onEdit?.(comment?.id, "reply")}
             style={styles.actionButton}
           >
             <Ionicons name="chatbubble-outline" size={16} color="#666" />
             <Text style={styles.actionText}>{comment?.replies_count ?? 0}</Text>
           </TouchableOpacity>
         </View>
+
+        {(!isFetched || isFetching) && comment?.replies_count > 0 && (
+          <Button
+            title={t("replies.viewReplies", {
+              count: comment?.replies_count,
+            })}
+            buttonStyle={styles.repliesButton}
+            type="text"
+            onPress={handleToggleReplies}
+            loading={isRepliesLoading || isFetching}
+            disabled={isRepliesLoading || isFetching}
+            textStyle={styles.repliesText}
+            sizeLoading="small"
+          />
+        )}
+        {/* input */}
         {activeAction?.id === comment?.id &&
           activeAction?.type === "reply" &&
           renderInput("reply")}
+        {/* replies */}
+
+        {isFetched && (
+          <Suspense fallback={<LoadingSpinner />}>
+            <RepliesList parentId={comment?.id} />
+          </Suspense>
+        )}
         {isModalDeleteOpen && (
           <Suspense fallback={<LoadingSpinner />}>
             <ModalConfirm
               isVisible={isModalDeleteOpen}
               isDanger
-              isLoading={isDeleting}
+              isLoading={!!isDeleting}
               error={deleteError ? deleteError?.message : ""}
               close={() => setModalDeleteOpen(false)}
               onSubmit={handleDeleteSubmit}
@@ -325,6 +372,14 @@ const styles = StyleSheet.create({
   },
   likedText: {
     color: "#ff6b6b",
+  },
+  repliesText: {
+    fontSize: hp(1.5),
+    height: hp(5),
+    color: THEME.colors.gray,
+  },
+  repliesButton: {
+    height: hp(2.5),
   },
 });
 CommentItem.displayName = "CommentItem";

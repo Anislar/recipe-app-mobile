@@ -9,9 +9,9 @@ import {
 } from "react-native";
 
 import { ListFooterComponent, LoadingSpinner, Separator } from "@/components";
-import { useComment } from "@/hooks/comment/useComment";
+import { useCommentMutation } from "@/hooks/comment/useCommentMutation";
 import { useCommentActions } from "@/hooks/comment/useCommentActions";
-import { Comment } from "@/type/coment.type";
+import { Comment } from "@/type/comment.type";
 import { EmptyCommentsState } from "./empty";
 import { ErrorState } from "./error";
 import { CommentsHeader } from "./header";
@@ -46,11 +46,13 @@ export const CommentSection: React.FC<CommentsSectionProps> = memo(
       deleteComment,
       toggleLike,
       refetch,
+      // getReplyComments,
       isAdding,
       isUpdating,
       isDeleting,
       deleteError,
-    } = useComment({ postId, enabled: true });
+      //  isReplyLoading,
+    } = useCommentMutation({ postId });
 
     const handleEndReached = useCallback(() => {
       if (hasNextPage && !isFetchingNextPage) {

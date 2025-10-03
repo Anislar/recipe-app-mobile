@@ -234,5 +234,9 @@
   "file": {
     "permissionDeniedTitle": "Autorisation requise",
     "permissionDeniedDescription": "Veuillez accorder à la galerie la permission de sélectionner des images."
+  },
+  "replies": {
+    "viewReplies": "Voir les {{count}} réponses",
+    "hideReplies": "Masquer les réponses"
   }
 }

@@ -29,6 +29,30 @@ class CommentService {
       return handleApiError(error);
     }
   }
+  async getReplies(
+    data: ApiQueryParams & {
+      commentId: string;
+    }
+  ): Promise<ApiSuccess<any>> {
+    try {
+      const response = await api.get(
+        `${this.prefix}/comment/${data.commentId}/replies`,
+        {
+          params: {
+            page: data.page ?? 1,
+            limit: data.limit ?? 15,
+            sortOrder: data.sortOrder ?? "desc",
+          },
+
+          signal: data.signal,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return handleApiError(error);
+    }
+  }
+
   async addComment(
     postId: string,
     data: CommentType

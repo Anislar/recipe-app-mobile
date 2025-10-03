@@ -1,21 +1,21 @@
+import { useCallback, useMemo } from "react";
+import { t } from "i18next";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+
 import { patchQuery } from "@/helpers/patchQuery";
 import { showToast } from "@/helpers/toastService";
 import { Post } from "@/schema/post";
 import { commentService } from "@/services/api/comment.service";
 import { useAuthStore } from "@/store";
 import { LikeTargetType } from "@/type";
-import { Comment } from "@/type/coment.type";
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { t } from "i18next";
-import { useCallback, useMemo } from "react";
+import { Comment } from "@/type/comment.type";
 
 interface UseCommentOptions {
   postId: string;
-  enabled?: boolean;
 }
 
 interface CommentMutationOptions {
@@ -23,15 +23,17 @@ interface CommentMutationOptions {
   onError?: (error: Error) => void;
 }
 
-export const useComment = ({ postId, enabled }: UseCommentOptions) => {
+export const useCommentMutation = ({ postId }: UseCommentOptions) => {
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
+
   const queryKey = useMemo(() => ["comments", postId] as const, [postId]);
   const queryPostUniqueKey = useMemo(
     () => ["posts", "general", postId] as const,
     [postId]
   );
   const queryPostKey = useMemo(() => ["posts", "general"] as const, []);
+
   const {
     data: infiniteData,
     isLoading,
@@ -63,7 +65,6 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
       return undefined;
     },
     initialPageParam: 1,
-    enabled,
   });
 
   const comments = useMemo(() => {
@@ -358,7 +359,7 @@ export const useComment = ({ postId, enabled }: UseCommentOptions) => {
     comments,
     size,
     // Loading states
-    isLoading: isLoading && enabled,
+    isLoading: isLoading,
     isError,
     error,
     isRefetching,
