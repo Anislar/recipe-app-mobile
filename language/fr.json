@@ -20,7 +20,21 @@
     "titleTab": "Accueil"
   },
   "notification": {
-    "titleTab": "Notification"
+    "titleTab": "Notification",
+    "like": {
+      "post": "{{name}} a aimé votre publication",
+      "comment": "{{name}} a aimé votre commentaire"
+    },
+    "unlike": {
+      "post": "{{name}} n'aime plus votre publication",
+      "comment": "{{name}} n'aime plus votre commentaire"
+    },
+    "comment": {
+      "new": "{{name}} a commenté votre publication"
+    },
+    "reply": {
+      "new": "{{name}} a répondu à votre commentaire"
+    }
   },
   "welcome": {
     "title": "LinkUp!",

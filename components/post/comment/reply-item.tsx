@@ -12,7 +12,7 @@ import { Comment } from "@/type/comment.type";
 
 interface ReplyItemProps {
   comment: Comment;
-  onLike?: (id: string, isLiked: boolean) => void;
+  onLike?: (id: string) => void;
 }
 
 export const ReplyItem = React.memo(({ comment, onLike }: ReplyItemProps) => {
@@ -25,7 +25,7 @@ export const ReplyItem = React.memo(({ comment, onLike }: ReplyItemProps) => {
       comment.is_liked = !comment.is_liked;
       comment.likes_count =
         (comment.likes_count || 0) + (comment.is_liked ? 1 : -1);
-      onLike?.(comment?.id, comment.is_liked || false);
+      onLike?.(comment?.id);
     });
   }, [comment, onLike]);
 

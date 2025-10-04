@@ -1,4 +1,4 @@
-import { FormWrapper, PostCard, ScreenWrapper } from "@/components";
+import { PostCard, ScreenWrapper } from "@/components";
 import { CommentSection } from "@/components/post/comment/list";
 import { ExpandableCard } from "@/components/UI/expandable-card";
 import { Post } from "@/schema/post";
@@ -20,7 +20,7 @@ const DetailPost = () => {
 
   const { data: post } = useQuery({
     queryKey: ["posts", "general", postId],
-    queryFn: () => Promise.resolve(initialPost),
+    queryFn: async () => Promise.resolve(initialPost),
     initialData: initialPost,
     enabled: !!initialPost,
   });

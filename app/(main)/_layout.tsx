@@ -1,26 +1,27 @@
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { router, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 import { HeaderTab, PlusButton } from "@/components";
-import { THEME } from "@/constants/theme";
+import { NotificationIcon } from "@/components/notification-bell";
+import useSocket from "@/hooks/real-time/useSocket";
 import { useSelectedColors } from "@/store";
+import { useNotification } from "@/store/notification.store";
 
 const MainLayout = () => {
   const { t } = useTranslation();
   const selected = useSelectedColors();
+  const notificationNumber = useNotification(
+    (state) => state.notificationNumber
+  );
+
+  // set the sokcet
+  useSocket();
 
   const titleMap: Record<string, any> = {
     index: {
       title: t("home.titleTab"),
-      suffixIcon: (
-        <MaterialCommunityIcons
-          onPress={() => router.push("/notification")}
-          size={32}
-          name="bell-outline"
-          color={THEME.colors.text}
-        />
-      ),
+      suffixIcon: <NotificationIcon count={notificationNumber} />,
     },
     search: { title: t("search.titleTab"), suffixIcon: null },
     notification: { title: t("notification.titleTab"), suffixIcon: null },
@@ -86,6 +87,7 @@ const MainLayout = () => {
         name="notification"
         options={{
           title: t("notification.titleTab"),
+          tabBarBadge: notificationNumber > 0 ? notificationNumber : undefined,
           tabBarIcon: ({ color, size, focused }) => (
             <MaterialCommunityIcons
               size={size}

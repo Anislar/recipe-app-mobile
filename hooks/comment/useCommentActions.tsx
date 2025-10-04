@@ -6,7 +6,7 @@ import { useCallback, useState } from "react";
 
 interface UseCommentActionsProps {
   updateComment: (id: string, content: string) => Promise<void>;
-  toggleLike: (id: string, isLiked: boolean) => Promise<void>;
+  toggleLike: (id: string) => Promise<void>;
   addReply: (content: string, parent_id?: string) => Promise<boolean>;
   postId: string;
 }
@@ -73,8 +73,8 @@ export const useCommentActions = ({
   }, []);
 
   const handleLike = useCallback(
-    async (commentId: string, isLiked: boolean) => {
-      await toggleLike(commentId, isLiked);
+    async (commentId: string) => {
+      await toggleLike(commentId);
     },
     [toggleLike]
   );

@@ -8,7 +8,7 @@ import { Separator } from "@/components/UI/separator";
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import { Post } from "@/schema/post";
-import { usePostMutations } from "@/hooks/post/useMutationPost";
+import { usePostMutations } from "@/hooks/post/usePostMutation";
 
 interface Props {
   post: Post & {

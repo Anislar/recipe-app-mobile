@@ -15,7 +15,7 @@ import { User } from "@/schema/auth";
 import { wp } from "@/helpers/common";
 import { Post } from "@/schema/post";
 import { showToast } from "@/helpers/toastService";
-import { usePostMutations } from "@/hooks/post/useMutationPost";
+import { usePostMutations } from "@/hooks/post/usePostMutation";
 
 import { LoadingSpinner } from "../UI/loading";
 import { PostAction, PostContent, PostHeader, PostMedia } from "./card";

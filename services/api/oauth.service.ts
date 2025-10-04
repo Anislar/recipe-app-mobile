@@ -22,7 +22,9 @@ export class OAuthService {
   private redirectUri: string;
 
   constructor() {
-    this.redirectUri = `${process.env.EXPO_PUBLIC_API_URL!}/auth`;
+    this.redirectUri = `${
+      process.env.EXPO_PUBLIC_API_URL! + process.env.EXPO_PUBLIC_API_PREFIX!
+    }/auth`;
   }
 
   async handleOAuthCallback(

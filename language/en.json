@@ -20,7 +20,21 @@
     "titleTab": "Home"
   },
   "notification": {
-    "titleTab": "Notification"
+    "titleTab": "Notification",
+     "like": {
+      "post": "{{name}} liked your post",
+      "comment": "{{name}} liked your comment"
+    },
+    "unlike": {
+      "post": "{{name}} unliked your post",
+      "comment": "{{name}} unliked your comment"
+    },
+    "comment": {
+      "new": "{{name}} commented on your post"
+    },
+    "reply": {
+      "new": "{{name}} replied to your comment"
+    }
   },
 
   "welcome": {
@@ -237,4 +251,5 @@
     "viewReplies": "View {{count}} replies",
     "hideReplies": "Hide replies"
   }
+
 }

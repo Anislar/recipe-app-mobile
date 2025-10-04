@@ -35,8 +35,8 @@ export const RepliesList: React.FC<RepliesListProps> = memo(({ parentId }) => {
   });
 
   const handleLike = useCallback(
-    async (commentId: string, isLiked: boolean) => {
-      await toggleLike(commentId, isLiked);
+    async (commentId: string) => {
+      await toggleLike(commentId);
     },
     [toggleLike]
   );

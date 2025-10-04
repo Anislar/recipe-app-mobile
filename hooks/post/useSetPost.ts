@@ -7,7 +7,7 @@ import { useCallback, useMemo } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import useUpload from "../useUpload";
-import { usePostMutations } from "./useMutationPost";
+import { usePostMutations } from "./usePostMutation";
 
 export const useSetPost = () => {
   const { t } = useTranslation();

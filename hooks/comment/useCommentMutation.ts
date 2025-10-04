@@ -180,7 +180,6 @@ export const useCommentMutation = ({ postId }: UseCommentOptions) => {
       }
     },
     onSuccess: (data, variables, context) => {
-      console.log(variables, data, context?.tempId);
       if (!variables.parent_id) {
         patchQuery<Comment>({
           queryClient,
@@ -266,13 +265,7 @@ export const useCommentMutation = ({ postId }: UseCommentOptions) => {
   });
 
   const toggleLikeMutation = useMutation({
-    mutationFn: async ({
-      commentId,
-      isLiked,
-    }: {
-      commentId: string;
-      isLiked: boolean;
-    }) =>
+    mutationFn: async ({ commentId }: { commentId: string }) =>
       await commentService.setLike(commentId, {
         target_type: LikeTargetType.COMMENT,
       }),
@@ -338,9 +331,9 @@ export const useCommentMutation = ({ postId }: UseCommentOptions) => {
   );
 
   const toggleLike = useCallback(
-    async (commentId: string, isLiked: boolean) => {
+    async (commentId: string) => {
       try {
-        await toggleLikeMutation.mutateAsync({ commentId, isLiked });
+        await toggleLikeMutation.mutateAsync({ commentId });
       } catch (error) {
         console.error("Failed to toggle like:", error);
       }
