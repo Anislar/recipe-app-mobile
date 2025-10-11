@@ -26,10 +26,9 @@ const useSocket = () => {
     // Connect to socket
     socketService.connect(token);
 
-    const handleLikeUpdate = (data: any) => {
-      const { target_type, targetId, postId } = data;
-
-      if (target_type === "post") {
+    const handleLikeUpdate = (result: any) => {
+      const { targetType, targetId, postId, data } = result;
+      if (targetType === "post") {
         patchQuery<Post>({
           queryClient,
           key: ["posts", "general"],
@@ -49,7 +48,7 @@ const useSocket = () => {
           }),
         });
       }
-      if (target_type === "comment") {
+      if (targetType === "comment") {
         patchQuery<Comment>({
           queryClient,
           key: ["comments", String(postId)],
@@ -58,9 +57,10 @@ const useSocket = () => {
           matchId: targetId,
         });
       }
+
       showToast(
-        t(`notification.${data.is_liked ? "like" : "unlike"}.${target_type}`, {
-          name: data.user.name,
+        t(`notification.${data.is_liked ? "like" : "unlike"}.${targetType}`, {
+          name: data.actor.name,
         })
       );
       setNotificationNumber((n) => Number(n) + 1);
