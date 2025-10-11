@@ -23,6 +23,7 @@ export function usePostMutations() {
         : {
             ...res.data,
             user: {
+              id: user?.id,
               name: user?.name,
               avatar: user?.avatar!,
             },

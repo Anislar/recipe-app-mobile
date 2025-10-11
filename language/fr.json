@@ -165,6 +165,7 @@
     "select": "Sélectionner",
     "email": "email",
     "name": "nom",
+      "delete": "supprimer",
     "loading": "Chargement",
     "errorImage": "Erreur : Échec du téléchargement du fichier...",
     "submit": "Valider",
@@ -187,7 +188,7 @@
     "email": "Assistance par e-mail"
   },
   "modal": {
-    "addPost": "Ajouter une publication",
+    "addPost": "Publication",
     "updatePost": "Modifier une publication",
     "editProfile": "Modifier le profil",
     "detailPost": "Détail du post"

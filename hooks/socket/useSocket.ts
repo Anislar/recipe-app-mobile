@@ -63,7 +63,7 @@ const useSocket = () => {
           name: data.user.name,
         })
       );
-      setNotificationNumber((n) => n + 1);
+      setNotificationNumber((n) => Number(n) + 1);
     };
 
     // Handle NEW COMMENT event
