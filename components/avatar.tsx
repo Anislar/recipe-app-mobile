@@ -2,7 +2,6 @@ import { StyleProp, StyleSheet, Text, View } from "react-native";
 import { Image, ImageStyle } from "expo-image";
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
-import { getUserImage } from "@/helpers/user.utils";
 import { useSelectedColors } from "@/store";
 
 interface AvatarProps {
@@ -50,7 +49,7 @@ export const Avatar = ({
 
   return (
     <Image
-      source={getUserImage(uri)}
+      source={{ uri }}
       transition={100}
       style={[styles.container, sizeStyle, style]}
     />
