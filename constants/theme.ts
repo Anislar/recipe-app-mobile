@@ -9,7 +9,8 @@ export const COLORS = {
   text: "#494949",
   textLight: "#7C7C7C",
   textDark: "#1D1D1D",
-
+  blue: "#3B82F6",
+  white: "#fff",
   rose: "#ef4444",
   roseLight: "#fbd0d0",
 };

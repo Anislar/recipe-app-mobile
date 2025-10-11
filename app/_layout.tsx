@@ -56,7 +56,6 @@ export default function RootLayout() {
       }
     }
 
-    // Only initialize if auth store is hydrated
     if (isHydrated) {
       initializeApp();
     }

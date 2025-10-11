@@ -101,7 +101,6 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await authService.signIn(data);
           const { data: userData, tokenData } = response;
-          console.log("🚀 ~ tokenData:", tokenData);
           set({
             user: userData,
             isLoading: false,

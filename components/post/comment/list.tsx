@@ -11,9 +11,9 @@ import {
 import { ListFooterComponent, LoadingSpinner, Separator } from "@/components";
 import { useCommentMutation } from "@/hooks/comment/useCommentMutation";
 import { useCommentActions } from "@/hooks/comment/useCommentActions";
-import { Comment } from "@/type/comment.type";
+import { Comment } from "@/type";
 import { EmptyCommentsState } from "./empty";
-import { ErrorState } from "./error";
+import { ErrorState } from "../../UI/error";
 import { CommentsHeader } from "./header";
 import { CommentInput } from "./input";
 import { CommentItem } from "./item";

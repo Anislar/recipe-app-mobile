@@ -11,8 +11,7 @@ import { showToast } from "@/helpers/toastService";
 import { Post } from "@/schema/post";
 import { commentService } from "@/services/api/comment.service";
 import { useAuthStore } from "@/store";
-import { LikeTargetType } from "@/type";
-import { Comment } from "@/type/comment.type";
+import { LikeTargetType, Comment } from "@/type";
 
 interface UseCommentOptions {
   postId: string;

@@ -20,11 +20,11 @@ interface ApiSuccess<T> {
   };
   timestamp: string;
 }
-interface ApiQueryParams<F = Record<string, any>> {
+interface ApiQueryParams {
   signal?: any;
   page?: number;
   limit?: number;
-  filters?: F;
+  filter?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }

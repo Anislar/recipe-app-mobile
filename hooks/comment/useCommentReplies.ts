@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { commentService } from "@/services/api/comment.service";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Comment } from "@/type/comment.type";
+import { Comment } from "@/type";
 
 // Add this new hook in the same file or a separate file
 export const useCommentReplies = (

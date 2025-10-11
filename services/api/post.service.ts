@@ -23,7 +23,7 @@ class PostService {
           page: data.page ?? 1,
           limit: data.limit ?? 15,
           sortOrder: data.sortOrder ?? "desc",
-          ...(data.filters || {}),
+          filter: data.filter,
         },
 
         signal: data.signal,

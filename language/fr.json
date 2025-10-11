@@ -23,18 +23,32 @@
     "titleTab": "Notification",
     "like": {
       "post": "{{name}} a aimé votre publication",
-      "comment": "{{name}} a aimé votre commentaire"
+      "post.withoutName": "a aimé votre publication",
+      "comment": "{{name}} a aimé votre commentaire",
+      "comment.withoutName": "a aimé votre commentaire"
     },
     "unlike": {
       "post": "{{name}} n'aime plus votre publication",
-      "comment": "{{name}} n'aime plus votre commentaire"
+      "post.withoutName": "n'aime plus votre publication",
+      "comment": "{{name}} n'aime plus votre commentaire",
+      "comment.withoutName": "n'aime plus votre commentaire"
     },
     "comment": {
-      "new": "{{name}} a commenté votre publication"
+      "new": "{{name}} a commenté votre publication",
+      "new.withoutName": "a commenté votre publication"
     },
     "reply": {
-      "new": "{{name}} a répondu à votre commentaire"
-    }
+      "new": "{{name}} a répondu à votre commentaire",
+      "new.withoutName": "a répondu à votre commentaire"
+    },
+    "filter": {
+      "showUnRead": "Afficher les non lues",
+      "showAll": "Afficher tout"
+    },
+    "on":"sur",
+    "emptyReadNotificaitons": "Aucune notification non lue",
+    "emptyNotificaitons": "Aucune notification pour le moment",
+    "noMore": "Plus de notifications!"
   },
   "welcome": {
     "title": "LinkUp!",
@@ -47,7 +61,6 @@
     "enterEmail": "Entrer votre email",
     "enterPassword": "Entrer votre mot de passe",
     "password": "mot de passe",
-
     "signIn": {
       "welcome": "Salut,",
       "welcomeBack": "Bon retour",
@@ -87,7 +100,6 @@
       "titlePassword": "Réinitialisation du mot de passe",
       "titleMail": "E-mail de vérification",
       "description": "Nous vous envoyons un code pour vérifier votre email !",
-
       "resentCode": "Renvoyer le code",
       "confirm": "Confirmer",
       "success": "Tout est prêt! Saisissez votre nouveau mot de passe."
@@ -128,7 +140,6 @@
       "success": "Profile updated successfully!"
     }
   },
-
   "appInfo": {
     "app": "📱 App",
     "version": "🔢 Version",
@@ -149,7 +160,6 @@
   "common": {
     "refresh": "Actualiser",
     "save": "Enregistrer",
-
     "error": "Erreur",
     "errorOccurred": "Une erreur s'est produite",
     "select": "Sélectionner",
@@ -179,7 +189,6 @@
   "modal": {
     "addPost": "Ajouter une publication",
     "updatePost": "Modifier une publication",
-
     "editProfile": "Modifier le profil",
     "detailPost": "Détail du post"
   },
@@ -225,7 +234,6 @@
       "delete": "supprimer",
       "share": "partager",
       "download": "télécharger",
-
       "createSuccess": "Publication créée avec succès!",
       "updateSuccess": "Publication modifiée avec succès!",
       "deleteSuccess": "Publication supprimée avec succès!"
@@ -244,7 +252,6 @@
       "edited": "Modifié"
     }
   },
-
   "file": {
     "permissionDeniedTitle": "Autorisation requise",
     "permissionDeniedDescription": "Veuillez accorder à la galerie la permission de sélectionner des images."

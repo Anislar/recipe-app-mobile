@@ -1,6 +1,6 @@
 import { patchQuery } from "@/helpers/patchQuery";
 import { useAuthStore } from "@/store";
-import { ActionType, ActiveAction, Comment } from "@/type/comment.type";
+import { ActionType, ActiveAction, Comment } from "@type";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 

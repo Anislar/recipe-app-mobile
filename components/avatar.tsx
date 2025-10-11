@@ -3,6 +3,7 @@ import { Image, ImageStyle } from "expo-image";
 import { THEME } from "@/constants/theme";
 import { hp } from "@/helpers/common";
 import { getUserImage } from "@/helpers/user.utils";
+import { useSelectedColors } from "@/store";
 
 interface AvatarProps {
   uri?: string;
@@ -10,6 +11,7 @@ interface AvatarProps {
   name?: string;
   rounded?: number;
   style?: StyleProp<ImageStyle>;
+  fontSize?: number;
 }
 
 export const Avatar = ({
@@ -18,7 +20,9 @@ export const Avatar = ({
   size = hp(4.5),
   rounded = THEME.radius.md,
   style,
+  fontSize,
 }: AvatarProps) => {
+  const { primary } = useSelectedColors();
   const sizeStyle = {
     height: size,
     width: size,
@@ -27,8 +31,19 @@ export const Avatar = ({
 
   if (!uri) {
     return (
-      <View style={[styles.container, sizeStyle, style]}>
-        <Text style={styles.text}>{name.charAt(0).toUpperCase()}</Text>
+      <View
+        style={[
+          styles.container,
+          sizeStyle,
+          {
+            backgroundColor: primary,
+          },
+          style,
+        ]}
+      >
+        <Text style={[styles.text, { fontSize }]}>
+          {name.charAt(0).toUpperCase()}
+        </Text>
       </View>
     );
   }
@@ -47,7 +62,6 @@ const styles = StyleSheet.create({
     borderCurve: "continuous",
     borderColor: THEME.colors.text,
     borderWidth: 1.5,
-    backgroundColor: "#007AFF",
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",

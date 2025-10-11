@@ -134,6 +134,7 @@ export default function Account() {
             uri={user?.avatar!}
             size={130}
             rounded={THEME.radius.xxl * 3}
+            fontSize={hp(5)}
           />
 
           <Text style={styles.name}>{capitalize(user?.name ?? "")} </Text>

@@ -1,13 +1,12 @@
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import { patchQuery } from "@/helpers/patchQuery";
 import { showToast } from "@/helpers/toastService";
 import { Post } from "@/schema/post";
 import { socketService } from "@/services/socket.service";
-import { useAuthStore } from "@/store";
-import { useNotification } from "@/store/notification.store";
-import { Comment } from "@/type/comment.type";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { useAuthStore, useNotification } from "@/store";
+import { Comment } from "@/type";
 
 export const EVENT = {
   LIKE: "like_event",
@@ -28,7 +27,6 @@ const useSocket = () => {
     socketService.connect(token);
 
     const handleLikeUpdate = (data: any) => {
-      console.log("👍 Like update:", data);
       const { target_type, targetId, postId } = data;
 
       if (target_type === "post") {

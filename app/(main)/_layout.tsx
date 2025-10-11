@@ -4,9 +4,8 @@ import { useTranslation } from "react-i18next";
 
 import { HeaderTab, PlusButton } from "@/components";
 import { NotificationIcon } from "@/components/notification-bell";
-import useSocket from "@/hooks/real-time/useSocket";
-import { useSelectedColors } from "@/store";
-import { useNotification } from "@/store/notification.store";
+import useSocket from "@/hooks/socket/useSocket";
+import { useSelectedColors, useNotification } from "@/store";
 
 const MainLayout = () => {
   const { t } = useTranslation();
@@ -21,7 +20,7 @@ const MainLayout = () => {
   const titleMap: Record<string, any> = {
     index: {
       title: t("home.titleTab"),
-      suffixIcon: <NotificationIcon count={notificationNumber} />,
+      suffixIcon: <NotificationIcon />,
     },
     search: { title: t("search.titleTab"), suffixIcon: null },
     notification: { title: t("notification.titleTab"), suffixIcon: null },
@@ -87,13 +86,8 @@ const MainLayout = () => {
         name="notification"
         options={{
           title: t("notification.titleTab"),
-          tabBarBadge: notificationNumber > 0 ? notificationNumber : undefined,
           tabBarIcon: ({ color, size, focused }) => (
-            <MaterialCommunityIcons
-              size={size}
-              name={focused ? "bell" : "bell-outline"}
-              color={color}
-            />
+            <NotificationIcon size={size} color={color} focused={focused} />
           ),
         }}
       />

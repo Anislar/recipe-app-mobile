@@ -23,18 +23,33 @@
     "titleTab": "Notification",
      "like": {
       "post": "{{name}} liked your post",
-      "comment": "{{name}} liked your comment"
+      "post.withoutName": "liked your post",
+      "comment": "{{name}} liked your comment",
+      "comment.withoutName": "liked your comment"
     },
     "unlike": {
       "post": "{{name}} unliked your post",
-      "comment": "{{name}} unliked your comment"
+      "post.withoutName": "unliked your post",
+      "comment": "{{name}} unliked your comment",
+      "comment.withoutName": "unliked your comment"
     },
     "comment": {
-      "new": "{{name}} commented on your post"
+      "new": "{{name}} commented on your post",
+      "new.withoutName": "commented on your post"
+
     },
     "reply": {
-      "new": "{{name}} replied to your comment"
-    }
+      "new": "{{name}} replied to your comment",
+      "new.withour": " replied to your comment"
+    },
+    "filter":{
+      "showUnRead":"Showing Unread",
+      "showAll":"Show All"
+    },
+    "on":"on",
+    "emptyUnReadNotificaitons":"No unread notifications",
+    "emptyNotificaitons":"No notifications yet",
+    "noMore":"No more Notifications!"
   },
 
   "welcome": {

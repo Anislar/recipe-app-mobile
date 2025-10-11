@@ -41,7 +41,7 @@ const HomePage = () => {
       postService.fetchPost({
         page: pageParam,
         signal,
-        filters: { category },
+        filter: category,
         limit: 20,
       }),
     initialPageParam: 1,

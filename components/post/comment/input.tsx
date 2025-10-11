@@ -1,3 +1,4 @@
+import { THEME } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { t } from "i18next";
 import { memo, useCallback, useState } from "react";
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#007AFF",
+    backgroundColor: THEME.colors.blue,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 2,

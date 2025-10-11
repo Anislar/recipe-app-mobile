@@ -8,7 +8,7 @@ import { Avatar } from "@/components/avatar";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { formatTimeAgo } from "@/helpers/utils";
-import { Comment } from "@/type/comment.type";
+import { Comment } from "@/type";
 
 interface ReplyItemProps {
   comment: Comment;

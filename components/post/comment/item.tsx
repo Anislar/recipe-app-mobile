@@ -6,7 +6,7 @@ import { ModalConfirm } from "@/components/UI/modal-confirm";
 import { THEME } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { formatTimeAgo } from "@/helpers/utils";
-import { ActionType, ActiveAction, Comment } from "@/type/comment.type";
+import { ActionType, ActiveAction, Comment } from "@/type";
 import { Ionicons } from "@expo/vector-icons";
 import React, {
   lazy,

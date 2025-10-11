@@ -1,4 +1,3 @@
-import { Comment } from "@/type/comment.type";
 import { memo, useCallback } from "react";
 import { FlatList, Platform, StyleSheet, View } from "react-native";
 import { wp } from "@/helpers/common";
@@ -10,8 +9,8 @@ import { useCommentReplies } from "@/hooks/comment/useCommentReplies";
 import { EmptyCommentsState } from "./empty";
 import { RefreshControl } from "react-native-gesture-handler";
 import { Separator } from "@/components/UI/separator";
-import { useCommentActions } from "@/hooks/comment/useCommentActions";
 import { useCommentMutation } from "@/hooks/comment/useCommentMutation";
+import { Comment } from "@/type";
 
 interface RepliesListProps {
   parentId: string;
