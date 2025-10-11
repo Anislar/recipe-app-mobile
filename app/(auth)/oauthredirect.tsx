@@ -13,13 +13,14 @@ const OauthRedirect = () => {
   const { t } = useTranslation();
   const selected = useSelectedColors();
   const searchParams = useSearchParams();
-  const token = searchParams?.get?.("token");
+  const accessToken = searchParams.get("accessToken") ?? "";
+  const refreshToken = searchParams.get("refreshToken") ?? "";
   const { getCurrentUser, error, setToken } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
-    if (token) {
-      setToken(token);
+    if (accessToken && refreshToken) {
+      setToken({ accessToken, refreshToken });
       setTimeout(async () => {
         const response = await getCurrentUser();
         if (typeof response === "boolean") {
@@ -29,7 +30,7 @@ const OauthRedirect = () => {
       }, 100);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+  }, [accessToken, refreshToken]);
 
   if (error)
     return (

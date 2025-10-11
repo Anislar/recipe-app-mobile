@@ -24,13 +24,14 @@ export interface AuthState {
   // User data
   user: User | null;
   token: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
 
   setLoading: (isLoading: boolean) => void;
   setError: (error: AuthState["error"] | null) => void;
   // User data
   setUser: (user: AuthState["user"]) => void;
-  setToken: (token: AuthState["token"]) => void;
+  setToken: (data: { accessToken: string; refreshToken: string }) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
   setResetElement: () => void;
   //signIn
@@ -76,12 +77,14 @@ export const useAuthStore = create<AuthState>()(
       error: null,
       user: null,
       token: null,
+      refreshToken: null,
       isAuthenticated: false,
       // Basic actions
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),
       setUser: (user) => set({ user }),
-      setToken: (token) => set({ token }),
+      setToken: (data) =>
+        set({ token: data.accessToken, refreshToken: data.refreshToken }),
       setIsAuthenticated: (isAuthenticated) => set({ isAuthenticated }),
       setResetElement: () =>
         set({
@@ -97,12 +100,14 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           const response = await authService.signIn(data);
-          const { data: userData, token } = response;
+          const { data: userData, tokenData } = response;
+          console.log("🚀 ~ tokenData:", tokenData);
           set({
             user: userData,
             isLoading: false,
             error: null,
-            token,
+            token: tokenData?.accessToken,
+            refreshToken: tokenData?.refreshToken,
             isAuthenticated: true,
           });
           return true;
@@ -326,7 +331,8 @@ export const useAuthStore = create<AuthState>()(
           set({
             isAuthenticated: true,
             user: result.data,
-            token: result.token,
+            token: result.tokenData.accessToken,
+            refreshToken: result.tokenData.refreshToken,
           });
           return true;
         } catch (error: ApiError | any) {
@@ -353,7 +359,8 @@ export const useAuthStore = create<AuthState>()(
           set({
             isAuthenticated: true,
             user: result.data,
-            token: result.token,
+            token: result.tokenData.accessToken,
+            refreshToken: result.tokenData.refreshToken,
           });
           return true;
         } catch (error: ApiError | any) {
@@ -380,7 +387,8 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
             isAuthenticated: true,
             user: result.data,
-            token: result.token,
+            token: result.tokenData.accessToken,
+            refreshToken: result.tokenData.refreshToken,
           });
           return true;
         } catch (error: ApiError | any) {

@@ -14,7 +14,10 @@ interface ApiSuccess<T> {
   success: true;
   message: string;
   data?: T;
-  token?: string;
+  tokenData: {
+    accessToken: string;
+    refreshToken: string;
+  };
   timestamp: string;
 }
 interface ApiQueryParams<F = Record<string, any>> {
