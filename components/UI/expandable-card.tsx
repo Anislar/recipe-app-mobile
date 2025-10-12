@@ -1,4 +1,3 @@
-import { hp } from "@/helpers/common";
 import { FC, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet, View } from "react-native";
 
@@ -19,54 +18,32 @@ export const ExpandableCard: FC<ExpandableCardProps> = ({
 
   const toggleExpand = () => {
     Animated.timing(animation, {
-      toValue: expanded ? 0 : 1,
-      duration: 500,
-      easing: Easing.inOut(Easing.quad),
+      toValue: !expanded ? 1 : 0,
+      duration: 300,
+      easing: Easing.inOut(Easing.ease),
       useNativeDriver: false,
-    }).start(() => {
-      setExpanded((prev) => !prev);
-    });
+    }).start(() => setExpanded((p) => !p));
   };
 
-  // Interpolate heights
-  const topHeight = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [hp(50), hp(0)],
-  });
-
-  const bottomHeight = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [hp(50), hp(90)],
-  });
-
   const topOpacity = animation.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [1, 0.5, 0.1],
+    inputRange: [0, 1],
+    outputRange: [1, 0],
   });
 
   return (
     <View style={styles.container}>
       <Animated.View
         style={[
-          styles.content,
-
+          styles.section,
           {
-            height: topHeight,
             opacity: topOpacity,
           },
         ]}
       >
-        {TopView}
+        {expanded ? null : TopView}
       </Animated.View>
 
-      <Animated.View
-        style={[
-          styles.content,
-          {
-            height: bottomHeight,
-          },
-        ]}
-      >
+      <Animated.View style={[styles.section]}>
         {BottomView({ expanded, toggleExpand })}
       </Animated.View>
     </View>
@@ -77,7 +54,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  content: {
-    backgroundColor: "#fff",
+  section: {
+    overflow: "hidden",
   },
 });
