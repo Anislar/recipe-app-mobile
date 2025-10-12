@@ -13,6 +13,7 @@ export const COLORS = {
   white: "#fff",
   rose: "#ef4444",
   roseLight: "#fbd0d0",
+  skyBlue: "#0895B5",
 };
 
 export const THEME = {

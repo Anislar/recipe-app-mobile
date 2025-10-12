@@ -1,14 +1,14 @@
-import { FC } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Notification } from "@/type";
-import { Avatar } from "@/components";
 import { Ionicons } from "@expo/vector-icons";
-import { THEME } from "@/constants/theme";
-import Animated, { FadeInDown, FadeOut } from "react-native-reanimated";
-import { formatDate, formatTimeAgo } from "@/helpers/utils";
-import { useSelectedColors } from "@/store";
-import { hp, wp } from "@/helpers/common";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Animated, { FadeInDown, FadeOut } from "react-native-reanimated";
+import { Avatar } from "@/components";
+import { THEME } from "@/constants/theme";
+import { hp, wp } from "@/helpers/common";
+import { formatTimeAgo } from "@/helpers/utils";
+import { useSelectedColors } from "@/store";
+import { Notification } from "@/type";
 
 interface Props {
   notification: Notification;
@@ -30,14 +30,13 @@ export const NotificationCard: FC<Props> = ({
   const shouldAnimate = index < 10;
   const { primary } = useSelectedColors();
   const getActionText = () => {
-    console.log(
-      "🚀 ~ getActionText ~ notification.targetType:",
-      notification.targetType
-    );
+    console.log("🚀 ~ getActionText ~ notification:", notification);
     if (notification.type === "like")
       return t(`notification.like.${notification.targetType}.withoutName`);
     if (notification.type === "comment")
       return t(`notification.comment.new.withoutName`);
+    if (notification.type === "reply")
+      return t(`notification.reply.new.withoutName`);
     return "notification";
   };
 
@@ -45,6 +44,7 @@ export const NotificationCard: FC<Props> = ({
     const map = {
       comment: { name: "chatbubble", color: THEME.colors.blue },
       like: { name: "heart", color: THEME.colors.rose },
+      reply: { name: "chatbubble", color: THEME.colors.skyBlue },
       default: { name: "notifications", color: THEME.colors.gray },
     };
     return map[notification.type] ?? map.default;
@@ -87,7 +87,7 @@ export const NotificationCard: FC<Props> = ({
             />
           </View>
 
-          {notification.type === "comment" && notification.comment?.content && (
+          {notification.type !== "like" && notification.comment?.content && (
             <Text style={styles.comment} numberOfLines={2}>
               &ldquo;{notification.comment.content}&ldquo;
             </Text>
@@ -96,7 +96,7 @@ export const NotificationCard: FC<Props> = ({
           <View style={styles.footerRow}>
             <Text style={styles.postInfo} numberOfLines={1}>
               {t("notification.on")}:{" "}
-              {notification.post?.content || notification.targetType}
+              {notification.post?.content || notification.parent?.content}
             </Text>
             <Text style={styles.time}>
               {formatTimeAgo(notification.createdAt)}

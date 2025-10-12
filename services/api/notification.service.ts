@@ -10,7 +10,6 @@ class NotificationService {
 
   async getNotifications(data: ApiQueryParams): Promise<ApiSuccess<any>> {
     try {
-      console.log(data);
       const response = await api.get(this.prefix, {
         params: {
           page: data.page ?? 1,

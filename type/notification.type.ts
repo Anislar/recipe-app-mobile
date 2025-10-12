@@ -26,8 +26,9 @@ export interface Notification {
   createdAt: string;
   updatedAt: string;
   actor: Actor;
-  post: Post | null;
-  comment: Post | null;
+  post: Content | null;
+  parent: Content | null;
+  comment: Content | null;
 }
 
 export interface Actor {
@@ -36,7 +37,7 @@ export interface Actor {
   avatar: string | null;
 }
 
-export interface Post {
+export interface Content {
   id: number;
   content: string;
 }
