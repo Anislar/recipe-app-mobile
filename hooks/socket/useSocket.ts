@@ -67,24 +67,68 @@ const useSocket = () => {
     };
 
     // Handle NEW COMMENT event
-    const handleNewComment = (data: any) => {
-      console.log("💬 New comment:", data);
-      const { post_id } = data;
+    const handleNewComment = (result: any) => {
+      const { data } = result;
 
-      queryClient.invalidateQueries({ queryKey: ["comments", post_id] });
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
-      queryClient.invalidateQueries({
-        queryKey: ["posts", "general", post_id],
+      patchQuery<Post>({
+        queryClient,
+        key: ["posts", "general", String(data.postId)],
+        type: "update_unique",
+        matchId: data.postId,
+        newItem: (item) => ({
+          ...item,
+          comment_count: item.comment_count + 1,
+        }),
       });
+      patchQuery<Comment>({
+        queryClient,
+        key: ["comments", String(data.postId)],
+        type: "add",
+        newItem: { ...data, user: data.actor },
+      });
+      patchQuery<Post>({
+        queryClient,
+        key: ["posts", "general"],
+        type: "update",
+        matchId: data.postId,
+        newItem: (item) => ({
+          ...item,
+          comment_count: item.comment_count + 1,
+        }),
+      });
+
+      showToast(
+        t(`notification.comment.new`, {
+          name: data.actor.name,
+        })
+      );
     };
 
     // Handle NEW REPLY event
-    const handleNewReply = (data: any) => {
-      console.log("💭 New reply:", data);
-      const { comment_id } = data;
-
-      queryClient.invalidateQueries({ queryKey: ["replies", comment_id] });
-      queryClient.invalidateQueries({ queryKey: ["comments"] });
+    const handleNewReply = (result: any) => {
+      const { data } = result;
+      patchQuery<Comment>({
+        queryClient,
+        key: ["comments", String(data.postId)],
+        type: "update",
+        matchId: data.parent_id,
+        newItem: (item) => ({
+          ...item,
+          replies_count: Number(item.replies_count) + 1,
+          replies: [{ ...data, user: data.actor }, ...(item.replies || [])],
+        }),
+      });
+      patchQuery<Comment>({
+        queryClient,
+        key: ["replies", data.parent_id],
+        type: "add",
+        newItem: { ...data, user: data.actor },
+      });
+      showToast(
+        t(`notification.reply.new`, {
+          name: data.actor.name,
+        })
+      );
     };
 
     // Register listeners
@@ -99,6 +143,7 @@ const useSocket = () => {
       socketService.off(EVENT.REPLY, handleNewReply);
       socketService.disconnect();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, queryClient]);
 };
 
